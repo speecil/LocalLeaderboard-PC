@@ -93,7 +93,10 @@ namespace LocalLeaderboard.UI.ViewControllers
         private void changeSort()
         {
             sorter.gameObject.SetActive(true);
-            StartCoroutine(RotateSorter());
+            if (sorter.gameObject.active)
+            {
+                StartCoroutine(RotateSorter());
+            }
         }
 
         [UIAction("Discord")]
@@ -188,8 +191,8 @@ namespace LocalLeaderboard.UI.ViewControllers
 
             _imgView = myHeader.background as ImageView;
             _imgView.color = new Color(0.156f, 0.69f, 0.46666f, 1);
-            _imgView.color0 = Color.white;
-            _imgView.color1 = new Color(1, 1, 1, 0);
+            _imgView.color0 = new Color(0.156f, 0.69f, 0.46666f, 1);
+            _imgView.color1 = new Color(0.156f, 0.69f, 0.46666f, 1);
             ImageSkew(ref _imgView) = 0.18f;
             ImageGradient(ref _imgView) = true;
         }
@@ -278,9 +281,12 @@ namespace LocalLeaderboard.UI.ViewControllers
             {
                 cell.showSeparator = true;
                 cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_playerNameText").richText = true;
-                StartCoroutine(FadeInTextDuration(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_playerNameText"), fadeAmount));
-                StartCoroutine(FadeInTextDuration(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_rankText"), fadeAmount));
-                StartCoroutine(FadeInTextDuration(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_scoreText"), fadeAmount));
+                if (cell.gameObject.active && leaderboardTransform.gameObject.active)
+                {
+                    StartCoroutine(FadeInTextDuration(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_playerNameText"), fadeAmount));
+                    StartCoroutine(FadeInTextDuration(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_rankText"), fadeAmount));
+                    StartCoroutine(FadeInTextDuration(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_scoreText"), fadeAmount));
+                }
             }
         }
 
@@ -377,7 +383,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             // Check that there are leaderboard entries
             if (leaderboardEntries.Count > 0)
             {
-                if (errorText.gameObject.active)
+                if (errorText.gameObject.active && leaderboardTransform.gameObject.active)
                 {
                     StartCoroutine(FadeOutText(errorText));
                 }
@@ -385,15 +391,25 @@ namespace LocalLeaderboard.UI.ViewControllers
                 Panel.totalScores.text = "Total Scores: " + leaderboardEntries.Count;
                 Panel.lastPlayed.gameObject.SetActive(true);
                 Panel.totalScores.gameObject.SetActive(true);
-                StartCoroutine(FadeInText(Panel.lastPlayed));
-                StartCoroutine(FadeInText(Panel.totalScores));
+
+                if(Panel.lastPlayed.gameObject.active && Panel.totalScores.gameObject.active && leaderboardTransform.gameObject.active)
+                {
+                    StartCoroutine(FadeInText(Panel.lastPlayed));
+                    StartCoroutine(FadeInText(Panel.totalScores));
+                }
             }
 
             if (leaderboardEntries.Count == 0)
             {
-                StartCoroutine(FadeOutText(Panel.lastPlayed));
-                StartCoroutine(FadeOutText(Panel.totalScores));
-                StartCoroutine(FadeInText(errorText));
+                if (Panel.lastPlayed.gameObject.active && Panel.totalScores.gameObject.active && leaderboardTransform.gameObject.active)
+                {
+                    StartCoroutine(FadeOutText(Panel.lastPlayed));
+                    StartCoroutine(FadeOutText(Panel.totalScores));
+                }
+                if (!errorText.gameObject.active && leaderboardTransform.gameObject.active)
+                {
+                    StartCoroutine(FadeInText(errorText));
+                }
             }
 
             totalPages = leaderboardEntries.Count / 10;

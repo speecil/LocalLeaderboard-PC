@@ -2,7 +2,7 @@
     xsi:noNamespaceSchemaLocation='https://raw.githubusercontent.com/RedBrumbler/Quest-BSML-Docs/gh-pages/schema.xsd'>
 
 	<!-- Header -->
-	<horizontal pref-width="91"
+	<horizontal pref-width="90"
 				pref-height="8"
 				anchor-pos-y="41.5"
 				id="myHeader"
@@ -11,7 +11,7 @@
 		<stack>
 			<horizontal>
 				<text id="headerText"
-					  text="LOCAL LEADERBOARD - DEV"
+					  text="SPEECIL LL - DEV DO NOT DISTRIBUTE"
 					  font-size="6"
 					  align="Midline"
 					  italics="true"/>
