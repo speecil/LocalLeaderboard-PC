@@ -36,16 +36,18 @@ namespace LocalLeaderboard.UI.ViewControllers
         internal static readonly FieldAccessor<ImageView, bool>.Accessor ImageGradient = FieldAccessor<ImageView, bool>.GetAccessor("_gradient");
 
         [UIComponent("totalScores")]
-        private TextMeshProUGUI totalScores;
+        public TextMeshProUGUI totalScores;
 
         [UIComponent("promptText")]
-        private TextMeshProUGUI promptText;
+        public TextMeshProUGUI promptText;
 
         [UIComponent("lastPlayed")]
         public TextMeshProUGUI lastPlayed;
 
         [UIComponent("prompt_loader")]
-        private GameObject prompt_loader;
+        public GameObject prompt_loader;
+
+
 
 
         [UIAction("#post-parse")]
@@ -65,6 +67,13 @@ namespace LocalLeaderboard.UI.ViewControllers
             ImageSkew(ref LocalLeaderboard_logo) = _skew;
             LocalLeaderboard_logo.SetVerticesDirty();
             ImageSkew(ref _separator) = _skew;
+        }
+
+        [UIAction("FunnyModalMoment")]
+        private void FunnyModalMoment()
+        {
+            var lb = Resources.FindObjectsOfTypeAll<LeaderboardView>().FirstOrDefault();
+            lb.showModal();
         }
 
         // function to show the saving prompt after you have set a score

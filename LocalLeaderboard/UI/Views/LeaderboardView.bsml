@@ -1,15 +1,32 @@
 ﻿<bg xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
     xsi:noNamespaceSchemaLocation='https://raw.githubusercontent.com/RedBrumbler/Quest-BSML-Docs/gh-pages/schema.xsd'>
-  
+
+	<!-- Header -->
+	<horizontal pref-width="91"
+				pref-height="8"
+				anchor-pos-y="41.5"
+				id="myHeader"
+				horizontal-fit="PreferredSize"
+				background="round-rect-panel">
+		<stack>
+			<horizontal>
+				<text id="headerText"
+					  text="LOCAL LEADERBOARD - DEV"
+					  font-size="6"
+					  align="Midline"
+					  italics="true"/>
+			</horizontal>
+		</stack>
+	</horizontal>
   <!-- Leaderboard scrollers -->
   <bg anchor-pos-x="-40" anchor-pos-y="-15">
     <clickable-image id="sorter"
-                      src="LocalLeaderboard.Images.carat.png"
+                      src="LocalLeaderboard.Images.sortArrow.png"
                       anchor-pos-y="47"
                       pref-height="3"
                       pref-width="3"
-					  size-delta-x="15"
-					  size-delta-y="15"
+					  size-delta-x="10"
+					  size-delta-y="10"
                       on-click="changeSort"
                       hover-hint='Sort Ascending/Descending'/>
     <page-button id="up_button"
@@ -42,16 +59,38 @@
             anchor-pos-y="5.5"
             horizontal-fit='PreferredSize'
             vertical-fit='PreferredSize'>
+	  <stack>
+		  
     <leaderboard id='leaderboardTableView'
                  cell-size='6.05'>
       <text id="errorText"
             text="No scores on this map!"
+			font-size="8"
             anchor-pos-x="-5"
             align="Center"
             italics="true"
             color="red"
             active="false"/>
+		<modal id='infoModal' show-event='showInfoModal' pref-height='10' pref-width='30' click-off-closes='true'
+				move-to-center='true' anchor-pos-x='-7'>
+			<vertical spacing='2'  bg='round-rect-panel'
+				vertical-fit='PreferredSize' pad='3'>
+				<horizontal spacing='4'>
+					<image align='Left' id="LocalLeaderboard_logo" src="LocalLeaderboard.Images.LocalLeaderboard_logo.png" preserve-aspect="true" pref-width="15" pref-height="15"/>
+					<text font-size="10" text='Local Leaderboard' align='Right'/>
+				</horizontal>
+				<text align='Center' text='Welcome to Local Leaderboard by Speecil!'/>
+				<text text-wrap='true' align='Center' text='A leaderboard for keeping track of previous plays on any map!'/>
+				<horizontal spacing='1'>
+					<action-button text='Discord' on-click='Discord'/>
+					<action-button text='Patreon' on-click='Patreon'/>
+					<action-button text='Website' on-click='Website'/>
+				</horizontal>
+			</vertical>
+		</modal>
     </leaderboard>
+	  </stack>
+
   </vertical>
   
 </bg>
