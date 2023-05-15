@@ -71,9 +71,9 @@
             italics="true"
             color="red"
             active="false"/>
-		<modal id='infoModal' show-event='showInfoModal' pref-height='10' pref-width='30' click-off-closes='true'
-				move-to-center='true' anchor-pos-x='-7'>
-			<vertical spacing='2'  bg='round-rect-panel'
+		<modal child-expand-height="false" id='infoModal' show-event='showInfoModal' size-delta-x='85' size-delta-y='50' clickerino-offerino-closerino='true'
+				move-to-center='true'>
+			<vertical spacing='2'
 				vertical-fit='PreferredSize' pad='3'>
 				<horizontal spacing='4'>
 					<image align='Left' id="LocalLeaderboard_logo" src="LocalLeaderboard.Images.LocalLeaderboard_logo.png" preserve-aspect="true" pref-width="15" pref-height="15"/>
@@ -82,9 +82,9 @@
 				<text align='Center' text='Welcome to Local Leaderboard by Speecil!'/>
 				<text text-wrap='true' align='Center' text='A leaderboard for keeping track of previous plays on any map!'/>
 				<horizontal spacing='1'>
-					<action-button text='Discord' on-click='Discord'/>
-					<action-button text='Patreon' on-click='Patreon'/>
-					<action-button text='Website' on-click='Website'/>
+					<action-button id='discordButton' text='Discord' on-click='Discord'/>
+					<action-button id='patreonButton' text='Patreon' on-click='Patreon'/>
+					<action-button id='websiteButton' text='Website' on-click='Website'/>
 				</horizontal>
 			</vertical>
 		</modal>

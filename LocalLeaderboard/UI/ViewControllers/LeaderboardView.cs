@@ -54,6 +54,15 @@ namespace LocalLeaderboard.UI.ViewControllers
         [UIComponent("myHeader")]
         private Backgroundable myHeader;
 
+        [UIComponent("discordButton")]
+        private Button discordButton;
+
+        [UIComponent("patreonButton")]
+        private Button patreonButton;
+        
+        [UIComponent("websiteButton")]
+        private Button websiteButton;
+
         [UIParams]
         BSMLParserParams parserParams = null;
 
@@ -120,6 +129,11 @@ namespace LocalLeaderboard.UI.ViewControllers
         public void showModal()
         {
             parserParams.EmitEvent("showInfoModal");
+            var silly = websiteButton.gameObject.GetComponentInChildren<HMUI.ImageView>();
+            ImageGradient(ref silly) = true;
+            silly.color = new Color(0.156f, 0.69f, 0.46666f, 1);
+            silly.color0 = Color.white;
+            silly.color1 = new Color(1, 1, 1, 0);
         }
 
         bool isAnimating;
