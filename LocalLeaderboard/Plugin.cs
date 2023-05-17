@@ -12,7 +12,7 @@ using System.Reflection;
 namespace LocalLeaderboard
 {
     [NoEnableDisable]
-    [Plugin(RuntimeOptions.SingleStartInit)]
+    [Plugin(RuntimeOptions.DynamicInit)]
     public class Plugin
     {
         internal static Plugin Instance { get; private set; }
@@ -23,7 +23,6 @@ namespace LocalLeaderboard
             Instance = this;
             Log = logger;
             LeaderboardData.LeaderboardData.createConfigIfNeeded();
-            Log.Info("HEY IM INIT");
             zenjector.Install<MenuInstaller>(Location.Menu);
             zenjector.Install<AppInstaller>(Location.App);
         }

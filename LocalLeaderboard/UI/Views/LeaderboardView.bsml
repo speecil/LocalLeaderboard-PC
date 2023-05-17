@@ -11,7 +11,7 @@
 		<stack>
 			<horizontal>
 				<text id="headerText"
-					  text="SPEECIL LL - DEV DO NOT DISTRIBUTE"
+					  text="LOCAL LEADERBOARD"
 					  font-size="6"
 					  align="Midline"
 					  italics="true"/>
@@ -82,9 +82,9 @@
 				<text align='Center' text='Welcome to Local Leaderboard by Speecil!'/>
 				<text text-wrap='true' align='Center' text='A leaderboard for keeping track of previous plays on any map!'/>
 				<horizontal spacing='1'>
-					<action-button id='discordButton' text='Discord' on-click='Discord'/>
-					<action-button id='patreonButton' text='Patreon' on-click='Patreon'/>
-					<action-button id='websiteButton' text='Website' on-click='Website'/>
+					<action-button pref-width='20' pref-height='10'  id='discordButton' text='Discord' on-click='Discord'/>
+					<action-button pref-width='20' pref-height='10' id='patreonButton' text='Patreon' on-click='Patreon'/>
+					<action-button pref-width='20' pref-height='10' id='websiteButton' text='Website' on-click='Website'/>
 				</horizontal>
 			</vertical>
 		</modal>

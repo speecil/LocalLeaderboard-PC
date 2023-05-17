@@ -1,16 +1,12 @@
-﻿using BeatSaberMarkupLanguage.Attributes;
+﻿using BeatSaberMarkupLanguage;
+using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Components;
 using BeatSaberMarkupLanguage.ViewControllers;
-using BeatSaberMarkupLanguage;
 using HMUI;
 using IPA.Utilities;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
 namespace LocalLeaderboard.UI.ViewControllers
 {
@@ -44,11 +40,11 @@ namespace LocalLeaderboard.UI.ViewControllers
         [UIComponent("lastPlayed")]
         public TextMeshProUGUI lastPlayed;
 
-        [UIComponent("prompt_loader")]
+        [UIObject("prompt_loader")]
         public GameObject prompt_loader;
 
 
-
+        LeaderboardView lb;
 
         [UIAction("#post-parse")]
         private void PostParse()
@@ -67,21 +63,13 @@ namespace LocalLeaderboard.UI.ViewControllers
             ImageSkew(ref LocalLeaderboard_logo) = _skew;
             LocalLeaderboard_logo.SetVerticesDirty();
             ImageSkew(ref _separator) = _skew;
+            lb = Resources.FindObjectsOfTypeAll<LeaderboardView>().FirstOrDefault();
         }
 
         [UIAction("FunnyModalMoment")]
         private void FunnyModalMoment()
         {
-            var lb = Resources.FindObjectsOfTypeAll<LeaderboardView>().FirstOrDefault();
             lb.showModal();
-        }
-
-        // function to show the saving prompt after you have set a score
-        private void SetSaving(bool value)
-        {
-            totalScores.gameObject.SetActive(value);
-            prompt_loader.SetActive(value);
-            promptText.gameObject.SetActive(value);
         }
     }
 }

@@ -6,7 +6,6 @@ using BeatSaberMarkupLanguage.ViewControllers;
 using HMUI;
 using IPA.Utilities;
 using LeaderboardCore.Interfaces;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,14 +58,17 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         [UIComponent("patreonButton")]
         private Button patreonButton;
-        
+
         [UIComponent("websiteButton")]
         private Button websiteButton;
+
+        [UIComponent("infoModal")]
+        private ModalView infoModal;
 
         [UIParams]
         BSMLParserParams parserParams = null;
 
-        public int page;
+        public int page = 0;
         public int totalPages;
         public int sortMethod;
 
@@ -96,6 +98,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         {
             up_button.interactable = (page > 0);
             down_button.interactable = (page < totalPages - 1);
+            Plugin.Log.Info("SHOULD BE UPDATING PAGE BUTTONS");
         }
 
         [UIAction("changeSort")]
@@ -111,29 +114,57 @@ namespace LocalLeaderboard.UI.ViewControllers
         [UIAction("Discord")]
         private void Discord()
         {
-            Plugin.Log.Info("DISCORD");
+            UnityEngine.Application.OpenURL("https://discord.gg/2KyykDXpBk");
         }
 
         [UIAction("Patreon")]
         private void Patreon()
         {
-            Plugin.Log.Info("Patreon");
+            UnityEngine.Application.OpenURL("https://patreon.com/speecil");
         }
 
         [UIAction("Website")]
         private void Website()
         {
-            Plugin.Log.Info("Website");
+            UnityEngine.Application.OpenURL("https://speecil.dev");
         }
 
         public void showModal()
         {
             parserParams.EmitEvent("showInfoModal");
-            var silly = websiteButton.gameObject.GetComponentInChildren<HMUI.ImageView>();
-            ImageGradient(ref silly) = true;
-            silly.color = new Color(0.156f, 0.69f, 0.46666f, 1);
-            silly.color0 = Color.white;
-            silly.color1 = new Color(1, 1, 1, 0);
+            StopCoroutine(setcolor(websiteButton));
+            StopCoroutine(setcolor(discordButton));
+            StopCoroutine(setcolor(patreonButton));
+
+            StartCoroutine(setcolor(websiteButton));
+            StartCoroutine(setcolor(discordButton));
+            StartCoroutine(setcolor(patreonButton));
+        }
+
+
+
+        private IEnumerator setcolor(Button button)
+        {
+            var bgImage = button.transform.FindChild("BG").gameObject.GetComponent<ImageView>();
+            var bgBorder = button.transform.FindChild("Border").gameObject.GetComponent<ImageView>();
+            var bgOutline = button.transform.FindChild("OutlineWrapper/Outline").gameObject.GetComponent<ImageView>();
+            var buttonText = button.transform.FindChild("Content/Text").gameObject.GetComponent<TextMeshProUGUI>();
+            while (infoModal.GetField<bool, ModalView>("_isShown"))
+            {
+                bgImage.color0 = new Color(0.156f, 0.69f, 0.46666f, 1);
+                bgImage.color1 = new Color(0.156f, 0.69f, 0.46666f, 1);
+
+                bgBorder.color0 = new Color(0.156f, 0.69f, 0.46666f, 1);
+                bgBorder.color1 = new Color(0.156f, 0.69f, 0.46666f, 1);
+                bgBorder.color = new Color(0.156f, 0.69f, 0.46666f, 1);
+
+                bgOutline.color = new Color(0.156f, 0.69f, 0.46666f, 1);
+                bgOutline.color0 = new Color(0.156f, 0.69f, 0.46666f, 1);
+                bgOutline.color1 = new Color(0.156f, 0.69f, 0.46666f, 1);
+
+                buttonText.color = new Color(1f, 1f, 1f, 1);
+                yield return null;
+            }
         }
 
         bool isAnimating;
@@ -189,8 +220,9 @@ namespace LocalLeaderboard.UI.ViewControllers
         internal static readonly FieldAccessor<ImageView, float>.Accessor ImageSkew = FieldAccessor<ImageView, float>.GetAccessor("_skew");
         internal static readonly FieldAccessor<ImageView, bool>.Accessor ImageGradient = FieldAccessor<ImageView, bool>.GetAccessor("_gradient");
 
-        private ImageView _imgView; 
+        private ImageView _imgView;
         private GameObject _loadingControl;
+        private ImageView _imgView2;
 
         [UIAction("#post-parse")]
         private void PostParse()
@@ -216,9 +248,12 @@ namespace LocalLeaderboard.UI.ViewControllers
         protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
             base.DidActivate(firstActivation, addedToHierarchy, screenSystemEnabling);
-            page = 0;
+            if (firstActivation)
+            {
+                page = 0;
+            }
             OnLeaderboardSet(currentDifficultyBeatmap);
-            Thread ac = new Thread(() => Activate());
+            Thread ac = new Thread(() => Activate(firstActivation));
             ac.Start();
         }
 
@@ -242,20 +277,20 @@ namespace LocalLeaderboard.UI.ViewControllers
             return null;
         }
 
-        private void Activate()
+        private void Activate(bool first)
         {
-            Thread.Sleep(10);
+            Thread.Sleep(1);
             var screen = this.gameObject.GetComponentInParent<HMUI.Screen>();
             var leaderboardViewController = FindChildRecursive(screen.transform, "PlatformLeaderboardViewController");
             var header = FindChildRecursive(leaderboardViewController, "HeaderPanel").gameObject;
-            origPos = header.transform.localPosition;
+            if (first) origPos = header.transform.localPosition;
             header.transform.localPosition = new Vector3(-999, -999, -999);
             Thread.CurrentThread.Join();
         }
 
         private void Deactivate()
         {
-            Thread.Sleep(10);
+            Thread.Sleep(1);
             var screen = this.gameObject.GetComponentInParent<HMUI.Screen>();
             var leaderboardViewController = FindChildRecursive(screen.transform, "PlatformLeaderboardViewController");
             var header = FindChildRecursive(leaderboardViewController, "HeaderPanel").gameObject;
@@ -336,100 +371,144 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         public void OnLeaderboardSet(IDifficultyBeatmap difficultyBeatmap)
         {
-            if (currentDifficultyBeatmap != difficultyBeatmap)
-            {
-                page = 0;
-            }
             Panel = UnityEngine.Resources.FindObjectsOfTypeAll<PanelView>().FirstOrDefault();
             currentDifficultyBeatmap = difficultyBeatmap;
             if (!this.isActivated) return;
+
             string mapId = difficultyBeatmap.level.levelID;
             int difficulty = difficultyBeatmap.difficultyRank;
             string mapType = difficultyBeatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName;
             string balls = mapType + difficulty.ToString();
             List<LeaderboardData.LeaderboardData.LeaderboardEntry> leaderboardEntries = LeaderboardData.LeaderboardData.LoadBeatMapInfo(mapId, balls);
+            totalPages = Mathf.CeilToInt((float)leaderboardEntries.Count / 10);
 
+            Plugin.Log.Info(totalPages.ToString());
+            UpdatePageButtons();
 
             if (Ascending)
             {
-                if (sortMethod == 0)
-                {
-                    if (leaderboardEntries.Count > 0)
-                    {
-                        LeaderboardData.LeaderboardData.LeaderboardEntry recent = leaderboardEntries[leaderboardEntries.Count - 1];
-                        Panel.lastPlayed.text = "Last Played: " + recent.datePlayed;
-                    }
-                }
-                else if (sortMethod == 1)
-                {
-                    leaderboardEntries.Sort((first, second) => first.acc.CompareTo(second.acc));
-
-                    if (leaderboardEntries.Count > 0)
-                    {
-                        Panel.lastPlayed.text = "Highest Acc : " + leaderboardEntries[leaderboardEntries.Count - 1].acc.ToString("F2") + "%";
-                    }
-                }
+                SortLeaderboardEntriesAscending(leaderboardEntries);
             }
             else
             {
-                if (sortMethod == 0)
-                {
-                    if (leaderboardEntries.Count > 0)
-                    {
-                        leaderboardEntries.Reverse();
-                        LeaderboardData.LeaderboardData.LeaderboardEntry recent = leaderboardEntries[leaderboardEntries.Count - 1];
-                        Panel.lastPlayed.text = "Last Played: " + recent.datePlayed;
-                    }
-                }
-                else if (sortMethod == 1)
-                {
-                    leaderboardEntries.Sort((first, second) => second.acc.CompareTo(first.acc));
-                    if (leaderboardEntries.Count > 0)
-                    {
-                        Panel.lastPlayed.text = "Highest Acc : " + leaderboardEntries[0].acc.ToString("F2") + "%";
-                    }
-                }
+                SortLeaderboardEntriesDescending(leaderboardEntries);
             }
 
+            UpdateLastPlayedText(leaderboardEntries);
             leaderboardTableView.SetScores(CreateLeaderboardData(leaderboardEntries, page), -1);
             RichMyText(leaderboardTableView);
 
-            // Check that there are leaderboard entries
             if (leaderboardEntries.Count > 0)
             {
-                if (errorText.gameObject.active && leaderboardTransform.gameObject.active)
-                {
-                    StartCoroutine(FadeOutText(errorText));
-                }
-                // Set the lastPlayed text to the most recent play
-                Panel.totalScores.text = "Total Scores: " + leaderboardEntries.Count;
-                Panel.lastPlayed.gameObject.SetActive(true);
-                Panel.totalScores.gameObject.SetActive(true);
-
-                if(Panel.lastPlayed.gameObject.active && Panel.totalScores.gameObject.active && leaderboardTransform.gameObject.active)
-                {
-                    StartCoroutine(FadeInText(Panel.lastPlayed));
-                    StartCoroutine(FadeInText(Panel.totalScores));
-                }
+                HandleLeaderboardEntriesExistence(leaderboardEntries);
             }
-
-            if (leaderboardEntries.Count == 0)
+            else
             {
-                if (Panel.lastPlayed.gameObject.active && Panel.totalScores.gameObject.active && leaderboardTransform.gameObject.active)
+                HandleNoLeaderboardEntries();
+            }
+        }
+
+        private void SortLeaderboardEntriesAscending(List<LeaderboardData.LeaderboardData.LeaderboardEntry> leaderboardEntries)
+        {
+            if (sortMethod == 0)
+            {
+                if (leaderboardEntries.Count > 0)
                 {
-                    StartCoroutine(FadeOutText(Panel.lastPlayed));
-                    StartCoroutine(FadeOutText(Panel.totalScores));
-                }
-                if (!errorText.gameObject.active && leaderboardTransform.gameObject.active)
-                {
-                    StartCoroutine(FadeInText(errorText));
+                    LeaderboardData.LeaderboardData.LeaderboardEntry recent = leaderboardEntries[leaderboardEntries.Count - 1];
+                    Panel.lastPlayed.text = "Last Played: " + recent.datePlayed;
                 }
             }
+            else if (sortMethod == 1)
+            {
+                leaderboardEntries.Sort((first, second) => first.acc.CompareTo(second.acc));
 
-            totalPages = leaderboardEntries.Count / 10;
-            UpdatePageButtons();
-
+                if (leaderboardEntries.Count > 0)
+                {
+                    Panel.lastPlayed.text = "Highest Acc : " + leaderboardEntries[leaderboardEntries.Count - 1].acc.ToString("F2") + "%";
+                }
+            }
         }
+
+        private void SortLeaderboardEntriesDescending(List<LeaderboardData.LeaderboardData.LeaderboardEntry> leaderboardEntries)
+        {
+            if (sortMethod == 0)
+            {
+                if (leaderboardEntries.Count > 0)
+                {
+                    LeaderboardData.LeaderboardData.LeaderboardEntry recent = leaderboardEntries[leaderboardEntries.Count - 1];
+                    leaderboardEntries.Reverse();
+                    Panel.lastPlayed.text = "Last Played: " + recent.datePlayed;
+                }
+            }
+            else if (sortMethod == 1)
+            {
+                leaderboardEntries.Sort((first, second) => second.acc.CompareTo(first.acc));
+                if (leaderboardEntries.Count > 0)
+                {
+                    Panel.lastPlayed.text = "Highest Acc : " + leaderboardEntries[0].acc.ToString("F2") + "%";
+                }
+            }
+        }
+
+        private void UpdateLastPlayedText(List<LeaderboardData.LeaderboardData.LeaderboardEntry> leaderboardEntries)
+        {
+            if (leaderboardEntries.Count > 0)
+            {
+                LeaderboardData.LeaderboardData.LeaderboardEntry recent = leaderboardEntries[leaderboardEntries.Count - 1];
+                Panel.lastPlayed.text = "Last Played: " + recent.datePlayed;
+            }
+        }
+
+        private void HandleLeaderboardEntriesExistence(List<LeaderboardData.LeaderboardData.LeaderboardEntry> leaderboardEntries)
+        {
+            if (errorText.gameObject.active && leaderboardTransform.gameObject.active)
+            {
+                StartCoroutine(FadeOutText(errorText));
+            }
+
+            Panel.totalScores.text = "Total Scores: " + leaderboardEntries.Count;
+            Panel.lastPlayed.gameObject.SetActive(true);
+            Panel.totalScores.gameObject.SetActive(true);
+
+            if (Panel.lastPlayed.gameObject.active && Panel.totalScores.gameObject.active && leaderboardTransform.gameObject.active)
+            {
+                StartCoroutine(FadeInText(Panel.lastPlayed));
+                StartCoroutine(FadeInText(Panel.totalScores));
+            }
+        }
+
+        private void HandleNoLeaderboardEntries()
+        {
+            if (Panel.lastPlayed.gameObject.active && Panel.totalScores.gameObject.active && leaderboardTransform.gameObject.active)
+            {
+                StartCoroutine(FadeOutText(Panel.lastPlayed));
+                StartCoroutine(FadeOutText(Panel.totalScores));
+            }
+            if (!errorText.gameObject.active && leaderboardTransform.gameObject.active)
+            {
+                StartCoroutine(FadeInText(errorText));
+            }
+            if (leaderboardTableView.gameObject.active && leaderboardTransform.gameObject.active)
+            {
+                FadeOut(leaderboardTableView);
+            }
+        }
+
+
+        void FadeOut(LeaderboardTableView tableView)
+        {
+            foreach (LeaderboardTableCell cell in tableView.GetComponentsInChildren<LeaderboardTableCell>())
+            {
+                if (cell.gameObject.active && leaderboardTransform.gameObject.active)
+                {
+                    StartCoroutine(FadeOutText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_playerNameText")));
+                    StartCoroutine(FadeOutText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_rankText")));
+                    StartCoroutine(FadeOutText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_scoreText")));
+                }
+
+            }
+        }
+
 
         public List<LeaderboardTableView.ScoreData> CreateLeaderboardData(List<LeaderboardData.LeaderboardData.LeaderboardEntry> leaderboard, int page)
         {
@@ -464,7 +543,5 @@ namespace LocalLeaderboard.UI.ViewControllers
 
             return new LeaderboardTableView.ScoreData(score, result, rank, false);
         }
-
-
     }
 }

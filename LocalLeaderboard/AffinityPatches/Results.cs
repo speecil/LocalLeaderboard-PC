@@ -1,10 +1,15 @@
 ﻿using HarmonyLib;
+using IPA.Utilities;
+using LocalLeaderboard.UI.ViewControllers;
 using SiraUtil.Affinity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
+using static PlayerSaveData;
 using static UnityEngine.EventSystems.EventTrigger;
 
 namespace LocalLeaderboard.AffinityPatches

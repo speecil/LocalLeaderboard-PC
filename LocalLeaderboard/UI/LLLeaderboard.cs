@@ -18,7 +18,6 @@ namespace LocalLeaderboard.UI
             _leaderboardView = leaderboardView;
             _manager = customLeaderboardManager;
             _manager.Register(this);
-            Plugin.Log.Info("HEY IM REGISTERING");
         }
 
         protected override ViewController panelViewController { get; }
