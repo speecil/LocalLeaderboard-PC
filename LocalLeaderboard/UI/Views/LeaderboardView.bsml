@@ -59,8 +59,6 @@
             anchor-pos-y="5.5"
             horizontal-fit='PreferredSize'
             vertical-fit='PreferredSize'>
-	  <stack>
-		  
     <leaderboard id='leaderboardTableView'
                  cell-size='6.05'>
       <text id="errorText"
@@ -71,15 +69,16 @@
             italics="true"
             color="red"
             active="false"/>
-		<modal child-expand-height="false" id='infoModal' show-event='showInfoModal' size-delta-x='85' size-delta-y='50' clickerino-offerino-closerino='true'
+		<button id="retryButton" text="Retry" on-click="Retry" active="false" anchor-pos-x="-5" align="Center"/>
+		<modal child-expand-height="false" id='infoModal' show-event='showInfoModal' hide-event='hideInfoModal' size-delta-x='85' size-delta-y='50' clickerino-offerino-closerino='true'
 				move-to-center='true'>
-			<vertical spacing='2'
+			<vertical spacing='1'
 				vertical-fit='PreferredSize' pad='3'>
 				<horizontal spacing='4'>
 					<image align='Left' id="LocalLeaderboard_logo" src="LocalLeaderboard.Images.LocalLeaderboard_logo.png" preserve-aspect="true" pref-width="15" pref-height="15"/>
 					<text font-size="10" text='Local Leaderboard' align='Right'/>
 				</horizontal>
-				<text align='Center' text='Welcome to Local Leaderboard by Speecil!'/>
+				<text font-size='5' align='Center' text='Welcome to Local Leaderboard by Speecil!'/>
 				<text text-wrap='true' align='Center' text='A leaderboard for keeping track of previous plays on any map!'/>
 				<horizontal spacing='1'>
 					<action-button pref-width='20' pref-height='10'  id='discordButton' text='Discord' on-click='Discord'/>
@@ -89,8 +88,6 @@
 			</vertical>
 		</modal>
     </leaderboard>
-	  </stack>
-
   </vertical>
   
 </bg>
