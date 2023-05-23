@@ -442,7 +442,6 @@ namespace LocalLeaderboard.UI.ViewControllers
                     SortLeaderboardEntriesDescending(leaderboardEntries);
                 }
 
-                UpdateLastPlayedText(leaderboardEntries);
                 leaderboardTableView.SetScores(CreateLeaderboardData(leaderboardEntries, page), -1);
                 RichMyText(leaderboardTableView);
 
@@ -503,15 +502,6 @@ namespace LocalLeaderboard.UI.ViewControllers
                 {
                     Panel.lastPlayed.text = "Highest Acc : " + leaderboardEntries[0].acc.ToString("F2") + "%";
                 }
-            }
-        }
-
-        private void UpdateLastPlayedText(List<LeaderboardData.LeaderboardData.LeaderboardEntry> leaderboardEntries)
-        {
-            if (leaderboardEntries.Count > 0)
-            {
-                LeaderboardData.LeaderboardData.LeaderboardEntry recent = leaderboardEntries[leaderboardEntries.Count - 1];
-                Panel.lastPlayed.text = "Last Played: " + recent.datePlayed;
             }
         }
 
