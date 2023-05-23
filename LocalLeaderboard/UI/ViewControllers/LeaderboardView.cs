@@ -460,7 +460,6 @@ namespace LocalLeaderboard.UI.ViewControllers
                 errorText.text = "Error!";
                 retryButton.gameObject.SetActive(true);
             }
-
         }
 
         private void SortLeaderboardEntriesAscending(List<LeaderboardData.LeaderboardData.LeaderboardEntry> leaderboardEntries)
