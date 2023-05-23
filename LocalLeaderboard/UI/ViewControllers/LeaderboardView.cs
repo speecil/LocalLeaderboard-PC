@@ -283,18 +283,21 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         void RichMyText(LeaderboardTableView tableView)
         {
-            var fadeAmount = 0.4f;
             foreach (LeaderboardTableCell cell in tableView.GetComponentsInChildren<LeaderboardTableCell>())
             {
                 cell.showSeparator = true;
                 cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_playerNameText").richText = true;
+                cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_playerNameText").gameObject.SetActive(false);
+                cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_rankText").gameObject.SetActive(false);
+                cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_scoreText").gameObject.SetActive(false);
+
                 if (cell.gameObject.active && leaderboardTransform.gameObject.active)
                 {
                     try
                     {
-                        StartCoroutine(FadeInTextDuration(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_playerNameText"), fadeAmount));
-                        StartCoroutine(FadeInTextDuration(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_rankText"), fadeAmount));
-                        StartCoroutine(FadeInTextDuration(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_scoreText"), fadeAmount));
+                        StartCoroutine(FadeInText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_playerNameText")));
+                        StartCoroutine(FadeInText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_rankText")));
+                        StartCoroutine(FadeInText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_scoreText")));
                     }
                     catch (Exception ex) { }
                 }
@@ -359,34 +362,22 @@ namespace LocalLeaderboard.UI.ViewControllers
         }
 
 
-        private IEnumerator FadeInTextDuration(TextMeshProUGUI text, float duration)
-        {
-            yield return null; // Wait for a single frame
-            yield return null; // Wait for a single frame
-            yield return null; // Wait for a single frame
-            duration = 0.4f;
-            float elapsedTime = 0f;
-            text.gameObject.SetActive(true);
-            while (elapsedTime < duration)
-            {
-                text.alpha = Mathf.Lerp(0f, 1f, elapsedTime / duration);
-                elapsedTime += Time.deltaTime;
-                yield return null;
-            }
-            text.alpha = 1f;
-        }
-
-
         private IEnumerator FadeInText(TextMeshProUGUI text)
         {
-            yield return null; // Wait for a single frame
-            yield return null; // Wait for a single frame
-            yield return null; // Wait for a single frame
+            yield return null;
+            if (text == null)
+            {
+                yield break;
+            }
             float duration = 0.4f;
             float elapsedTime = 0f;
             text.gameObject.SetActive(true);
             while (elapsedTime < duration)
             {
+                if (!text.gameObject.active)
+                {
+                    yield break;
+                }
                 text.alpha = Mathf.Lerp(0f, 1f, elapsedTime / duration);
                 elapsedTime += Time.deltaTime;
                 yield return null;
@@ -396,15 +387,11 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         private IEnumerator FadeOutText(TextMeshProUGUI text)
         {
+            yield return null;
             if (text == null)
             {
                 yield break;
             }
-
-            yield return null; // Wait for a single frame
-            yield return null; // Wait for a single frame
-            yield return null; // Wait for a single frame
-
             float duration = 0.4f;
             float elapsedTime = 0f;
 
