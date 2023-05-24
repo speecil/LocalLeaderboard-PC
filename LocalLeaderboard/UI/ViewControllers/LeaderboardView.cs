@@ -6,15 +6,15 @@ using BeatSaberMarkupLanguage.ViewControllers;
 using HMUI;
 using IPA.Utilities;
 using LeaderboardCore.Interfaces;
-using System;
+using LocalLeaderboard.Services;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 using static LeaderboardTableView;
+using LLeaderboardEntry = LocalLeaderboard.LeaderboardData.LeaderboardData.LeaderboardEntry;
 
 namespace LocalLeaderboard.UI.ViewControllers
 {
@@ -24,6 +24,9 @@ namespace LocalLeaderboard.UI.ViewControllers
     {
         private bool Ascending = true;
         private List<ScoreData> scores = new List<ScoreData>();
+        private PanelView _panelView;
+        private PlatformLeaderboardViewController _plvc;
+        private TweeningService _tweeningService;
 
         public IDifficultyBeatmap currentDifficultyBeatmap;
 
@@ -44,9 +47,6 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         [UIComponent("down_button")]
         private Button down_button;
-
-        [UIComponent("segmentedControl")]
-        private IconSegmentedControl segmentedControl;
 
         [UIComponent("sorter")]
         private ImageView sorter;
@@ -108,64 +108,34 @@ namespace LocalLeaderboard.UI.ViewControllers
         private void changeSort()
         {
             sorter.gameObject.SetActive(true);
-            if (sorter.gameObject.active)
+            if (!sorter.gameObject.activeSelf) return;
+            
+            _tweeningService.RotateTransform(sorter.GetComponentInChildren<ImageView>().transform, 180f, 0.1f, () =>
             {
-                try
-                {
-                    StartCoroutine(RotateSorter());
-                }
-                catch(Exception ex)
-                {
-
-                }
-            }
+                Ascending = !Ascending;
+                OnLeaderboardSet(currentDifficultyBeatmap);
+            });
         }
 
         [UIAction("Discord")]
-        private void Discord()
-        {
-            UnityEngine.Application.OpenURL("https://discord.gg/2KyykDXpBk");
-        }
+        private void Discord() => Application.OpenURL("https://discord.gg/2KyykDXpBk");
 
         [UIAction("Patreon")]
-        private void Patreon()
-        {
-            UnityEngine.Application.OpenURL("https://patreon.com/speecil");
-        }
+        private void Patreon() => Application.OpenURL("https://patreon.com/speecil");
 
         [UIAction("Website")]
-        private void Website()
-        {
-            UnityEngine.Application.OpenURL("https://speecil.dev");
-        }
-
+        private void Website() => Application.OpenURL("https://speecil.dev");
+        
         public void showModal()
         {
             parserParams.EmitEvent("showInfoModal");
-            try
-            {
-                StopCoroutine(setcolor(websiteButton));
-                StopCoroutine(setcolor(discordButton));
-                StopCoroutine(setcolor(patreonButton));
-            }
-            catch(Exception ex)
-            {
-
-            }
-            try
-            {
-                StartCoroutine(setcolor(websiteButton));
-                StartCoroutine(setcolor(discordButton));
-                StartCoroutine(setcolor(patreonButton));
-            }
-            catch (Exception ex) { }
+            infoModal.StartCoroutine(setcolor(websiteButton));
+            infoModal.StartCoroutine(setcolor(discordButton));
+            infoModal.StartCoroutine(setcolor(patreonButton));
         }
 
         [UIAction("Retry")]
-        private void Retry()
-        {
-            OnLeaderboardSet(currentDifficultyBeatmap);
-        }
+        private void Retry() => OnLeaderboardSet(currentDifficultyBeatmap);
 
         [UIAction("OnIconSelected")]
         private void OnIconSelected(SegmentedControl segmentedControl, int index)
@@ -173,7 +143,6 @@ namespace LocalLeaderboard.UI.ViewControllers
             sortMethod = index;
             OnLeaderboardSet(currentDifficultyBeatmap);
         }
-
 
         [UIValue("leaderboardIcons")]
         private List<IconSegmentedControl.DataItem> leaderboardIcons
@@ -183,9 +152,9 @@ namespace LocalLeaderboard.UI.ViewControllers
                 return new List<IconSegmentedControl.DataItem>()
                 {
                 new IconSegmentedControl.DataItem(
-                    BeatSaberMarkupLanguage.Utilities.FindSpriteInAssembly("LocalLeaderboard.Images.clock.png"), "Date / Time"),
+                    Utilities.FindSpriteInAssembly("LocalLeaderboard.Images.clock.png"), "Date / Time"),
                 new IconSegmentedControl.DataItem(
-                    BeatSaberMarkupLanguage.Utilities.FindSpriteInAssembly("LocalLeaderboard.Images.score.png"), "Highscore")
+                    Utilities.FindSpriteInAssembly("LocalLeaderboard.Images.score.png"), "Highscore")
                 };
             }
         }
@@ -215,70 +184,32 @@ namespace LocalLeaderboard.UI.ViewControllers
             ImageGradient(ref _imgView) = true;
         }
 
+        [Inject]
+        public void Inject(TweeningService tweeningService, PanelView panel, PlatformLeaderboardViewController plvc)
+        {
+            _tweeningService = tweeningService;
+            _panelView = panel;
+            _plvc = plvc;
+        }
+
         private static Vector3 origPos;
 
         protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
             base.DidActivate(firstActivation, addedToHierarchy, screenSystemEnabling);
-            if (firstActivation)
-            {
-                page = 0;
-            }
             OnLeaderboardSet(currentDifficultyBeatmap);
-            Thread ac = new Thread(() => Activate(firstActivation));
-            ac.Start();
-        }
-
-        public static Transform FindChildRecursive(Transform parent, string childName)
-        {
-            if (parent.name == childName)
-            {
-                return parent;
-            }
-
-            foreach (Transform child in parent)
-            {
-                Transform result = FindChildRecursive(child, childName);
-
-                if (result != null)
-                {
-                    return result;
-                }
-            }
-
-            return null;
-        }
-
-        private void Activate(bool first)
-        {
-            Thread.Sleep(1);
-            var screen = this.gameObject.GetComponentInParent<HMUI.Screen>();
-            var leaderboardViewController = FindChildRecursive(screen.transform, "PlatformLeaderboardViewController");
-            var header = FindChildRecursive(leaderboardViewController, "HeaderPanel").gameObject;
-            if (first) origPos = header.transform.localPosition;
+            var header = _plvc.transform.Find("HeaderPanel");
+            if (firstActivation) origPos = header.transform.localPosition;
             header.transform.localPosition = new Vector3(-999, -999, -999);
-            Thread.CurrentThread.Join();
         }
-        PanelView Panel;
-
-        private void Deactivate()
-        {
-            Thread.Sleep(1);
-            parserParams.EmitEvent("hideInfoModal");
-            var screen = this.gameObject.GetComponentInParent<HMUI.Screen>();
-            var leaderboardViewController = FindChildRecursive(screen.transform, "PlatformLeaderboardViewController");
-            var header = FindChildRecursive(leaderboardViewController, "HeaderPanel").gameObject;
-            header.transform.localPosition = origPos;
-            Thread.CurrentThread.Join();
-        }
-
 
         protected override void DidDeactivate(bool removedFromHierarchy, bool screenSystemDisabling)
         {
             base.DidDeactivate(removedFromHierarchy, screenSystemDisabling);
             page = 0;
-            Thread deac = new Thread(() => Deactivate());
-            deac.Start();
+            parserParams.EmitEvent("hideInfoModal");
+            var header = _plvc.transform.Find("HeaderPanel");
+            header.transform.localPosition = origPos;
         }
 
         void RichMyText(LeaderboardTableView tableView)
@@ -286,173 +217,69 @@ namespace LocalLeaderboard.UI.ViewControllers
             foreach (LeaderboardTableCell cell in tableView.GetComponentsInChildren<LeaderboardTableCell>())
             {
                 cell.showSeparator = true;
-                cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_playerNameText").richText = true;
-                cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_playerNameText").gameObject.SetActive(false);
-                cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_rankText").gameObject.SetActive(false);
-                cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_scoreText").gameObject.SetActive(false);
+                var nameText = cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_playerNameText");
+                var rankText = cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_rankText");
+                var scoreText = cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_scoreText");
+                nameText.richText = true;
+                nameText.gameObject.SetActive(false);
+                rankText.gameObject.SetActive(false);
+                scoreText.gameObject.SetActive(false);
 
-                if (cell.gameObject.active && leaderboardTransform.gameObject.active)
+                if (cell.gameObject.activeSelf && leaderboardTransform.gameObject.activeSelf)
                 {
-                    try
-                    {
-                        StartCoroutine(FadeInText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_playerNameText")));
-                        StartCoroutine(FadeInText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_rankText")));
-                        StartCoroutine(FadeInText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_scoreText")));
-                    }
-                    catch (Exception ex) { }
+                    _tweeningService.FadeText(nameText, true, 0.4f);
+                    _tweeningService.FadeText(rankText, true, 0.4f);
+                    _tweeningService.FadeText(scoreText, true, 0.4f);
                 }
             }
         }
 
         private IEnumerator setcolor(Button button)
         {
-            var bgImage = button.transform.FindChild("BG").gameObject.GetComponent<ImageView>();
-            var bgBorder = button.transform.FindChild("Border").gameObject.GetComponent<ImageView>();
-            var bgOutline = button.transform.FindChild("OutlineWrapper/Outline").gameObject.GetComponent<ImageView>();
-            var buttonText = button.transform.FindChild("Content/Text").gameObject.GetComponent<TextMeshProUGUI>();
-
-            if(bgImage == null || bgBorder.isActiveAndEnabled == false)
+            var bgImage = button.transform.Find("BG").gameObject.GetComponent<ImageView>();
+            var bgBorder = button.transform.Find("Border").gameObject.GetComponent<ImageView>();
+            var bgOutline = button.transform.Find("OutlineWrapper/Outline").gameObject.GetComponent<ImageView>();
+            var buttonText = button.transform.Find("Content/Text").gameObject.GetComponent<TextMeshProUGUI>();
+            var bgColour = new Color(0.156f, 0.69f, 0.46666f, 1);
+            var textColour = new Color(1f, 1f, 1f, 1);
+            while (infoModal.gameObject.activeInHierarchy)
             {
-                yield break;
-            }
+                bgImage.color0 = bgColour;
+                bgImage.color1 = bgColour;
 
-            while (infoModal.GetField<bool, ModalView>("_isShown"))
-            {
-                bgImage.color0 = new Color(0.156f, 0.69f, 0.46666f, 1);
-                bgImage.color1 = new Color(0.156f, 0.69f, 0.46666f, 1);
+                bgBorder.color0 = bgColour;
+                bgBorder.color1 = bgColour;
+                bgBorder.color = bgColour;
 
-                bgBorder.color0 = new Color(0.156f, 0.69f, 0.46666f, 1);
-                bgBorder.color1 = new Color(0.156f, 0.69f, 0.46666f, 1);
-                bgBorder.color = new Color(0.156f, 0.69f, 0.46666f, 1);
+                bgOutline.color = bgColour;
+                bgOutline.color0 = bgColour;
+                bgOutline.color1 = bgColour;
 
-                bgOutline.color = new Color(0.156f, 0.69f, 0.46666f, 1);
-                bgOutline.color0 = new Color(0.156f, 0.69f, 0.46666f, 1);
-                bgOutline.color1 = new Color(0.156f, 0.69f, 0.46666f, 1);
-
-                buttonText.color = new Color(1f, 1f, 1f, 1);
+                buttonText.color = textColour;
                 yield return null;
             }
-        }
-
-        bool isAnimating;
-
-        private IEnumerator RotateSorter()
-        {
-            if (!isAnimating)
-            {
-                isAnimating = true;
-                const float duration = 0.10f;
-                float startTime = Time.time;
-                float startRotation = sorter.GetComponentInChildren<HMUI.ImageView>().transform.rotation.eulerAngles.z;
-                float endRotation = startRotation + 180f;
-
-                while (Time.time < startTime + duration)
-                {
-                    float t = (Time.time - startTime) / duration;
-                    float currentRotation = Mathf.Lerp(startRotation, endRotation, t);
-                    sorter.GetComponentInChildren<HMUI.ImageView>().transform.rotation = Quaternion.Euler(0f, 0f, currentRotation);
-                    yield return null;
-                }
-
-                sorter.GetComponentInChildren<HMUI.ImageView>().transform.rotation = Quaternion.Euler(0f, 0f, endRotation);
-                Ascending = !Ascending;
-                OnLeaderboardSet(currentDifficultyBeatmap);
-                isAnimating = false;
-            }
-        }
-
-
-        private IEnumerator FadeInText(TextMeshProUGUI text)
-        {
-            yield return null;
-            if (text == null)
-            {
-                yield break;
-            }
-            float duration = 0.4f;
-            float elapsedTime = 0f;
-            text.gameObject.SetActive(true);
-            while (elapsedTime < duration)
-            {
-                if (!text.gameObject.active)
-                {
-                    yield break;
-                }
-                text.alpha = Mathf.Lerp(0f, 1f, elapsedTime / duration);
-                elapsedTime += Time.deltaTime;
-                yield return null;
-            }
-            text.alpha = 1f;
-        }
-
-        private IEnumerator FadeOutText(TextMeshProUGUI text)
-        {
-            yield return null;
-            if (text == null)
-            {
-                yield break;
-            }
-            float duration = 0.4f;
-            float elapsedTime = 0f;
-
-            if (!text.gameObject.active)
-            {
-                yield break;
-            }
-
-            while (elapsedTime < duration)
-            {
-                if (!text.gameObject.active)
-                {
-                    yield break;
-                }
-
-                text.alpha = Mathf.Lerp(1f, 0f, elapsedTime / duration);
-                elapsedTime += Time.deltaTime;
-                yield return null;
-            }
-
-            text.alpha = 0f;
-            text.gameObject.SetActive(false);
         }
 
         public void OnLeaderboardSet(IDifficultyBeatmap difficultyBeatmap)
         {
             currentDifficultyBeatmap = difficultyBeatmap;
             if (!this.isActivated) return;
-            Panel = UnityEngine.Resources.FindObjectsOfTypeAll<PanelView>().FirstOrDefault();
-
             string mapId = difficultyBeatmap.level.levelID;
             int difficulty = difficultyBeatmap.difficultyRank;
             string mapType = difficultyBeatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName;
             string balls = mapType + difficulty.ToString();
-            List<LeaderboardData.LeaderboardData.LeaderboardEntry> leaderboardEntries = LeaderboardData.LeaderboardData.LoadBeatMapInfo(mapId, balls);
+            List<LLeaderboardEntry> leaderboardEntries = LeaderboardData.LeaderboardData.LoadBeatMapInfo(mapId, balls);
             totalPages = Mathf.CeilToInt((float)leaderboardEntries.Count / 10);
 
             try
             {
                 UpdatePageButtons();
-
-                if (Ascending)
-                {
-                    SortLeaderboardEntriesAscending(leaderboardEntries);
-                }
-                else
-                {
-                    SortLeaderboardEntriesDescending(leaderboardEntries);
-                }
-
+                SortLeaderboardEntries(leaderboardEntries);
                 leaderboardTableView.SetScores(CreateLeaderboardData(leaderboardEntries, page), -1);
                 RichMyText(leaderboardTableView);
 
-                if (leaderboardEntries.Count > 0)
-                {
-                    HandleLeaderboardEntriesExistence(leaderboardEntries);
-                }
-                else
-                {
-                    HandleNoLeaderboardEntries();
-                }
+                if (leaderboardEntries.Count > 0) HandleLeaderboardEntriesExistence(leaderboardEntries);
+                else HandleNoLeaderboardEntries();
             }
             catch
             {
@@ -462,116 +289,75 @@ namespace LocalLeaderboard.UI.ViewControllers
             }
         }
 
-        private void SortLeaderboardEntriesAscending(List<LeaderboardData.LeaderboardData.LeaderboardEntry> leaderboardEntries)
+        private void SortLeaderboardEntries(List<LLeaderboardEntry> leaderboardEntries)
         {
             if (sortMethod == 0)
             {
-                if (leaderboardEntries.Count > 0)
-                {
-                    LeaderboardData.LeaderboardData.LeaderboardEntry recent = leaderboardEntries[leaderboardEntries.Count - 1];
-                    Panel.lastPlayed.text = "Last Played: " + recent.datePlayed;
-                }
+                if (leaderboardEntries.Count <= 0) return;
+                LLeaderboardEntry recent = leaderboardEntries[leaderboardEntries.Count - 1];
+                if (!Ascending) leaderboardEntries.Reverse();
+                _panelView.lastPlayed.text = "Last Played: " + recent.datePlayed;    
             }
             else if (sortMethod == 1)
             {
-                leaderboardEntries.Sort((first, second) => first.acc.CompareTo(second.acc));
-
-                if (leaderboardEntries.Count > 0)
-                {
-                    Panel.lastPlayed.text = "Highest Acc : " + leaderboardEntries[leaderboardEntries.Count - 1].acc.ToString("F2") + "%";
-                }
+                if (Ascending) leaderboardEntries.Sort((first, second) => first.acc.CompareTo(second.acc));
+                else leaderboardEntries.Sort((first, second) => second.acc.CompareTo(first.acc));
+                if (leaderboardEntries.Count <= 0) return;
+                _panelView.lastPlayed.text = (Ascending ? "Lowest Acc : " : "Highest Acc : ") + leaderboardEntries[0].acc.ToString("F2") + "%";
             }
         }
 
-        private void SortLeaderboardEntriesDescending(List<LeaderboardData.LeaderboardData.LeaderboardEntry> leaderboardEntries)
+        private void HandleLeaderboardEntriesExistence(List<LLeaderboardEntry> leaderboardEntries)
         {
-            if (sortMethod == 0)
+            if (errorText.gameObject.activeSelf && leaderboardTransform.gameObject.activeSelf)
             {
-                if (leaderboardEntries.Count > 0)
-                {
-                    LeaderboardData.LeaderboardData.LeaderboardEntry recent = leaderboardEntries[leaderboardEntries.Count - 1];
-                    leaderboardEntries.Reverse();
-                    Panel.lastPlayed.text = "Last Played: " + recent.datePlayed;
-                }
+                _tweeningService.FadeText(errorText, false, 0.4f);
             }
-            else if (sortMethod == 1)
+
+            _panelView.totalScores.text = "Total Scores: " + leaderboardEntries.Count;
+            _panelView.lastPlayed.gameObject.SetActive(true);
+            _panelView.totalScores.gameObject.SetActive(true);
+
+            if (_panelView.lastPlayed.gameObject.activeSelf && _panelView.totalScores.gameObject.activeSelf && leaderboardTransform.gameObject.activeSelf)
             {
-                leaderboardEntries.Sort((first, second) => second.acc.CompareTo(first.acc));
-                if (leaderboardEntries.Count > 0)
-                {
-                    Panel.lastPlayed.text = "Highest Acc : " + leaderboardEntries[0].acc.ToString("F2") + "%";
-                }
+                _tweeningService.FadeText(_panelView.lastPlayed, true, 0.4f);
+                _tweeningService.FadeText(_panelView.totalScores, true, 0.4f);
             }
-        }
-
-        private void HandleLeaderboardEntriesExistence(List<LeaderboardData.LeaderboardData.LeaderboardEntry> leaderboardEntries)
-        {
-            try
-            {
-                if (errorText.gameObject.active && leaderboardTransform.gameObject.active)
-                {
-                    StartCoroutine(FadeOutText(errorText));
-                }
-
-                Panel.totalScores.text = "Total Scores: " + leaderboardEntries.Count;
-                Panel.lastPlayed.gameObject.SetActive(true);
-                Panel.totalScores.gameObject.SetActive(true);
-
-                if (Panel.lastPlayed.gameObject.active && Panel.totalScores.gameObject.active && leaderboardTransform.gameObject.active)
-                {
-                    StartCoroutine(FadeInText(Panel.lastPlayed));
-                    StartCoroutine(FadeInText(Panel.totalScores));
-                }
-            }
-            catch(Exception e) { }
         }
 
         private void HandleNoLeaderboardEntries()
         {
             errorText.text = "No scores on this map!";
 
-            try
+            if (_panelView.lastPlayed.gameObject.activeSelf && _panelView.totalScores.gameObject.activeSelf && leaderboardTransform.gameObject.activeSelf)
             {
-                if (Panel.lastPlayed.gameObject.active && Panel.totalScores.gameObject.active && leaderboardTransform.gameObject.active)
-                {
-                    StartCoroutine(FadeOutText(Panel.lastPlayed));
-                    StartCoroutine(FadeOutText(Panel.totalScores));
-                }
-                if (!errorText.gameObject.active && leaderboardTransform.gameObject.active)
-                {
-                    StartCoroutine(FadeInText(errorText));
-                }
-                if (leaderboardTableView.gameObject.active && leaderboardTransform.gameObject.active)
-                {
-                    FadeOut(leaderboardTableView);
-                }
+                _tweeningService.FadeText(_panelView.lastPlayed, false, 0.4f);
+                _tweeningService.FadeText(_panelView.totalScores, false, 0.4f);
             }
-            catch(Exception e)
+            if (!errorText.gameObject.activeSelf && leaderboardTransform.gameObject.activeSelf)
             {
-
+                _tweeningService.FadeText(errorText, true, 0.4f);
             }
-
+            if (leaderboardTableView.gameObject.activeSelf && leaderboardTransform.gameObject.activeSelf)
+            {
+                FadeOut(leaderboardTableView);
+            }
         }
-
 
         void FadeOut(LeaderboardTableView tableView)
         {
             foreach (LeaderboardTableCell cell in tableView.GetComponentsInChildren<LeaderboardTableCell>())
             {
-                if (cell.gameObject.active && leaderboardTransform.gameObject.active)
-                {
-                    StartCoroutine(FadeOutText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_playerNameText")));
-                    StartCoroutine(FadeOutText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_rankText")));
-                    StartCoroutine(FadeOutText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_scoreText")));
-                }
-
+                if (!(cell.gameObject.activeSelf && leaderboardTransform.gameObject.activeSelf)) continue; 
+                _tweeningService.FadeText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_playerNameText"), false, 0.4f);
+                _tweeningService.FadeText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_rankText"), false, 0.4f);
+                _tweeningService.FadeText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_scoreText"), false, 0.4f);
             }
         }
 
-
-        public List<LeaderboardTableView.ScoreData> CreateLeaderboardData(List<LeaderboardData.LeaderboardData.LeaderboardEntry> leaderboard, int page)
+        public List<ScoreData> CreateLeaderboardData(List<LLeaderboardEntry> leaderboard, int page)
         {
-            List<LeaderboardTableView.ScoreData> tableData = new List<LeaderboardTableView.ScoreData>();
+            List<ScoreData> tableData = new List<ScoreData>();
             int pageIndex = page * 10;
             for (int i = pageIndex; i < leaderboard.Count && i < pageIndex + 10; i++)
             {
@@ -581,26 +367,20 @@ namespace LocalLeaderboard.UI.ViewControllers
             return tableData;
         }
 
-        public LeaderboardTableView.ScoreData CreateLeaderboardEntryData(LeaderboardData.LeaderboardData.LeaderboardEntry entry, int rank, int score)
+        public ScoreData CreateLeaderboardEntryData(LLeaderboardEntry entry, int rank, int score)
         {
             string formattedDate = string.Format("<color=#28b077>{0}</color></size>", entry.datePlayed);
             string formattedAcc = string.Format(" - (<color=#ffd42a>{0:0.00}%</color>)", entry.acc);
             score = entry.score;
             string formattedCombo = "";
-            if (entry.fullCombo)
-            {
-                formattedCombo = " -<color=green> FC </color>";
-            }
-            else
-            {
-                formattedCombo = string.Format(" - <color=red>x{0} </color>", entry.badCutCount + entry.missCount);
-            }
-
+            if (entry.fullCombo) formattedCombo = " -<color=green> FC </color>";
+            else formattedCombo = string.Format(" - <color=red>x{0} </color>", entry.badCutCount + entry.missCount);
+            
             string formattedMods = string.Format("   {0}</size>", entry.mods);
 
             string result = "<size=85%>" + formattedDate + formattedAcc + formattedCombo + formattedMods + "</size>";
 
-            return new LeaderboardTableView.ScoreData(score, result, rank, false);
+            return new ScoreData(score, result, rank, false);
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Zenject;
+using LocalLeaderboard.Services;
 
 namespace LocalLeaderboard.Installers
 {
@@ -17,6 +18,7 @@ namespace LocalLeaderboard.Installers
             Container.BindInterfacesAndSelfTo<LeaderboardView>().FromNewComponentAsViewController().AsSingle();
             Container.BindInterfacesAndSelfTo<PanelView>().FromNewComponentAsViewController().AsSingle();
             Container.BindInterfacesTo<LLLeaderboard>().AsSingle();
+            Container.Bind<TweeningService>().AsSingle();
         }
     }
 }

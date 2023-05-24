@@ -16,7 +16,7 @@ namespace LocalLeaderboard.AffinityPatches
 {
     internal class Results : IAffinity
     {
-        public static string GetModifiersString(LevelCompletionResults levelCompletionResults, GameEnergyCounter energy)
+        public static string GetModifiersString(LevelCompletionResults levelCompletionResults)
         {
             string mods = "";
 
@@ -87,8 +87,6 @@ namespace LocalLeaderboard.AffinityPatches
             return mods;
         }
 
-        GameEnergyCounter energy;
-
         [AffinityPostfix]
         [AffinityPatch(typeof(LevelCompletionResultsHelper), nameof(LevelCompletionResultsHelper.ProcessScore))]
         private void Postfix(ref PlayerData playerData, ref PlayerLevelStatsData playerLevelStats, ref LevelCompletionResults levelCompletionResults, ref IReadonlyBeatmapData transformedBeatmapData, ref IDifficultyBeatmap difficultyBeatmap, ref PlatformLeaderboardsModel platformLeaderboardsModel)
@@ -112,9 +110,7 @@ namespace LocalLeaderboard.AffinityPatches
 
             string balls = mapType + difficulty.ToString(); // BeatMap Allocated Level Label String
 
-            energy = UnityEngine.Resources.FindObjectsOfTypeAll<GameEnergyCounter>().FirstOrDefault();
-
-            LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(levelCompletionResults, energy));
+            LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(levelCompletionResults));
         }
     }
 }
