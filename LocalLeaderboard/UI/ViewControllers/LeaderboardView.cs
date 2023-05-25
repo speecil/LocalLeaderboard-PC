@@ -5,6 +5,7 @@ using BeatSaberMarkupLanguage.Parser;
 using BeatSaberMarkupLanguage.ViewControllers;
 using HMUI;
 using IPA.Utilities;
+using IPA.Utilities.Async;
 using LeaderboardCore.Interfaces;
 using LocalLeaderboard.Services;
 using System.Collections;
@@ -109,11 +110,11 @@ namespace LocalLeaderboard.UI.ViewControllers
         {
             sorter.gameObject.SetActive(true);
             if (!sorter.gameObject.activeSelf) return;
-            
-            _tweeningService.RotateTransform(sorter.GetComponentInChildren<ImageView>().transform, 180f, 0.1f, () =>
+
+            _tweeningService.RotateTransform(sorter.GetComponentInChildren<ImageView>().transform, 180f, 0.1f,  () =>
             {
                 Ascending = !Ascending;
-                OnLeaderboardSet(currentDifficultyBeatmap);
+                UnityMainThreadTaskScheduler.Factory.StartNew(() => OnLeaderboardSet(currentDifficultyBeatmap));
             });
         }
 
