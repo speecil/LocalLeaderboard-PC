@@ -58,8 +58,10 @@ namespace LocalLeaderboard.LeaderboardData
             public string datePlayed;
             public int score;
             public string mods;
+            public int maxCombo;
+            public int averageHitscore;
 
-            public LeaderboardEntry(int missCount, int badCutCount, float acc, bool fullCombo, string datePlayed, int score, string mods)
+            public LeaderboardEntry(int missCount, int badCutCount, float acc, bool fullCombo, string datePlayed, int score, string mods, int maxCombo, int averageHitscore)
             {
                 this.missCount = missCount;
                 this.badCutCount = badCutCount;
@@ -68,10 +70,12 @@ namespace LocalLeaderboard.LeaderboardData
                 this.datePlayed = datePlayed;
                 this.score = score;
                 this.mods = mods;
+                this.maxCombo = maxCombo;
+                this.averageHitscore = averageHitscore;
             }
         }
 
-        public static void AddBeatMap(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods)
+        public static void AddBeatMap(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, int averageHitscore)
         {
             if (string.IsNullOrEmpty(mapID) || string.IsNullOrEmpty(diff))
             {
@@ -92,7 +96,9 @@ namespace LocalLeaderboard.LeaderboardData
                 { "datePlayed", datePlayed },
                 { "acc", acc },
                 { "score", score },
-                { "modifiers", mods }
+                { "modifiers", mods },
+                { "maxCombo", maxCombo },
+                { "averageHitscore", averageHitscore },
             });
                 }
                 else
@@ -105,7 +111,9 @@ namespace LocalLeaderboard.LeaderboardData
                 { "datePlayed", datePlayed },
                 { "acc", acc },
                 { "score", score },
-                { "modifiers", mods }
+                { "modifiers", mods },
+                { "maxCombo", maxCombo },
+                { "averageHitscore", averageHitscore },
             });
                 }
             }
@@ -119,7 +127,9 @@ namespace LocalLeaderboard.LeaderboardData
             { "datePlayed", datePlayed },
             { "acc", acc },
             { "score", score },
-            { "modifiers", mods }
+            { "modifiers", mods },
+            { "maxCombo", maxCombo },
+            { "averageHitscore", averageHitscore },
         }) } };
                 LocalLeaderboardData.Add(mapID, mapData);
             }
@@ -128,7 +138,7 @@ namespace LocalLeaderboard.LeaderboardData
 
 
 
-        public static void UpdateBeatMapInfo(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods)
+        public static void UpdateBeatMapInfo(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, int averageHitscore)
         {
             var difficulty = new JObject
         {
@@ -138,12 +148,14 @@ namespace LocalLeaderboard.LeaderboardData
             { "datePlayed", datePlayed },
             { "acc", acc },
             { "score", score },
-            { "modifiers", mods }
+            { "modifiers", mods },
+            { "maxCombo", maxCombo },
+            { "averageHitscore", averageHitscore },
         };
 
             if (LocalLeaderboardData[mapID] == null)
             {
-                AddBeatMap(mapID, diff, missCount, badCutCount, fullCombo, datePlayed, acc, score, mods);
+                AddBeatMap(mapID, diff, missCount, badCutCount, fullCombo, datePlayed, acc, score, mods, maxCombo, averageHitscore);
                 return;
             }
 
@@ -173,7 +185,10 @@ namespace LocalLeaderboard.LeaderboardData
                         scoreData["fullCombo"].Value<bool>(),
                         scoreData["datePlayed"].Value<string>(),
                         scoreData["score"].Value<int>(),
-                        scoreData["modifiers"].Value<string>()));
+                        scoreData["modifiers"].Value<string>(),
+                        scoreData["maxCombo"].Value<int>(),
+                        scoreData["averageHitscore"].Value<int>()
+                        ));
                 }
             }
             return leaderboard;
