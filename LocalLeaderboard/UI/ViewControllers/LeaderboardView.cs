@@ -43,7 +43,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         private static LLeaderboardEntry button9Entry;
         private static LLeaderboardEntry button10Entry;
 
-        private static LLeaderboardEntry[] leaderboardEntriesFORTNITE = new LLeaderboardEntry[] { button1Entry, button2Entry, button3Entry, button4Entry, button5Entry, button6Entry, button7Entry, button8Entry, button9Entry, button10Entry };
+        private static LLeaderboardEntry[] buttonEntryArray = new LLeaderboardEntry[] { button1Entry, button2Entry, button3Entry, button4Entry, button5Entry, button6Entry, button7Entry, button8Entry, button9Entry, button10Entry };
 
 
         public IDifficultyBeatmap currentDifficultyBeatmap;
@@ -117,16 +117,16 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         void setScoreModalText(int pos)
         {
-            dateScoreText.text = $"Date set: <size=6><color=#28b077>{leaderboardEntriesFORTNITE[pos].datePlayed}</color></size>";
-            accScoreText.text = $"Accuracy: <size=6><color=#ffd42a>{leaderboardEntriesFORTNITE[pos].acc.ToString("F2")}%</color></size>";
-            scoreScoreText.text = $"Score: <size=6>{leaderboardEntriesFORTNITE[pos].score}</size>";
+            dateScoreText.text = $"Date set: <size=6><color=#28b077>{buttonEntryArray[pos].datePlayed}</color></size>";
+            accScoreText.text = $"Accuracy: <size=6><color=#ffd42a>{buttonEntryArray[pos].acc.ToString("F2")}%</color></size>";
+            scoreScoreText.text = $"Score: <size=6>{buttonEntryArray[pos].score}</size>";
 
-            if (leaderboardEntriesFORTNITE[pos].fullCombo) fcScoreText.text = "<color=green>Full Combo</color>";
-            else fcScoreText.text = string.Format("Mistakes: <size=6><color=red>{0}</color></size>", leaderboardEntriesFORTNITE[pos].badCutCount + leaderboardEntriesFORTNITE[pos].missCount);
+            if (buttonEntryArray[pos].fullCombo) fcScoreText.text = "<color=green>Full Combo</color>";
+            else fcScoreText.text = string.Format("Mistakes: <size=6><color=red>{0}</color></size>", buttonEntryArray[pos].badCutCount + buttonEntryArray[pos].missCount);
 
-            failScoreText.gameObject.SetActive(leaderboardEntriesFORTNITE[pos].didFail);
-            avgHitscoreScoreText.text = $"Average Hitscore: <size=6>{leaderboardEntriesFORTNITE[pos].averageHitscore}</size>";
-            maxComboScoreText.text = $"Max Combo: <size=6>{leaderboardEntriesFORTNITE[pos].maxCombo}</size>";
+            failScoreText.gameObject.SetActive(buttonEntryArray[pos].didFail);
+            avgHitscoreScoreText.text = $"Average Hitscore: <size=6>{buttonEntryArray[pos].averageHitscore}</size>";
+            maxComboScoreText.text = $"Max Combo: <size=6>{buttonEntryArray[pos].maxCombo}</size>";
             parserParams.EmitEvent("showScoreInfo");
         }
 
@@ -439,7 +439,6 @@ namespace LocalLeaderboard.UI.ViewControllers
             List<LLeaderboardEntry> leaderboardEntries = LeaderboardData.LeaderboardData.LoadBeatMapInfo(mapId, balls);
 
 
-
             totalPages = Mathf.CeilToInt((float)leaderboardEntries.Count / 10);
 
             try
@@ -546,8 +545,8 @@ namespace LocalLeaderboard.UI.ViewControllers
             int pageIndex = page * 10;
             for (int i = pageIndex; i < leaderboard.Count && i < pageIndex + 10; i++)
             {
+                buttonEntryArray[i % 10] = leaderboard[i];
                 int score = leaderboard[i].score;
-                leaderboardEntriesFORTNITE[i] = leaderboard[i];
                 tableData.Add(CreateLeaderboardEntryData(leaderboard[i], i + 1, score));
             }
             return tableData;
@@ -555,6 +554,7 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         public ScoreData CreateLeaderboardEntryData(LLeaderboardEntry entry, int rank, int score)
         {
+            
             string formattedDate = string.Format("<color=#28b077>{0}</color></size>", entry.datePlayed);
             string formattedAcc = string.Format(" - (<color=#ffd42a>{0:0.00}%</color>)", entry.acc);
             score = entry.score;
