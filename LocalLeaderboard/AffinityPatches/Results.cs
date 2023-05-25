@@ -100,7 +100,7 @@ namespace LocalLeaderboard.AffinityPatches
             int badCut = levelCompletionResults.badCutsCount;
             int misses = levelCompletionResults.missedCount;
             bool fc = levelCompletionResults.fullCombo;
-
+            
             string currentTime = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yy h:mm tt");
 
             string mapId = difficultyBeatmap.level.levelID;
@@ -110,7 +110,12 @@ namespace LocalLeaderboard.AffinityPatches
 
             string balls = mapType + difficulty.ToString(); // BeatMap Allocated Level Label String
 
-            LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(levelCompletionResults));
+
+            // new data modals balls
+            int maxCombo = levelCompletionResults.okCount;
+            int averageHitscore = (int)levelCompletionResults.averageCutScoreForNotesWithFullScoreScoringType;
+
+            LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(levelCompletionResults), maxCombo, averageHitscore);
         }
     }
 }
