@@ -53,71 +53,73 @@
   </bg>
   
   <!-- Leaderboard table -->
-  <vertical pref-width='76'
-            pref-height='60'
-            anchor-pos-x="7"
-            anchor-pos-y="5.5"
-            horizontal-fit='PreferredSize'
-            vertical-fit='PreferredSize'>
-    <leaderboard id='leaderboardTableView'
-                 cell-size='6.05'>
-      <text id="errorText"
-            text="No scores on this map!"
-			font-size="8"
-            anchor-pos-x="-5"
-            align="Center"
-            italics="true"
-            color="red"
-            active="false"/>
-		<button id="retryButton" text="Retry" on-click="Retry" active="false" anchor-pos-x="-5" align="Center"/>
-		<modal child-expand-height="false" id='infoModal' show-event='showInfoModal' hide-event='hideInfoModal' size-delta-x='85' size-delta-y='50' clickerino-offerino-closerino='true'
-				move-to-center='true'>
-			<vertical spacing='1'
-				vertical-fit='PreferredSize' pad='3'>
-				<horizontal spacing='4'>
-					<image align='Left' id="LocalLeaderboard_logo" src="LocalLeaderboard.Images.LocalLeaderboard_logo.png" preserve-aspect="true" pref-width="15" pref-height="15"/>
-					<text font-size="10" text='Local Leaderboard' align='Right'/>
-				</horizontal>
-				<text font-size='5' align='Center' text='Welcome to Local Leaderboard by Speecil!'/>
-				<text text-wrap='true' align='Center' text='A leaderboard for keeping track of previous plays on any map!'/>
-				<horizontal spacing='1'>
-					<action-button pref-width='20' pref-height='10'  id='discordButton' text='Discord' on-click='Discord'/>
-					<action-button pref-width='20' pref-height='10' id='patreonButton' text='Patreon' on-click='Patreon'/>
-					<action-button pref-width='20' pref-height='10' id='websiteButton' text='Website' on-click='Website'/>
-				</horizontal>
-			</vertical>
-		</modal>
-		<modal child-expand-height="false" id='scoreInfo' show-event='showScoreInfo' hide-event='hideScoreInfo' size-delta-x='70' size-delta-y='50' clickerino-offerino-closerino='true'
-				move-to-center='true'>
-			<vertical spacing='3'
-				vertical-fit='PreferredSize' pad='3'>
-				<horizontal spacing='4'>
-					<text rich-text='true' id='dateScoreText' font-size="5" text='DATE' align='Center'/>
-				</horizontal>
-				<horizontal spacing='4'>
-					<text rich-text='true' id='accScoreText' font-size="5" text='ACC' align='Left'/>
-					<text rich-text='true' id='scoreScoreText' font-size="5" text='SCORE' align='Right'/>
-				</horizontal>
-				<horizontal spacing='4'>
-					<text rich-text='true' id='fcScoreText' font-size="5" text='FC' align='Center'/>
-					<text rich-text='true' font-color='red' id='failScoreText' font-size="5" text='Fail' active='false' align='Center'/>
-				</horizontal>
-				<horizontal spacing='4'>
-					<text rich-text='true' id='avgHitscoreScoreText' font-size="5" text='AVGHIT' align='Left'/>
-					<text rich-text='true' id='maxComboScoreText' font-size="5" text='MAXCOMBO' align='Right'/>
-				</horizontal>
-			</vertical>
-		</modal>
-    </leaderboard>
-  </vertical>
-    <button-with-icon on-click='button1Click' icon='LocalLeaderboard.Images.info.png' id='button1'  hover-hint='Info' pref-width='10' pref-height='8' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='32.2'/>
-    <button-with-icon on-click='button2Click' icon='LocalLeaderboard.Images.info.png' id='button2'  hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='26.2'/>
-    <button-with-icon on-click='button3Click' icon='LocalLeaderboard.Images.info.png' id='button3'  hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='20.2'/>
-    <button-with-icon on-click='button4Click' icon='LocalLeaderboard.Images.info.png' id='button4'  hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='14.2'/>
-    <button-with-icon on-click='button5Click' icon='LocalLeaderboard.Images.info.png' id='button5'  hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='8.2'/>
-    <button-with-icon on-click='button6Click' icon='LocalLeaderboard.Images.info.png' id='button6'  hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='2.2'/>
-    <button-with-icon on-click='button7Click' icon='LocalLeaderboard.Images.info.png' id='button7'  hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='-4.2'/>
-    <button-with-icon on-click='button8Click' icon='LocalLeaderboard.Images.info.png' id='button8'  hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='-10.2'/>
-    <button-with-icon on-click='button9Click' icon='LocalLeaderboard.Images.info.png' id='button9'  hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='-16.2'/>
-    <button-with-icon on-click='button10Click' icon='LocalLeaderboard.Images.info.png' id='button10' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='-22.2'/>
+	<vertical pref-width='76'
+			  pref-height='60'
+			  anchor-pos-x="7"
+			  anchor-pos-y="5.5"
+			  horizontal-fit='PreferredSize'
+			  vertical-fit='PreferredSize'>
+		<leaderboard id='leaderboardTableView'
+					 cell-size='6.05'>
+			<text id="errorText"
+				  text="No scores on this map!"
+				  font-size="8"
+				  anchor-pos-x="-5"
+				  align="Center"
+				  italics="true"
+				  color="red"
+				  active="false"/>
+			<button id="retryButton" text="Retry" on-click="Retry" active="false" anchor-pos-x="-5" align="Center"/>
+			<modal child-expand-height="false" id='infoModal' show-event='showInfoModal' hide-event='hideInfoModal' size-delta-x='85' size-delta-y='50' clickerino-offerino-closerino='true'
+					move-to-center='true'>
+				<vertical spacing='1'
+					vertical-fit='PreferredSize' pad='3'>
+					<horizontal spacing='4'>
+						<image align='Left' id="LocalLeaderboard_logo" src="LocalLeaderboard.Images.LocalLeaderboard_logo.png" preserve-aspect="true" pref-width="15" pref-height="15"/>
+						<text font-size="10" text='Local Leaderboard' align='Right'/>
+					</horizontal>
+					<text font-size='5' align='Center' text='Welcome to Local Leaderboard by Speecil!'/>
+					<text text-wrap='true' align='Center' text='A leaderboard for keeping track of previous plays on any map!'/>
+					<horizontal spacing='1'>
+						<action-button pref-width='20' pref-height='10'  id='discordButton' text='Discord' on-click='Discord'/>
+						<action-button pref-width='20' pref-height='10' id='patreonButton' text='Patreon' on-click='Patreon'/>
+						<action-button pref-width='20' pref-height='10' id='websiteButton' text='Website' on-click='Website'/>
+					</horizontal>
+				</vertical>
+			</modal>
+			<modal child-expand-height="false" id='scoreInfo' show-event='showScoreInfo' hide-event='hideScoreInfo' size-delta-x='70' size-delta-y='50' clickerino-offerino-closerino='true'
+					move-to-center='true'>
+				<vertical spacing='3'
+					vertical-fit='PreferredSize' pad='3'>
+					<horizontal spacing='4'>
+						<text rich-text='true' id='dateScoreText' font-size="5" text='DATE' align='Center'/>
+					</horizontal>
+					<horizontal spacing='4'>
+						<text rich-text='true' id='accScoreText' font-size="5" text='ACC' align='Left'/>
+						<text rich-text='true' id='scoreScoreText' font-size="5" text='SCORE' align='Right'/>
+					</horizontal>
+					<horizontal spacing='4'>
+						<text rich-text='true' id='fcScoreText' font-size="5" text='FC' align='Center'/>
+						<text rich-text='true' font-color='red' id='failScoreText' font-size="5" text='Fail' active='false' align='Center'/>
+					</horizontal>
+					<horizontal spacing='4'>
+						<text rich-text='true' id='avgHitscoreScoreText' font-size="5" text='AVGHIT' align='Left'/>
+						<text rich-text='true' id='maxComboScoreText' font-size="5" text='MAXCOMBO' align='Right'/>
+					</horizontal>
+				</vertical>
+			</modal>
+		</leaderboard>
+	</vertical>
+	<stack id='buttonHolder'>
+		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='8' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='32.2' ignore-layout='true'/>
+		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='26.2' ignore-layout='true'/>
+		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='20.2' ignore-layout='true'/>
+		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='14.2' ignore-layout='true'/>
+		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='8.2' ignore-layout='true'/>
+		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='2.2' ignore-layout='true'/>
+		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='-4.2' ignore-layout='true'/>
+		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='-10.2' ignore-layout='true'/>
+		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='-16.2' ignore-layout='true'/>
+		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='-22.2' ignore-layout='true'/>
+	</stack>
 </bg>

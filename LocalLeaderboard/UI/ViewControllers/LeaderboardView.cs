@@ -11,12 +11,12 @@ using LocalLeaderboard.Services;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 using static LeaderboardTableView;
-using static UnityEngine.EventSystems.EventTrigger;
 using LLeaderboardEntry = LocalLeaderboard.LeaderboardData.LeaderboardData.LeaderboardEntry;
 
 namespace LocalLeaderboard.UI.ViewControllers
@@ -26,25 +26,11 @@ namespace LocalLeaderboard.UI.ViewControllers
     internal class LeaderboardView : BSMLAutomaticViewController, INotifyLeaderboardSet
     {
         private bool Ascending = true;
-        private List<ScoreData> scores = new List<ScoreData>();
         private PanelView _panelView;
         private PlatformLeaderboardViewController _plvc;
         private TweeningService _tweeningService;
-
-
-        private static LLeaderboardEntry button1Entry;
-        private static LLeaderboardEntry button2Entry;
-        private static LLeaderboardEntry button3Entry;
-        private static LLeaderboardEntry button4Entry;
-        private static LLeaderboardEntry button5Entry;
-        private static LLeaderboardEntry button6Entry;
-        private static LLeaderboardEntry button7Entry;
-        private static LLeaderboardEntry button8Entry;
-        private static LLeaderboardEntry button9Entry;
-        private static LLeaderboardEntry button10Entry;
-
-        private static LLeaderboardEntry[] buttonEntryArray = new LLeaderboardEntry[] { button1Entry, button2Entry, button3Entry, button4Entry, button5Entry, button6Entry, button7Entry, button8Entry, button9Entry, button10Entry };
-
+        private List<Button> infoButtons;
+        private LLeaderboardEntry[] buttonEntryArray = new LLeaderboardEntry[10];
 
         public IDifficultyBeatmap currentDifficultyBeatmap;
 
@@ -84,37 +70,6 @@ namespace LocalLeaderboard.UI.ViewControllers
         [UIComponent("retryButton")]
         private Button retryButton;
 
-
-        [UIComponent("button1")]
-        private Button button1;
-
-        [UIComponent("button2")]
-        private Button button2;
-
-        [UIComponent("button3")]
-        private Button button3;
-
-        [UIComponent("button4")]
-        private Button button4;
-
-        [UIComponent("button5")]
-        private Button button5;
-
-        [UIComponent("button6")]
-        private Button button6;
-
-        [UIComponent("button7")]
-        private Button button7;
-
-        [UIComponent("button8")]
-        private Button button8;
-
-        [UIComponent("button9")]
-        private Button button9;
-
-        [UIComponent("button10")]
-        private Button button10;
-
         void setScoreModalText(int pos)
         {
             dateScoreText.text = $"Date set: <size=6><color=#28b077>{buttonEntryArray[pos].datePlayed}</color></size>";
@@ -128,67 +83,6 @@ namespace LocalLeaderboard.UI.ViewControllers
             avgHitscoreScoreText.text = $"Average Hitscore: <size=6>{buttonEntryArray[pos].averageHitscore}</size>";
             maxComboScoreText.text = $"Max Combo: <size=6>{buttonEntryArray[pos].maxCombo}</size>";
             parserParams.EmitEvent("showScoreInfo");
-        }
-
-        [UIAction("button1Click")]
-        private void button1Click()
-        {
-            setScoreModalText(0);
-        }
-
-        [UIAction("button2Click")]
-        private void button2Click()
-        {
-            setScoreModalText(1);
-        }
-
-
-        [UIAction("button3Click")]
-        private void button3Click()
-        {
-            setScoreModalText(2);
-        }
-
-        [UIAction("button4Click")]
-        private void button4Click()
-        {
-            setScoreModalText(3);
-        }
-
-        [UIAction("button5Click")]
-        private void button5Click()
-        {
-            setScoreModalText(4);
-        }
-
-        [UIAction("button6Click")]
-        private void button6Click()
-        {
-            setScoreModalText(5);
-        }
-
-        [UIAction("button7Click")]
-        private void button7Click()
-        {
-            setScoreModalText(6);
-        }
-
-        [UIAction("button8Click")]
-        private void button8Click()
-        {
-            setScoreModalText(7);
-        }
-
-        [UIAction("button9Click")]
-        private void button9Click()
-        {
-            setScoreModalText(8);
-        }
-
-        [UIAction("button10Click")]
-        private void button10Click()
-        {
-            setScoreModalText(9);
         }
 
         [UIComponent("dateScoreText")]
@@ -215,6 +109,9 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         [UIComponent("infoModal")]
         private ModalView infoModal;
+
+        [UIComponent("buttonHolder")]
+        private StackLayoutGroup buttonHolder;
 
         [UIParams]
         BSMLParserParams parserParams = null;
@@ -329,6 +226,9 @@ namespace LocalLeaderboard.UI.ViewControllers
             _imgView.color1 = new Color(0.156f, 0.69f, 0.46666f, 1);
             ImageSkew(ref _imgView) = 0.18f;
             ImageGradient(ref _imgView) = true;
+
+            infoButtons = buttonHolder.GetComponentsInChildren<Button>(true).ToList();
+            foreach (var button in infoButtons) button.onClick.AddListener(() => setScoreModalText(infoButtons.IndexOf(button)));
         }
 
         [Inject]
@@ -388,19 +288,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             }
         }
 
-        private void FuckOffButtons()
-        {
-            button1.gameObject.SetActive(false);
-            button2.gameObject.SetActive(false);
-            button3.gameObject.SetActive(false);
-            button4.gameObject.SetActive(false);
-            button5.gameObject.SetActive(false);
-            button6.gameObject.SetActive(false);
-            button7.gameObject.SetActive(false);
-            button8.gameObject.SetActive(false);
-            button9.gameObject.SetActive(false);
-            button10.gameObject.SetActive(false);
-        }
+        private void FuckOffButtons() => infoButtons.ForEach(button => button.gameObject.SetActive(false));
 
         private IEnumerator setcolor(Button button)
         {
@@ -501,11 +389,10 @@ namespace LocalLeaderboard.UI.ViewControllers
             int startIndex = page * 10;
             int remainingEntries = leaderboardEntries.Count - startIndex;
             int maxEntriesPerPage = Mathf.Min(remainingEntries, 10);
-            Button[] buttons = new Button[] { button1, button2, button3, button4, button5, button6, button7, button8, button9, button10 };
 
             for (int i = 0; i < maxEntriesPerPage; i++)
             {
-                buttons[i].gameObject.SetActive(true);
+                infoButtons[i].gameObject.SetActive(true);
             }
         }
 
