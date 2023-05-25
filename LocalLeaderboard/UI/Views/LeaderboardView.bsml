@@ -87,7 +87,37 @@
 				</horizontal>
 			</vertical>
 		</modal>
+		<modal child-expand-height="false" id='scoreInfo' show-event='showScoreInfo' hide-event='hideScoreInfo' size-delta-x='70' size-delta-y='50' clickerino-offerino-closerino='true'
+				move-to-center='true'>
+			<vertical spacing='3'
+				vertical-fit='PreferredSize' pad='3'>
+				<horizontal spacing='4'>
+					<text rich-text='true' id='dateScoreText' font-size="5" text='DATE' align='Center'/>
+				</horizontal>
+				<horizontal spacing='4'>
+					<text rich-text='true' id='accScoreText' font-size="5" text='ACC' align='Left'/>
+					<text rich-text='true' id='scoreScoreText' font-size="5" text='SCORE' align='Right'/>
+				</horizontal>
+				<horizontal spacing='4'>
+					<text rich-text='true' id='fcScoreText' font-size="5" text='FC' align='Center'/>
+					<text rich-text='true' font-color='red' id='failScoreText' font-size="5" text='Fail' active='false' align='Center'/>
+				</horizontal>
+				<horizontal spacing='4'>
+					<text rich-text='true' id='avgHitscoreScoreText' font-size="5" text='AVGHIT' align='Left'/>
+					<text rich-text='true' id='maxComboScoreText' font-size="5" text='MAXCOMBO' align='Right'/>
+				</horizontal>
+			</vertical>
+		</modal>
     </leaderboard>
   </vertical>
-  
+    <button-with-icon on-click='button1Click' icon='LocalLeaderboard.Images.info.png' id='button1'  hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='32.1'/>
+    <button-with-icon on-click='button2Click' icon='LocalLeaderboard.Images.info.png' id='button2'  hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='26.1'/>
+    <button-with-icon on-click='button3Click' icon='LocalLeaderboard.Images.info.png' id='button3'  hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='20.1'/>
+    <button-with-icon on-click='button4Click' icon='LocalLeaderboard.Images.info.png' id='button4'  hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='14.1'/>
+    <button-with-icon on-click='button5Click' icon='LocalLeaderboard.Images.info.png' id='button5'  hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='8.1'/>
+    <button-with-icon on-click='button6Click' icon='LocalLeaderboard.Images.info.png' id='button6'  hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='2.1'/>
+    <button-with-icon on-click='button7Click' icon='LocalLeaderboard.Images.info.png' id='button7'  hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='-4.1'/>
+    <button-with-icon on-click='button8Click' icon='LocalLeaderboard.Images.info.png' id='button8'  hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='-10.1'/>
+    <button-with-icon on-click='button9Click' icon='LocalLeaderboard.Images.info.png' id='button9'  hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='-16.1'/>
+    <button-with-icon on-click='button10Click' icon='LocalLeaderboard.Images.info.png' id='button10' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='-22.1'/>
 </bg>

@@ -249,5 +249,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Images\sortArrow.png" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Images\info.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

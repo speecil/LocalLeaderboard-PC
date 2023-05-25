@@ -109,13 +109,15 @@ namespace LocalLeaderboard.AffinityPatches
             string mapType = playerLevelStats.beatmapCharacteristic.serializedName;
 
             string balls = mapType + difficulty.ToString(); // BeatMap Allocated Level Label String
-
-
+            
+            
             // new data modals balls
+
+            bool didFail = levelCompletionResults.levelEndStateType == LevelCompletionResults.LevelEndStateType.Failed;
             int maxCombo = levelCompletionResults.okCount;
             int averageHitscore = (int)levelCompletionResults.averageCutScoreForNotesWithFullScoreScoringType;
 
-            LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(levelCompletionResults), maxCombo, averageHitscore);
+            LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(levelCompletionResults), maxCombo, averageHitscore, didFail);
         }
     }
 }

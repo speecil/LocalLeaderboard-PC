@@ -8,6 +8,7 @@ using IPA.Utilities;
 using IPA.Utilities.Async;
 using LeaderboardCore.Interfaces;
 using LocalLeaderboard.Services;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -15,6 +16,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 using static LeaderboardTableView;
+using static UnityEngine.EventSystems.EventTrigger;
 using LLeaderboardEntry = LocalLeaderboard.LeaderboardData.LeaderboardData.LeaderboardEntry;
 
 namespace LocalLeaderboard.UI.ViewControllers
@@ -28,6 +30,21 @@ namespace LocalLeaderboard.UI.ViewControllers
         private PanelView _panelView;
         private PlatformLeaderboardViewController _plvc;
         private TweeningService _tweeningService;
+
+
+        private static LLeaderboardEntry button1Entry;
+        private static LLeaderboardEntry button2Entry;
+        private static LLeaderboardEntry button3Entry;
+        private static LLeaderboardEntry button4Entry;
+        private static LLeaderboardEntry button5Entry;
+        private static LLeaderboardEntry button6Entry;
+        private static LLeaderboardEntry button7Entry;
+        private static LLeaderboardEntry button8Entry;
+        private static LLeaderboardEntry button9Entry;
+        private static LLeaderboardEntry button10Entry;
+
+        private static LLeaderboardEntry[] leaderboardEntriesFORTNITE = new LLeaderboardEntry[] { button1Entry, button2Entry, button3Entry, button4Entry, button5Entry, button6Entry, button7Entry, button8Entry, button9Entry, button10Entry };
+
 
         public IDifficultyBeatmap currentDifficultyBeatmap;
 
@@ -66,6 +83,135 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         [UIComponent("retryButton")]
         private Button retryButton;
+
+
+        [UIComponent("button1")]
+        private Button button1;
+
+        [UIComponent("button2")]
+        private Button button2;
+
+        [UIComponent("button3")]
+        private Button button3;
+
+        [UIComponent("button4")]
+        private Button button4;
+
+        [UIComponent("button5")]
+        private Button button5;
+
+        [UIComponent("button6")]
+        private Button button6;
+
+        [UIComponent("button7")]
+        private Button button7;
+
+        [UIComponent("button8")]
+        private Button button8;
+
+        [UIComponent("button9")]
+        private Button button9;
+
+        [UIComponent("button10")]
+        private Button button10;
+
+        void setScoreModalText(int pos)
+        {
+            dateScoreText.text = $"Date set: <size=6><color=#28b077>{leaderboardEntriesFORTNITE[pos].datePlayed}</color></size>";
+            accScoreText.text = $"Accuracy: <size=6><color=#ffd42a>{leaderboardEntriesFORTNITE[pos].acc.ToString("F2")}%</color></size>";
+            scoreScoreText.text = $"Score: <size=6>{leaderboardEntriesFORTNITE[pos].score}</size>";
+
+            if (leaderboardEntriesFORTNITE[pos].fullCombo) fcScoreText.text = "<color=green>Full Combo</color>";
+            else fcScoreText.text = string.Format("Mistakes: <size=6><color=red>{0}</color></size>", leaderboardEntriesFORTNITE[pos].badCutCount + leaderboardEntriesFORTNITE[pos].missCount);
+
+            failScoreText.gameObject.SetActive(leaderboardEntriesFORTNITE[pos].didFail);
+            avgHitscoreScoreText.text = $"Average Hitscore: <size=6>{leaderboardEntriesFORTNITE[pos].averageHitscore}</size>";
+            maxComboScoreText.text = $"Max Combo: <size=6>{leaderboardEntriesFORTNITE[pos].maxCombo}</size>";
+            parserParams.EmitEvent("showScoreInfo");
+        }
+
+        [UIAction("button1Click")]
+        private void button1Click()
+        {
+            setScoreModalText(0);
+        }
+
+        [UIAction("button2Click")]
+        private void button2Click()
+        {
+            setScoreModalText(1);
+        }
+
+
+        [UIAction("button3Click")]
+        private void button3Click()
+        {
+            setScoreModalText(2);
+        }
+
+        [UIAction("button4Click")]
+        private void button4Click()
+        {
+            setScoreModalText(3);
+        }
+
+        [UIAction("button5Click")]
+        private void button5Click()
+        {
+            setScoreModalText(4);
+        }
+
+        [UIAction("button6Click")]
+        private void button6Click()
+        {
+            setScoreModalText(5);
+        }
+
+        [UIAction("button7Click")]
+        private void button7Click()
+        {
+            setScoreModalText(6);
+        }
+
+        [UIAction("button8Click")]
+        private void button8Click()
+        {
+            setScoreModalText(7);
+        }
+
+        [UIAction("button9Click")]
+        private void button9Click()
+        {
+            setScoreModalText(8);
+        }
+
+        [UIAction("button10Click")]
+        private void button10Click()
+        {
+            setScoreModalText(9);
+        }
+
+        [UIComponent("dateScoreText")]
+        private TextMeshProUGUI dateScoreText;
+
+        [UIComponent("accScoreText")]
+        private TextMeshProUGUI accScoreText;
+
+        [UIComponent("scoreScoreText")]
+        private TextMeshProUGUI scoreScoreText;
+
+        [UIComponent("fcScoreText")]
+        private TextMeshProUGUI fcScoreText;
+
+        [UIComponent("failScoreText")]
+        private TextMeshProUGUI failScoreText;
+
+        [UIComponent("avgHitscoreScoreText")]
+        private TextMeshProUGUI avgHitscoreScoreText;
+
+        [UIComponent("maxComboScoreText")]
+        private TextMeshProUGUI maxComboScoreText;
+
 
         [UIComponent("infoModal")]
         private ModalView infoModal;
@@ -194,23 +340,30 @@ namespace LocalLeaderboard.UI.ViewControllers
         }
 
         private static Vector3 origPos;
-
         protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
             base.DidActivate(firstActivation, addedToHierarchy, screenSystemEnabling);
+            if (!this.isActiveAndEnabled) return;
+            if (!_plvc) return;
             OnLeaderboardSet(currentDifficultyBeatmap);
             var header = _plvc.transform.Find("HeaderPanel");
-            if (firstActivation) origPos = header.transform.localPosition;
+            if (firstActivation)
+            {
+                origPos = header.transform.localPosition;
+            }
             header.transform.localPosition = new Vector3(-999, -999, -999);
         }
 
         protected override void DidDeactivate(bool removedFromHierarchy, bool screenSystemDisabling)
         {
             base.DidDeactivate(removedFromHierarchy, screenSystemDisabling);
-            page = 0;
-            parserParams.EmitEvent("hideInfoModal");
+            if (!_plvc) return;
+            if (!_plvc.isActivated) return;
             var header = _plvc.transform.Find("HeaderPanel");
             header.transform.localPosition = origPos;
+            page = 0;
+            parserParams.EmitEvent("hideInfoModal");
+            parserParams.EmitEvent("hideScoreInfo");
         }
 
         void RichMyText(LeaderboardTableView tableView)
@@ -233,6 +386,20 @@ namespace LocalLeaderboard.UI.ViewControllers
                     _tweeningService.FadeText(scoreText, true, 0.4f);
                 }
             }
+        }
+
+        private void FuckOffButtons()
+        {
+            button1.gameObject.SetActive(false);
+            button2.gameObject.SetActive(false);
+            button3.gameObject.SetActive(false);
+            button4.gameObject.SetActive(false);
+            button5.gameObject.SetActive(false);
+            button6.gameObject.SetActive(false);
+            button7.gameObject.SetActive(false);
+            button8.gameObject.SetActive(false);
+            button9.gameObject.SetActive(false);
+            button10.gameObject.SetActive(false);
         }
 
         private IEnumerator setcolor(Button button)
@@ -270,10 +437,15 @@ namespace LocalLeaderboard.UI.ViewControllers
             string mapType = difficultyBeatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName;
             string balls = mapType + difficulty.ToString();
             List<LLeaderboardEntry> leaderboardEntries = LeaderboardData.LeaderboardData.LoadBeatMapInfo(mapId, balls);
+
+
+
             totalPages = Mathf.CeilToInt((float)leaderboardEntries.Count / 10);
 
             try
             {
+
+                FuckOffButtons();
                 UpdatePageButtons();
                 SortLeaderboardEntries(leaderboardEntries);
                 leaderboardTableView.SetScores(CreateLeaderboardData(leaderboardEntries, page), -1);
@@ -282,8 +454,9 @@ namespace LocalLeaderboard.UI.ViewControllers
                 if (leaderboardEntries.Count > 0) HandleLeaderboardEntriesExistence(leaderboardEntries);
                 else HandleNoLeaderboardEntries();
             }
-            catch
+            catch(Exception ex)
             {
+                Plugin.Log.Error(ex);
                 errorText.gameObject.SetActive(true);
                 errorText.text = "Error!";
                 retryButton.gameObject.SetActive(true);
@@ -306,6 +479,8 @@ namespace LocalLeaderboard.UI.ViewControllers
                 if (leaderboardEntries.Count <= 0) return;
                 _panelView.lastPlayed.text = (Ascending ? "Lowest Acc : " : "Highest Acc : ") + leaderboardEntries[0].acc.ToString("F2") + "%";
             }
+
+
         }
 
         private void HandleLeaderboardEntriesExistence(List<LLeaderboardEntry> leaderboardEntries)
@@ -323,6 +498,15 @@ namespace LocalLeaderboard.UI.ViewControllers
             {
                 _tweeningService.FadeText(_panelView.lastPlayed, true, 0.4f);
                 _tweeningService.FadeText(_panelView.totalScores, true, 0.4f);
+            }
+            int startIndex = page * 10;
+            int remainingEntries = leaderboardEntries.Count - startIndex;
+            int maxEntriesPerPage = Mathf.Min(remainingEntries, 10);
+            Button[] buttons = new Button[] { button1, button2, button3, button4, button5, button6, button7, button8, button9, button10 };
+
+            for (int i = 0; i < maxEntriesPerPage; i++)
+            {
+                buttons[i].gameObject.SetActive(true);
             }
         }
 
@@ -363,6 +547,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             for (int i = pageIndex; i < leaderboard.Count && i < pageIndex + 10; i++)
             {
                 int score = leaderboard[i].score;
+                leaderboardEntriesFORTNITE[i] = leaderboard[i];
                 tableData.Add(CreateLeaderboardEntryData(leaderboard[i], i + 1, score));
             }
             return tableData;

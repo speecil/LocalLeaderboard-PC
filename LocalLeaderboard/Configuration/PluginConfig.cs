@@ -60,8 +60,9 @@ namespace LocalLeaderboard.LeaderboardData
             public string mods;
             public int maxCombo;
             public int averageHitscore;
+            public bool didFail;
 
-            public LeaderboardEntry(int missCount, int badCutCount, float acc, bool fullCombo, string datePlayed, int score, string mods, int maxCombo, int averageHitscore)
+            public LeaderboardEntry(int missCount, int badCutCount, float acc, bool fullCombo, string datePlayed, int score, string mods, int maxCombo, int averageHitscore, bool didFail)
             {
                 this.missCount = missCount;
                 this.badCutCount = badCutCount;
@@ -72,10 +73,11 @@ namespace LocalLeaderboard.LeaderboardData
                 this.mods = mods;
                 this.maxCombo = maxCombo;
                 this.averageHitscore = averageHitscore;
+                this.didFail = didFail;
             }
         }
 
-        public static void AddBeatMap(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, int averageHitscore)
+        public static void AddBeatMap(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, int averageHitscore, bool didFail)
         {
             if (string.IsNullOrEmpty(mapID) || string.IsNullOrEmpty(diff))
             {
@@ -99,6 +101,8 @@ namespace LocalLeaderboard.LeaderboardData
                 { "modifiers", mods },
                 { "maxCombo", maxCombo },
                 { "averageHitscore", averageHitscore },
+                { "didFail", didFail },
+
             });
                 }
                 else
@@ -114,6 +118,8 @@ namespace LocalLeaderboard.LeaderboardData
                 { "modifiers", mods },
                 { "maxCombo", maxCombo },
                 { "averageHitscore", averageHitscore },
+                { "didFail", didFail },
+
             });
                 }
             }
@@ -130,6 +136,7 @@ namespace LocalLeaderboard.LeaderboardData
             { "modifiers", mods },
             { "maxCombo", maxCombo },
             { "averageHitscore", averageHitscore },
+            { "didFail", didFail },
         }) } };
                 LocalLeaderboardData.Add(mapID, mapData);
             }
@@ -138,7 +145,7 @@ namespace LocalLeaderboard.LeaderboardData
 
 
 
-        public static void UpdateBeatMapInfo(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, int averageHitscore)
+        public static void UpdateBeatMapInfo(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, int averageHitscore, bool didFail)
         {
             var difficulty = new JObject
         {
@@ -151,11 +158,12 @@ namespace LocalLeaderboard.LeaderboardData
             { "modifiers", mods },
             { "maxCombo", maxCombo },
             { "averageHitscore", averageHitscore },
+            { "didFail", averageHitscore },
         };
 
             if (LocalLeaderboardData[mapID] == null)
             {
-                AddBeatMap(mapID, diff, missCount, badCutCount, fullCombo, datePlayed, acc, score, mods, maxCombo, averageHitscore);
+                AddBeatMap(mapID, diff, missCount, badCutCount, fullCombo, datePlayed, acc, score, mods, maxCombo, averageHitscore, didFail);
                 return;
             }
 
@@ -178,16 +186,28 @@ namespace LocalLeaderboard.LeaderboardData
             {
                 foreach (var scoreData in LocalLeaderboardData[mapID][diff])
                 {
+                    int? missCount = scoreData["missCount"]?.Value<int>();
+                    int? badCutCount = scoreData["badCutCount"]?.Value<int>();
+                    float? acc = scoreData["acc"]?.Value<float>();
+                    bool? fullCombo = scoreData["fullCombo"]?.Value<bool>();
+                    string datePlayed = scoreData["datePlayed"]?.Value<string>();
+                    int? score = scoreData["score"]?.Value<int>();
+                    string modifiers = scoreData["modifiers"]?.Value<string>();
+                    int? maxCombo = scoreData["maxCombo"]?.Value<int>();
+                    int? averageHitscore = scoreData["averageHitscore"]?.Value<int>();
+                    bool? didFail = scoreData["didFail"]?.Value<bool>();
+
                     leaderboard.Add(new LeaderboardEntry(
-                        scoreData["missCount"].Value<int>(),
-                        scoreData["badCutCount"].Value<int>(),
-                        scoreData["acc"].Value<float>(),
-                        scoreData["fullCombo"].Value<bool>(),
-                        scoreData["datePlayed"].Value<string>(),
-                        scoreData["score"].Value<int>(),
-                        scoreData["modifiers"].Value<string>(),
-                        scoreData["maxCombo"].Value<int>(),
-                        scoreData["averageHitscore"].Value<int>()
+                        missCount ?? 0,
+                        badCutCount ?? 0,
+                        acc ?? 0f,
+                        fullCombo ?? false,
+                        datePlayed,
+                        score ?? 0,
+                        modifiers,
+                        maxCombo ?? 0,
+                        averageHitscore ?? 0,
+                        didFail ?? false
                         ));
                 }
             }
