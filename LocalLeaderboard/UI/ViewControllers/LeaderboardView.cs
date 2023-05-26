@@ -1,4 +1,6 @@
-﻿using BeatSaberMarkupLanguage;
+﻿using BeatLeader.Models.Replay;
+using BeatLeader;
+using BeatSaberMarkupLanguage;
 using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Components;
 using BeatSaberMarkupLanguage.Parser;
@@ -8,9 +10,11 @@ using IPA.Utilities;
 using IPA.Utilities.Async;
 using LeaderboardCore.Interfaces;
 using LocalLeaderboard.Services;
+using ModestTree;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -18,6 +22,9 @@ using UnityEngine.UI;
 using Zenject;
 using static LeaderboardTableView;
 using LLeaderboardEntry = LocalLeaderboard.LeaderboardData.LeaderboardData.LeaderboardEntry;
+using Transform = UnityEngine.Transform;
+using Vector3 = UnityEngine.Vector3;
+using BeatLeader.Utils;
 
 namespace LocalLeaderboard.UI.ViewControllers
 {
@@ -30,6 +37,10 @@ namespace LocalLeaderboard.UI.ViewControllers
         private PlatformLeaderboardViewController _plvc;
         private TweeningService _tweeningService;
         private LLeaderboardEntry[] buttonEntryArray = new LLeaderboardEntry[10];
+        private BeatLeader.Replayer.ReplayerMenuLoader _replayerMenuLoader;
+        private BeatLeader.Replayer.ReplayerLauncher _replayerLauncher;
+        private BeatLeader.Models.Replay.Replay _replay;
+        private ReplayService _replayService;
 
         public IDifficultyBeatmap currentDifficultyBeatmap;
 
@@ -69,11 +80,18 @@ namespace LocalLeaderboard.UI.ViewControllers
         [UIComponent("retryButton")]
         private Button retryButton;
 
+        [UIComponent("watchReplayButton")]
+        private Button watchReplayButton;
+
         void setScoreModalText(int pos)
         {
             dateScoreText.text = $"Date set: <size=6><color=#28b077>{buttonEntryArray[pos].datePlayed}</color></size>";
             accScoreText.text = $"Accuracy: <size=6><color=#ffd42a>{buttonEntryArray[pos].acc.ToString("F2")}%</color></size>";
             scoreScoreText.text = $"Score: <size=6>{buttonEntryArray[pos].score}</size>";
+            modifiersScoreText.text = $"Mods: <size=5>{buttonEntryArray[pos].mods}</size>";
+            
+            if (buttonEntryArray[pos].mods.IsEmpty()) modifiersScoreText.gameObject.SetActive(false);
+            else modifiersScoreText.gameObject.SetActive(true);
 
             if (buttonEntryArray[pos].fullCombo) fcScoreText.text = "<color=green>Full Combo</color>";
             else fcScoreText.text = string.Format("Mistakes: <size=6><color=red>{0}</color></size>", buttonEntryArray[pos].badCutCount + buttonEntryArray[pos].missCount);
@@ -82,7 +100,55 @@ namespace LocalLeaderboard.UI.ViewControllers
             avgHitscoreScoreText.text = $"Average Hitscore: <size=6>{buttonEntryArray[pos].averageHitscore}</size>";
             maxComboScoreText.text = $"Max Combo: <size=6>{buttonEntryArray[pos].maxCombo}</size>";
             parserParams.EmitEvent("showScoreInfo");
+            currentModalView = buttonEntryArray[pos];
+
+            if (File.Exists(buttonEntryArray[pos].bsorPath)) watchReplayButton.interactable = true;
+            else watchReplayButton.interactable = false;
         }
+
+        private LLeaderboardEntry currentModalView;
+
+        [UIAction("replayStart")]
+        void replayStart() => silly(currentModalView);
+
+        private void silly(LLeaderboardEntry leaderboardEntry)
+        {
+            Plugin.Log.Info("STARTING REPLAY");
+            string fileLocation = leaderboardEntry.bsorPath;
+            Plugin.Log.Info(fileLocation);
+            if(TryReadReplay(fileLocation, out var replay1))
+            {
+                parserParams.EmitEvent("hideScoreInfo");
+                _replayerMenuLoader.StartReplayAsync(replay1, null, null);
+            }
+        }
+
+        public static bool TryReadReplay(string filename, out Replay replay)
+        {
+            try
+            {
+                if (File.Exists(filename))
+                {
+                    Stream stream = File.Open(filename, FileMode.Open);
+                    int arrayLength = (int)stream.Length;
+                    byte[] buffer = new byte[arrayLength];
+                    stream.Read(buffer, 0, arrayLength);
+                    stream.Close();
+
+                    replay = ReplayService.Decode(buffer);
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.Debug(e);
+            }
+
+            replay = default;
+            return false;
+        }
+
+
 
         [UIComponent("dateScoreText")]
         private TextMeshProUGUI dateScoreText;
@@ -104,6 +170,9 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         [UIComponent("maxComboScoreText")]
         private TextMeshProUGUI maxComboScoreText;
+
+        [UIComponent("modifiersScoreText")]
+        private TextMeshProUGUI modifiersScoreText;
 
 
         [UIComponent("infoModal")]
@@ -230,11 +299,13 @@ namespace LocalLeaderboard.UI.ViewControllers
         }
 
         [Inject]
-        public void Inject(TweeningService tweeningService, PanelView panel, PlatformLeaderboardViewController plvc)
+        public void Inject(TweeningService tweeningService, PanelView panel, PlatformLeaderboardViewController plvc, BeatLeader.Replayer.ReplayerMenuLoader replayerMenuLoader, BeatLeader.Replayer.ReplayerLauncher replayerLauncher)
         {
             _tweeningService = tweeningService;
             _panelView = panel;
             _plvc = plvc;
+            _replayerMenuLoader = replayerMenuLoader;
+            _replayerLauncher = replayerLauncher;
         }
 
         private static Vector3 origPos;

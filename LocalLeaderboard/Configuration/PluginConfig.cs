@@ -61,8 +61,9 @@ namespace LocalLeaderboard.LeaderboardData
             public int maxCombo;
             public int averageHitscore;
             public bool didFail;
+            public string bsorPath;
 
-            public LeaderboardEntry(int missCount, int badCutCount, float acc, bool fullCombo, string datePlayed, int score, string mods, int maxCombo, int averageHitscore, bool didFail)
+            public LeaderboardEntry(int missCount, int badCutCount, float acc, bool fullCombo, string datePlayed, int score, string mods, int maxCombo, int averageHitscore, bool didFail, string bsorPath)
             {
                 this.missCount = missCount;
                 this.badCutCount = badCutCount;
@@ -74,10 +75,11 @@ namespace LocalLeaderboard.LeaderboardData
                 this.maxCombo = maxCombo;
                 this.averageHitscore = averageHitscore;
                 this.didFail = didFail;
+                this.bsorPath = bsorPath;
             }
         }
 
-        public static void AddBeatMap(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, int averageHitscore, bool didFail)
+        public static void AddBeatMap(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, int averageHitscore, bool didFail, string bsorPath)
         {
             if (string.IsNullOrEmpty(mapID) || string.IsNullOrEmpty(diff))
             {
@@ -102,6 +104,8 @@ namespace LocalLeaderboard.LeaderboardData
                 { "maxCombo", maxCombo },
                 { "averageHitscore", averageHitscore },
                 { "didFail", didFail },
+                { "bsorPath", bsorPath },
+
 
             });
                 }
@@ -119,6 +123,8 @@ namespace LocalLeaderboard.LeaderboardData
                 { "maxCombo", maxCombo },
                 { "averageHitscore", averageHitscore },
                 { "didFail", didFail },
+                { "bsorPath", bsorPath },
+
 
             });
                 }
@@ -137,6 +143,7 @@ namespace LocalLeaderboard.LeaderboardData
             { "maxCombo", maxCombo },
             { "averageHitscore", averageHitscore },
             { "didFail", didFail },
+            { "bsorPath", bsorPath },
         }) } };
                 LocalLeaderboardData.Add(mapID, mapData);
             }
@@ -145,7 +152,7 @@ namespace LocalLeaderboard.LeaderboardData
 
 
 
-        public static void UpdateBeatMapInfo(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, int averageHitscore, bool didFail)
+        public static void UpdateBeatMapInfo(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, int averageHitscore, bool didFail, string bsorPath)
         {
             var difficulty = new JObject
         {
@@ -159,11 +166,12 @@ namespace LocalLeaderboard.LeaderboardData
             { "maxCombo", maxCombo },
             { "averageHitscore", averageHitscore },
             { "didFail", averageHitscore },
+            { "bsorPath", bsorPath },
         };
 
             if (LocalLeaderboardData[mapID] == null)
             {
-                AddBeatMap(mapID, diff, missCount, badCutCount, fullCombo, datePlayed, acc, score, mods, maxCombo, averageHitscore, didFail);
+                AddBeatMap(mapID, diff, missCount, badCutCount, fullCombo, datePlayed, acc, score, mods, maxCombo, averageHitscore, didFail, bsorPath);
                 return;
             }
 
@@ -196,6 +204,7 @@ namespace LocalLeaderboard.LeaderboardData
                     int? maxCombo = scoreData["maxCombo"]?.Value<int>();
                     int? averageHitscore = scoreData["averageHitscore"]?.Value<int>();
                     bool? didFail = scoreData["didFail"]?.Value<bool>();
+                    string bsorPath = scoreData["bsorPath"]?.Value<string>();
 
                     leaderboard.Add(new LeaderboardEntry(
                         missCount ?? 0,
@@ -207,7 +216,8 @@ namespace LocalLeaderboard.LeaderboardData
                         modifiers,
                         maxCombo ?? 0,
                         averageHitscore ?? 0,
-                        didFail ?? false
+                        didFail ?? false,
+                        bsorPath ?? ""
                         ));
                 }
             }
