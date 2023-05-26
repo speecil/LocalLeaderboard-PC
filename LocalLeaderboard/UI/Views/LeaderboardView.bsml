@@ -73,13 +73,15 @@
 			<modal child-expand-height="false" id='infoModal' show-event='showInfoModal' hide-event='hideInfoModal' size-delta-x='85' size-delta-y='50' clickerino-offerino-closerino='true'
 					move-to-center='true'>
 				<vertical spacing='1'
-					vertical-fit='PreferredSize' pad='3'>
+					vertical-fit='PreferredSize' pad='6'>
 					<horizontal spacing='4'>
 						<image align='Left' id="LocalLeaderboard_logo" src="LocalLeaderboard.Images.LocalLeaderboard_logo.png" preserve-aspect="true" pref-width="15" pref-height="15"/>
 						<text font-size="10" text='Local Leaderboard' align='Right'/>
 					</horizontal>
 					<text font-size='5' align='Center' text='Welcome to Local Leaderboard by Speecil!'/>
-					<text text-wrap='true' align='Center' text='A leaderboard for keeping track of previous plays on any map!'/>
+					<text font-size='4' text-wrap='true' align='Center' text='With help from metal_marmott!'/>
+					<text text-wrap='true' align='Center' text='A leaderboard for keeping track of previous plays!'/>
+
 					<horizontal spacing='1'>
 						<action-button pref-width='20' pref-height='10'  id='discordButton' text='Discord' on-click='Discord'/>
 						<action-button pref-width='20' pref-height='10' id='patreonButton' text='Patreon' on-click='Patreon'/>

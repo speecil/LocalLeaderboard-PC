@@ -518,9 +518,9 @@ namespace LocalLeaderboard.UI.ViewControllers
             if (entry.fullCombo) formattedCombo = " -<color=green> FC </color>";
             else formattedCombo = string.Format(" - <color=red>x{0} </color>", entry.badCutCount + entry.missCount);
             
-            string formattedMods = string.Format("   {0}</size>", entry.mods);
+            string formattedMods = string.Format("  <size=60%>{0}</size>", entry.mods);
 
-            string result = "<size=85%>" + formattedDate + formattedAcc + formattedCombo + formattedMods + "</size>";
+            string result = "<size=100%>" + formattedDate + formattedAcc + formattedCombo + formattedMods + "</size>";
 
             return new ScoreData(score, result, rank, false);
         }
