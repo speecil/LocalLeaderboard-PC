@@ -29,7 +29,6 @@ namespace LocalLeaderboard.UI.ViewControllers
         private PanelView _panelView;
         private PlatformLeaderboardViewController _plvc;
         private TweeningService _tweeningService;
-        private List<Button> infoButtons;
         private LLeaderboardEntry[] buttonEntryArray = new LLeaderboardEntry[10];
 
         public IDifficultyBeatmap currentDifficultyBeatmap;
@@ -110,8 +109,10 @@ namespace LocalLeaderboard.UI.ViewControllers
         [UIComponent("infoModal")]
         private ModalView infoModal;
 
-        [UIComponent("buttonHolder")]
-        private StackLayoutGroup buttonHolder;
+        private List<ButtonHolder> _holders = null;
+
+        [UIValue("buttonHolders")]
+        private List<ButtonHolder> holders => _holders ?? (_holders = Enumerable.Range(0, 10).Select(x => new ButtonHolder(x, setScoreModalText)).ToList());
 
         [UIParams]
         BSMLParserParams parserParams = null;
@@ -226,9 +227,6 @@ namespace LocalLeaderboard.UI.ViewControllers
             _imgView.color1 = new Color(0.156f, 0.69f, 0.46666f, 1);
             ImageSkew(ref _imgView) = 0.18f;
             ImageGradient(ref _imgView) = true;
-
-            infoButtons = buttonHolder.GetComponentsInChildren<Button>(true).ToList();
-            foreach (var button in infoButtons) button.onClick.AddListener(() => setScoreModalText(infoButtons.IndexOf(button)));
         }
 
         [Inject]
@@ -288,7 +286,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             }
         }
 
-        private void FuckOffButtons() => infoButtons.ForEach(button => button.gameObject.SetActive(false));
+        private void FuckOffButtons() => holders.ForEach(holder => holder.infoButton.gameObject.SetActive(false));
 
         private IEnumerator setcolor(Button button)
         {
@@ -392,7 +390,7 @@ namespace LocalLeaderboard.UI.ViewControllers
 
             for (int i = 0; i < maxEntriesPerPage; i++)
             {
-                infoButtons[i].gameObject.SetActive(true);
+                holders[i].infoButton.gameObject.SetActive(true);
             }
         }
 
@@ -454,6 +452,24 @@ namespace LocalLeaderboard.UI.ViewControllers
             string result = "<size=85%>" + formattedDate + formattedAcc + formattedCombo + formattedMods + "</size>";
 
             return new ScoreData(score, result, rank, false);
+        }
+
+        internal class ButtonHolder
+        {
+            private int index;
+            private Action<int> onClick;
+
+            public ButtonHolder(int index, Action<int> endmylife)
+            {
+                this.index = index;
+                onClick = endmylife;
+            }
+
+            [UIComponent("infoButton")]
+            public Button infoButton;
+
+            [UIAction("infoClick")]
+            private void infoClick() => onClick?.Invoke(index);
         }
     }
 }

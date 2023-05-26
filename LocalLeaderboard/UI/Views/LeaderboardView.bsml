@@ -1,5 +1,5 @@
-﻿<bg xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-    xsi:noNamespaceSchemaLocation='https://raw.githubusercontent.com/RedBrumbler/Quest-BSML-Docs/gh-pages/schema.xsd'>
+﻿<bg xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' 
+	xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
 
 	<!-- Header -->
 	<horizontal pref-width="90"
@@ -110,16 +110,11 @@
 			</modal>
 		</leaderboard>
 	</vertical>
-	<stack id='buttonHolder'>
-		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='8' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='32.2' ignore-layout='true'/>
-		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='26.2' ignore-layout='true'/>
-		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='20.2' ignore-layout='true'/>
-		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='14.2' ignore-layout='true'/>
-		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='8.2' ignore-layout='true'/>
-		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='2.2' ignore-layout='true'/>
-		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='-4.2' ignore-layout='true'/>
-		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='-10.2' ignore-layout='true'/>
-		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='-16.2' ignore-layout='true'/>
-		<button-with-icon icon='LocalLeaderboard.Images.info.png' hover-hint='Info' pref-width='10' pref-height='7' anchor-max-x='.5' anchor-max-y='.5' anchor-min-x='.5' anchor-min-y='.5' anchor-pos-x='47' anchor-pos-y='-22.2' ignore-layout='true'/>
-	</stack>
+	<vertical anchor-pos-x="47" anchor-pos-y="5.4" spacing="-19.4">
+		<macro.for-each hosts="buttonHolders">
+			<horizontal min-height="8" child-expand-height="true" child-align="MiddleCenter">
+				<button-with-icon id="infoButton" on-click="infoClick" icon ="LocalLeaderboard.Images.info.png" hover-hint="Info" pref-width="10" pref-height="7"/>
+			</horizontal>
+		</macro.for-each>
+	</vertical>
 </bg>
