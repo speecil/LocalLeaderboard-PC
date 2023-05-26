@@ -24,3 +24,7 @@ If you have any issues or questions regarding the Local Leaderboard mod, please 
 
 The Local Leaderboard mod is licensed under a custom license, this can be located under the LICENSE file within the root of the repository.
 
+## Credits
+- **Metal_Marmott** for fixing many various skill issues
+- **Male** for the the logo
+
