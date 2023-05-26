@@ -87,7 +87,7 @@
 					</horizontal>
 				</vertical>
 			</modal>
-			<modal child-expand-height="false" id='scoreInfo' show-event='showScoreInfo' hide-event='hideScoreInfo' size-delta-x='70' size-delta-y='60' clickerino-offerino-closerino='true'
+			<modal child-expand-height="false" id='scoreInfo' show-event='showScoreInfo' hide-event='hideScoreInfo' size-delta-x='65' size-delta-y='50' clickerino-offerino-closerino='true'
 					move-to-center='true'>
 				<vertical spacing='-1'
 					vertical-fit='PreferredSize' horizontal-fit='PreferredSize' pad='3'>
