@@ -4,6 +4,7 @@ using LocalLeaderboard.UI.ViewControllers;
 using SiraUtil.Affinity;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -16,6 +17,7 @@ namespace LocalLeaderboard.AffinityPatches
 {
     internal class Results : IAffinity
     {
+        private static readonly string ReplaysFolderPath = Environment.CurrentDirectory + "\\UserData\\BeatLeader\\Replays\\";
         public static string GetModifiersString(LevelCompletionResults levelCompletionResults)
         {
             string mods = "";
@@ -100,7 +102,7 @@ namespace LocalLeaderboard.AffinityPatches
             int badCut = levelCompletionResults.badCutsCount;
             int misses = levelCompletionResults.missedCount;
             bool fc = levelCompletionResults.fullCombo;
-            
+
             string currentTime = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yy h:mm tt");
 
             string mapId = difficultyBeatmap.level.levelID;
@@ -109,15 +111,18 @@ namespace LocalLeaderboard.AffinityPatches
             string mapType = playerLevelStats.beatmapCharacteristic.serializedName;
 
             string balls = mapType + difficulty.ToString(); // BeatMap Allocated Level Label String
-            
-            
+
+
             // new data modals balls
 
             bool didFail = levelCompletionResults.levelEndStateType == LevelCompletionResults.LevelEndStateType.Failed;
             int maxCombo = levelCompletionResults.okCount;
             int averageHitscore = (int)levelCompletionResults.averageCutScoreForNotesWithFullScoreScoringType;
+            var directory = new DirectoryInfo(ReplaysFolderPath);
+            var filePath = directory.GetFiles().OrderByDescending(f => f.LastWriteTime).First();
+            var replayFilePath = ReplaysFolderPath + "\\" + filePath.Name;
 
-            LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(levelCompletionResults), maxCombo, averageHitscore, didFail);
+            LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(levelCompletionResults), maxCombo, averageHitscore, didFail, replayFilePath);
         }
     }
 }
