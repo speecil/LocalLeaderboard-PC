@@ -24,11 +24,7 @@ namespace LocalLeaderboard.AffinityPatches
 
             if (levelCompletionResults.gameplayModifiers.noFailOn0Energy && levelCompletionResults.energy == 0)
             {
-                mods += "Fail (NF) ";
-            }
-            else if (levelCompletionResults.energy == 0)
-            {
-                mods += "Fail";
+                mods += "NF";
             }
             if (levelCompletionResults.gameplayModifiers.energyType == GameplayModifiers.EnergyType.Battery)
             {
@@ -120,7 +116,7 @@ namespace LocalLeaderboard.AffinityPatches
             int averageHitscore = (int)levelCompletionResults.averageCutScoreForNotesWithFullScoreScoringType;
             var directory = new DirectoryInfo(ReplaysFolderPath);
             var filePath = directory.GetFiles().OrderByDescending(f => f.LastWriteTime).First();
-            var replayFilePath = ReplaysFolderPath + "\\" + filePath.Name;
+            var replayFilePath = ReplaysFolderPath + filePath.Name;
 
             LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(levelCompletionResults), maxCombo, averageHitscore, didFail, replayFilePath);
         }
