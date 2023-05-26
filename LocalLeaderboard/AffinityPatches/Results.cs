@@ -116,9 +116,9 @@ namespace LocalLeaderboard.AffinityPatches
             int averageHitscore = (int)levelCompletionResults.averageCutScoreForNotesWithFullScoreScoringType;
             var directory = new DirectoryInfo(ReplaysFolderPath);
             var filePath = directory.GetFiles().OrderByDescending(f => f.LastWriteTime).First();
-            var replayFilePath = ReplaysFolderPath + filePath.Name;
+            var replayFileName = filePath.Name;
 
-            LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(levelCompletionResults), maxCombo, averageHitscore, didFail, replayFilePath);
+            LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(levelCompletionResults), maxCombo, averageHitscore, didFail, replayFileName);
         }
     }
 }

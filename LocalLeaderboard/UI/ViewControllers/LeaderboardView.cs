@@ -25,6 +25,7 @@ using LLeaderboardEntry = LocalLeaderboard.LeaderboardData.LeaderboardData.Leade
 using Transform = UnityEngine.Transform;
 using Vector3 = UnityEngine.Vector3;
 using BeatLeader.Utils;
+using System.Reflection;
 
 namespace LocalLeaderboard.UI.ViewControllers
 {
@@ -40,7 +41,6 @@ namespace LocalLeaderboard.UI.ViewControllers
         private BeatLeader.Replayer.ReplayerMenuLoader _replayerMenuLoader;
         private BeatLeader.Replayer.ReplayerLauncher _replayerLauncher;
         private BeatLeader.Models.Replay.Replay _replay;
-        private ReplayService _replayService;
 
         public IDifficultyBeatmap currentDifficultyBeatmap;
 
@@ -83,6 +83,8 @@ namespace LocalLeaderboard.UI.ViewControllers
         [UIComponent("watchReplayButton")]
         private Button watchReplayButton;
 
+        private static readonly string ReplaysFolderPath = Environment.CurrentDirectory + "\\UserData\\BeatLeader\\Replays\\";
+
         void setScoreModalText(int pos)
         {
             dateScoreText.text = $"Date set: <size=6><color=#28b077>{buttonEntryArray[pos].datePlayed}</color></size>";
@@ -102,7 +104,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             parserParams.EmitEvent("showScoreInfo");
             currentModalView = buttonEntryArray[pos];
 
-            if (File.Exists(buttonEntryArray[pos].bsorPath)) watchReplayButton.interactable = true;
+            if (File.Exists(ReplaysFolderPath + buttonEntryArray[pos].bsorPath)) watchReplayButton.interactable = true;
             else watchReplayButton.interactable = false;
         }
 
@@ -114,7 +116,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         private void silly(LLeaderboardEntry leaderboardEntry)
         {
             Plugin.Log.Info("STARTING REPLAY");
-            string fileLocation = leaderboardEntry.bsorPath;
+            string fileLocation = ReplaysFolderPath + leaderboardEntry.bsorPath;
             Plugin.Log.Info(fileLocation);
             if(TryReadReplay(fileLocation, out var replay1))
             {
@@ -135,7 +137,9 @@ namespace LocalLeaderboard.UI.ViewControllers
                     stream.Read(buffer, 0, arrayLength);
                     stream.Close();
 
-                    replay = ReplayService.Decode(buffer);
+                    var method = typeof(BeatLeader.Plugin).Assembly.GetType("BeatLeader.Models.Replay.ReplayDecoder").GetMethod("Decode", BindingFlags.Public | BindingFlags.Static);
+                    replay = (Replay)method.Invoke(null, new object[] { buffer });
+
                     return true;
                 }
             }
