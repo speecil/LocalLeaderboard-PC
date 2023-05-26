@@ -87,24 +87,29 @@
 					</horizontal>
 				</vertical>
 			</modal>
-			<modal child-expand-height="false" id='scoreInfo' show-event='showScoreInfo' hide-event='hideScoreInfo' size-delta-x='70' size-delta-y='50' clickerino-offerino-closerino='true'
+			<modal child-expand-height="false" id='scoreInfo' show-event='showScoreInfo' hide-event='hideScoreInfo' size-delta-x='65' size-delta-y='50' clickerino-offerino-closerino='true'
 					move-to-center='true'>
-				<vertical spacing='3'
+				<vertical spacing='-1'
 					vertical-fit='PreferredSize' pad='3'>
-					<horizontal spacing='4'>
+					<horizontal spacing='1'>
 						<text rich-text='true' id='dateScoreText' font-size="5" text='DATE' align='Center'/>
 					</horizontal>
-					<horizontal spacing='4'>
-						<text rich-text='true' id='accScoreText' font-size="5" text='ACC' align='Left'/>
-						<text rich-text='true' id='scoreScoreText' font-size="5" text='SCORE' align='Right'/>
+					<horizontal spacing='1'>
+						<text rich-text='true' id='accScoreText' font-size="5" text='ACC' align='Center'/>
+						<text rich-text='true' id='scoreScoreText' font-size="5" text='SCORE' align='Center'/>
 					</horizontal>
-					<horizontal spacing='4'>
+					<horizontal spacing='1'>
 						<text rich-text='true' id='fcScoreText' font-size="5" text='FC' align='Center'/>
+					</horizontal>
+					<horizontal spacing='1'>
 						<text rich-text='true' font-color='red' id='failScoreText' font-size="5" text='Fail' active='false' align='Center'/>
 					</horizontal>
-					<horizontal spacing='4'>
+					<horizontal spacing='3'>
 						<text rich-text='true' id='avgHitscoreScoreText' font-size="5" text='AVGHIT' align='Left'/>
 						<text rich-text='true' id='maxComboScoreText' font-size="5" text='MAXCOMBO' align='Right'/>
+					</horizontal>
+					<horizontal>
+						<button bold='false' all-uppercase='true' text='Watch Beatleader Replay' align='Center'/>
 					</horizontal>
 				</vertical>
 			</modal>
