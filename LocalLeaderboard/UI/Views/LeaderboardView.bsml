@@ -98,39 +98,41 @@
 				<vertical
 					 pad='3'>
 					<text align='Top' font-size='5' bold='false' underlined='true' text='Settings'/>
-						<toggle-setting on-change='BurgerChanged' apply-on-change='true' text='American Dates' pref-width='45' value='dateoption' hover-hint='Save data using the terrible american date format'/>
-						<toggle-setting id='uwuToggle' on-change='ToggleRainbow' apply-on-change='true' text='uwu mode :3' pref-width='45' value='rainbowsuwu' hover-hint='Hi patreon user, heres a fun lil thing'/>
+						<toggle-setting apply-on-change='true' text='American Dates' pref-width='45' value='dateoption' hover-hint='Save data using the terrible american date format'/>
+						<toggle-setting id='uwuToggle' apply-on-change='true' text='uwu mode :3' pref-width='45' value='rainbowsuwu' hover-hint='Hi patreon user, heres a fun lil thing'/>
 				</vertical>
 			</modal>
-			<modal child-expand-height="false" id='scoreInfo' show-event='showScoreInfo' hide-event='hideScoreInfo' size-delta-x='72' size-delta-y='50' clickerino-offerino-closerino='true'
-		move-to-center='true'>
-				<vertical spacing='-1'
-					vertical-fit='PreferredSize' horizontal-fit='PreferredSize' pad='3'>
-					<horizontal spacing='1'>
-						<text rich-text='true' id='dateScoreText' font-size="5" text='DATE' align='Center'/>
-					</horizontal>
-					<horizontal spacing='1'>
-						<text rich-text='true' id='accScoreText' font-size="5" text='ACC' align='Center'/>
-						<text rich-text='true' id='scoreScoreText' font-size="5" text='SCORE' align='Center'/>
-					</horizontal>
-					<horizontal spacing='1'>
-						<text rich-text='true' id='modifiersScoreText' font-size="5" text='MODS' align='Center'/>
-					</horizontal>
-					<horizontal spacing='1'>
-						<text rich-text='true' id='fcScoreText' font-size="5" text='FC' align='Center'/>
-					</horizontal>
-					<horizontal spacing='1'>
-						<text rich-text='true' font-color='red' id='failScoreText' font-size="5" text='Fail' active='false' align='Center'/>
-					</horizontal>
-					<horizontal spacing='3'>
-						<text rich-text='true' id='avgHitscoreScoreText' font-size="5" text='AVGHIT' align='Left'/>
-						<text rich-text='true' id='maxComboScoreText' font-size="5" text='MAXCOMBO' align='Right'/>
-					</horizontal>
-					<horizontal>
-						<button on-click='replayStart' id='watchReplayButton' bold='false' all-uppercase='true' text='Watch Beatleader Replay' align='Center'/>
-					</horizontal>
-				</vertical>
-			</modal>
+			<macro.as-host host='scoreInfoModal'>
+				<modal child-expand-height="false" id='scoreInfo' show-event='showScoreInfo' hide-event='hideScoreInfo' size-delta-x='72' size-delta-y='50' clickerino-offerino-closerino='true'
+			move-to-center='true'>
+					<vertical spacing='-1'
+						vertical-fit='PreferredSize' horizontal-fit='PreferredSize' pad='3'>
+						<horizontal spacing='1'>
+							<text rich-text='true' id='dateScoreText' font-size="5" text='DATE' align='Center'/>
+						</horizontal>
+						<horizontal spacing='1'>
+							<text rich-text='true' id='accScoreText' font-size="5" text='ACC' align='Center'/>
+							<text rich-text='true' id='scoreScoreText' font-size="5" text='SCORE' align='Center'/>
+						</horizontal>
+						<horizontal spacing='1'>
+							<text rich-text='true' id='modifiersScoreText' font-size="5" text='MODS' align='Center'/>
+						</horizontal>
+						<horizontal spacing='1'>
+							<text rich-text='true' id='fcScoreText' font-size="5" text='FC' align='Center'/>
+						</horizontal>
+						<horizontal spacing='1'>
+							<text rich-text='true' font-color='red' id='failScoreText' font-size="5" text='Fail' active='false' align='Center'/>
+						</horizontal>
+						<horizontal spacing='3'>
+							<text rich-text='true' id='avgHitscoreScoreText' font-size="5" text='AVGHIT' align='Left'/>
+							<text rich-text='true' id='maxComboScoreText' font-size="5" text='MAXCOMBO' align='Right'/>
+						</horizontal>
+						<horizontal>
+							<button on-click='replayStart' id='watchReplayButton' bold='false' all-uppercase='true' text='Watch Beatleader Replay' align='Center'/>
+						</horizontal>
+					</vertical>
+				</modal>
+			</macro.as-host>
 		</leaderboard>
 	</vertical>
 	<vertical anchor-pos-x="47" anchor-pos-y="5.4" spacing="-19.4">

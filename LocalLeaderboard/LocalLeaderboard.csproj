@@ -235,8 +235,11 @@
     <Compile Include="Configuration\PluginConfig.cs" />
     <Compile Include="LocalLeaderboardController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\PlayerService.cs" />
+    <Compile Include="Services\ReplayService.cs" />
     <Compile Include="Services\TweeningService.cs" />
     <Compile Include="UI\LLLeaderboard.cs" />
+    <Compile Include="UI\ScoreInfoModal.cs" />
     <Compile Include="UI\ViewControllers\LeaderboardView.cs" />
     <Compile Include="UI\ViewControllers\PanelView.cs" />
   </ItemGroup>
