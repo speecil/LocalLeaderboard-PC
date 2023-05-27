@@ -18,7 +18,13 @@ namespace LocalLeaderboard.UI.ViewControllers
     {
         private const float _skew = 0.18f;
         private Coroutine rainbowCoroutine;
-        private bool uwu = false;
+        public bool uwu
+        {
+            get => SettingsConfig.Instance.rainbowsuwu;
+            set => SettingsConfig.Instance.rainbowsuwu = value;
+        }
+        private float hue = 0f;
+        private float hueIncrement = 0.001f;
 
         private ImageView _background;
         private ImageView _imgView;
@@ -69,12 +75,24 @@ namespace LocalLeaderboard.UI.ViewControllers
             ImageSkew(ref _separator) = _skew;
         }
 
+        protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+        {
+            base.DidActivate(firstActivation, addedToHierarchy, screenSystemEnabling);
+            if (uwu)
+            {
+                rainbowCoroutine = StartCoroutine(RainbowCoroutine());
+            }
+        }
+
         public void toggleRainbow(bool value)
         {
             uwu = value;
             if (uwu)
             {
-                rainbowCoroutine = StartCoroutine(RainbowCoroutine());
+                if (rainbowCoroutine == null)
+                {
+                    rainbowCoroutine = StartCoroutine(RainbowCoroutine());
+                }
             }
             else
             {
@@ -91,9 +109,6 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         private System.Collections.IEnumerator RainbowCoroutine()
         {
-            float hue = 0f; // Start with a hue of 0
-            float hueIncrement = 0.001f; // Adjust this value to control the speed of color change
-
             while (true)
             {
                 hue += hueIncrement;
