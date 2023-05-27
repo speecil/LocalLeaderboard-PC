@@ -2,6 +2,7 @@
 	xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
 
 	<!-- Header -->
+
 	<horizontal pref-width="90"
 				pref-height="8"
 				anchor-pos-y="41.5"
@@ -18,7 +19,7 @@
 			</horizontal>
 		</stack>
 	</horizontal>
-  <!-- Leaderboard scrollers -->
+	<!-- Leaderboard scrollers -->
   <bg anchor-pos-x="-40" anchor-pos-y="-15">
     <clickable-image id="sorter"
                       src="LocalLeaderboard.Images.sortArrow.png"
@@ -50,6 +51,9 @@
                  pref-width="10"
                  pref-height="10"
                  on-click="OnPageDown"/>
+
+	  <clickable-image size-delta-x="6" size-delta-y="6" anchor-pos-y="-5.5" anchor-pos-x="0" id='settingsIcon' src='#SettingsIcon' on-click='showSettings'/>
+
   </bg>
   
   <!-- Leaderboard table -->
@@ -89,8 +93,16 @@
 					</horizontal>
 				</vertical>
 			</modal>
-			<modal child-expand-height="false" id='scoreInfo' show-event='showScoreInfo' hide-event='hideScoreInfo' size-delta-x='72' size-delta-y='50' clickerino-offerino-closerino='true'
+			<modal child-expand-height="false" id='settingsModal' show-event='showSettings' hide-event='hideSettings' size-delta-x='50' size-delta-y='50' clickerino-offerino-closerino='true'
 					move-to-center='true'>
+				<vertical
+					 pad='3'>
+					<text align='Top' font-size='5' bold='false' underlined='true' text='Settings'/>
+						<toggle-setting apply-on-change='true' text='American Dates' pref-width='45' value='dateoption' hover-hint='Save data using the terrible american date format'/>
+				</vertical>
+			</modal>
+			<modal child-expand-height="false" id='scoreInfo' show-event='showScoreInfo' hide-event='hideScoreInfo' size-delta-x='72' size-delta-y='50' clickerino-offerino-closerino='true'
+		move-to-center='true'>
 				<vertical spacing='-1'
 					vertical-fit='PreferredSize' horizontal-fit='PreferredSize' pad='3'>
 					<horizontal spacing='1'>

@@ -7,6 +7,7 @@ using IPA.Utilities;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using Zenject;
 
 namespace LocalLeaderboard.UI.ViewControllers
 {
@@ -44,7 +45,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         public GameObject prompt_loader;
 
 
-        LeaderboardView lb;
+        [Inject] LeaderboardView lb;
 
         [UIAction("#post-parse")]
         private void PostParse()
@@ -63,7 +64,6 @@ namespace LocalLeaderboard.UI.ViewControllers
             ImageSkew(ref LocalLeaderboard_logo) = _skew;
             LocalLeaderboard_logo.SetVerticesDirty();
             ImageSkew(ref _separator) = _skew;
-            lb = Resources.FindObjectsOfTypeAll<LeaderboardView>().FirstOrDefault();
         }
 
         [UIAction("FunnyModalMoment")]

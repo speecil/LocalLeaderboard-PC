@@ -99,7 +99,7 @@ namespace LocalLeaderboard.AffinityPatches
             int misses = levelCompletionResults.missedCount;
             bool fc = levelCompletionResults.fullCombo;
 
-            string currentTime = DateTime.UtcNow.ToLocalTime().ToString("dd/MM/yy h:mm tt");
+            string currentTime = DateTime.UtcNow.ToLocalTime().ToString(SettingsConfig.Instance.BurgerDate ? "MM/dd/yy h:mm tt" : "dd/MM/yy h:mm tt");
 
             string mapId = difficultyBeatmap.level.levelID;
 

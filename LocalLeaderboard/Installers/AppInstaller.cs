@@ -14,7 +14,6 @@ namespace LocalLeaderboard.Installers
     {
         public override void InstallBindings()
         {
-            Plugin.Log.Info("HEY IM INSTALL BINDINGS");
             Container.BindInterfacesTo<Results>().AsSingle();
         }
     }

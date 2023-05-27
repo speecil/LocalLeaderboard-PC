@@ -243,9 +243,28 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         [UIAction("Website")]
         private void Website() => Application.OpenURL("https://speecil.dev");
-        
+
+        [UIAction("showSettings")]
+        private void showSettings() => parserParams.EmitEvent("showSettings");
+
+
+        [UIValue("dateoption")]
+        private bool dateoption
+        {
+            get
+            {
+                return SettingsConfig.Instance.BurgerDate;
+            }
+            set
+            {
+                SettingsConfig.Instance.BurgerDate = value;
+            }
+        }
+
         public void showModal()
         {
+            parserParams.EmitEvent("hideSettings");
+            parserParams.EmitEvent("hideScoreInfo");
             parserParams.EmitEvent("showInfoModal");
             infoModal.StartCoroutine(setcolor(websiteButton));
             infoModal.StartCoroutine(setcolor(discordButton));
@@ -337,6 +356,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             page = 0;
             parserParams.EmitEvent("hideInfoModal");
             parserParams.EmitEvent("hideScoreInfo");
+            parserParams.EmitEvent("hideSettings");
         }
 
         void RichMyText(LeaderboardTableView tableView)

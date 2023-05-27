@@ -14,7 +14,6 @@ namespace LocalLeaderboard.Installers
     {
         public override void InstallBindings()
         {
-            Plugin.Log.Info("HEY IM INSTALL BINDINGS");
             Container.BindInterfacesAndSelfTo<LeaderboardView>().FromNewComponentAsViewController().AsSingle();
             Container.BindInterfacesAndSelfTo<PanelView>().FromNewComponentAsViewController().AsSingle();
             Container.BindInterfacesTo<LLLeaderboard>().AsSingle();
