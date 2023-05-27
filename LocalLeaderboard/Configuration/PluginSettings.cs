@@ -11,6 +11,9 @@ namespace LocalLeaderboard
 
         public bool BurgerDate = false;
 
+        public bool rainbowsuwu = false;
+
+
         public virtual void Changed() => ApplyValues();
 
         public void ApplyValues()

@@ -26,6 +26,12 @@ using Transform = UnityEngine.Transform;
 using Vector3 = UnityEngine.Vector3;
 using BeatLeader.Utils;
 using System.Reflection;
+using LocalLeaderboard.Services;
+using BeatLeader.Models;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace LocalLeaderboard.UI.ViewControllers
 {
@@ -41,6 +47,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         private BeatLeader.Replayer.ReplayerMenuLoader _replayerMenuLoader;
         private BeatLeader.Replayer.ReplayerLauncher _replayerLauncher;
         private BeatLeader.Models.Replay.Replay _replay;
+        private bool UserIsPatron = false;
 
         public IDifficultyBeatmap currentDifficultyBeatmap;
 
@@ -182,6 +189,9 @@ namespace LocalLeaderboard.UI.ViewControllers
         [UIComponent("infoModal")]
         private ModalView infoModal;
 
+        [UIObject("uwuToggle")]
+        private GameObject uwuToggle;
+
         private List<ButtonHolder> _holders = null;
 
         [UIValue("buttonHolders")]
@@ -245,8 +255,11 @@ namespace LocalLeaderboard.UI.ViewControllers
         private void Website() => Application.OpenURL("https://speecil.dev");
 
         [UIAction("showSettings")]
-        private void showSettings() => parserParams.EmitEvent("showSettings");
-
+        private void showSettings()
+        {
+            parserParams.EmitEvent("showSettings");
+            uwuToggle.SetActive(UserIsPatron);
+        }
 
         [UIValue("dateoption")]
         private bool dateoption
@@ -259,6 +272,40 @@ namespace LocalLeaderboard.UI.ViewControllers
             {
                 SettingsConfig.Instance.BurgerDate = value;
             }
+        }
+
+        [UIValue("PatreonCheck")]
+        private bool PatreonCheck
+        {
+            get
+            {
+                return UserIsPatron;
+            }
+        }
+
+        [UIValue("rainbowsuwu")]
+        private bool rainbowsuwu
+        {
+            get
+            {
+                return SettingsConfig.Instance.rainbowsuwu;
+            }
+            set
+            {
+                SettingsConfig.Instance.rainbowsuwu = value;
+            }
+        }
+
+        [UIAction("ToggleRainbow")]
+        public void ToggleRainbow(bool silly)
+        {
+            _panelView.toggleRainbow(silly);
+        }
+
+        [UIAction("SettingsChanged")]
+        public void SettingsChanged(bool silly)
+        {
+            OnLeaderboardSet(currentDifficultyBeatmap);
         }
 
         public void showModal()
@@ -332,7 +379,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         }
 
         private static Vector3 origPos;
-        protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+        protected override async void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
             base.DidActivate(firstActivation, addedToHierarchy, screenSystemEnabling);
             if (!this.isActiveAndEnabled) return;
@@ -342,6 +389,8 @@ namespace LocalLeaderboard.UI.ViewControllers
             if (firstActivation)
             {
                 origPos = header.transform.localPosition;
+                Thread thread = new Thread(() => GetPatreonStatus());
+                thread.Start();
             }
             header.transform.localPosition = new Vector3(-999, -999, -999);
         }
@@ -358,6 +407,47 @@ namespace LocalLeaderboard.UI.ViewControllers
             parserParams.EmitEvent("hideScoreInfo");
             parserParams.EmitEvent("hideSettings");
         }
+
+        public void GetPatreonStatus()
+        {
+            string playerID = string.Empty;
+
+            if (File.Exists(Path.Combine(UnityGame.InstallPath, "Beat Saber_Data", "Plugins", "x86_64", "steam_api64.dll")))
+            {
+                //Steamworks.CSteamID steamID = Steamworks.SteamUser.GetSteamID();
+                //string playerId = steamID.m_SteamID.ToString();
+            }
+            else
+            {
+                Oculus.Platform.Users.GetLoggedInUser().OnComplete(async user =>
+                {
+                    playerID = user.Data.OculusID;
+                    using (var client = new HttpClient())
+                    {
+                        string patronListUrl = "https://raw.githubusercontent.com/speecil/Patrons/main/patrons.txt";
+                        string patronList = await client.GetStringAsync(patronListUrl);
+
+                        string[] patrons = patronList.Split(new[] { "\n" }, StringSplitOptions.None);
+                        foreach (var patron in patrons)
+                        {
+                            if(patron == playerID)
+                            {
+                                UserIsPatron = true;
+                                Plugin.Log.Info("USER IS PATRON (tysm)");
+                                headerText.text = playerID.ToUpper() + "'S LEADERBOARD";
+                                uwuToggle.SetActive(true);
+                            }
+                            else
+                            {
+                                uwuToggle.SetActive(false);
+                            }
+                        }
+                    }
+                });
+            }
+            Thread.CurrentThread.Join();
+        }
+
 
         void RichMyText(LeaderboardTableView tableView)
         {
@@ -450,7 +540,15 @@ namespace LocalLeaderboard.UI.ViewControllers
                 if (leaderboardEntries.Count <= 0) return;
                 LLeaderboardEntry recent = leaderboardEntries[leaderboardEntries.Count - 1];
                 if (!Ascending) leaderboardEntries.Reverse();
-                _panelView.lastPlayed.text = "Last Played: " + recent.datePlayed;    
+                long unixTimestamp;
+                string formattedDate = "Error";
+                if (long.TryParse(recent.datePlayed, out unixTimestamp))
+                {
+                    DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(unixTimestamp);
+                    DateTime datePlayed = dateTimeOffset.LocalDateTime;
+                    formattedDate = datePlayed.ToString(SettingsConfig.Instance.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt");
+                    _panelView.lastPlayed.text = "Last Played: " + formattedDate;
+                }
             }
             else if (sortMethod == 1)
             {
@@ -534,8 +632,16 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         public ScoreData CreateLeaderboardEntryData(LLeaderboardEntry entry, int rank, int score)
         {
-            
-            string formattedDate = string.Format("<color=#28b077>{0}</color></size>", entry.datePlayed);
+            string datePlayedString = entry.datePlayed;
+            long unixTimestamp;
+            string formattedDate = "Error";
+            if (long.TryParse(datePlayedString, out unixTimestamp))
+            {
+                DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(unixTimestamp);
+                DateTime datePlayed = dateTimeOffset.LocalDateTime;
+
+                formattedDate = string.Format("<color=#28b077>{0}</color></size>", datePlayed.ToString(SettingsConfig.Instance.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt"));
+            }
             string formattedAcc = string.Format(" - (<color=#ffd42a>{0:0.00}%</color>)", entry.acc);
             score = entry.score;
             string formattedCombo = "";

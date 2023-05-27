@@ -4,6 +4,7 @@ using BeatSaberMarkupLanguage.Components;
 using BeatSaberMarkupLanguage.ViewControllers;
 using HMUI;
 using IPA.Utilities;
+using System.Collections;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -16,6 +17,8 @@ namespace LocalLeaderboard.UI.ViewControllers
     internal class PanelView : BSMLAutomaticViewController
     {
         private const float _skew = 0.18f;
+        private Coroutine rainbowCoroutine;
+        private bool uwu = false;
 
         private ImageView _background;
         private ImageView _imgView;
@@ -65,6 +68,52 @@ namespace LocalLeaderboard.UI.ViewControllers
             LocalLeaderboard_logo.SetVerticesDirty();
             ImageSkew(ref _separator) = _skew;
         }
+
+        public void toggleRainbow(bool value)
+        {
+            uwu = value;
+            if (uwu)
+            {
+                rainbowCoroutine = StartCoroutine(RainbowCoroutine());
+            }
+            else
+            {
+                if (rainbowCoroutine != null)
+                {
+                    StopCoroutine(rainbowCoroutine);
+                    rainbowCoroutine = null;
+                }
+                // Set the image color back to its default value
+                _imgView.color = new Color(0.156f, 0.69f, 0.46666f, 1);
+                _imgView.SetVerticesDirty();
+            }
+        }
+
+        private System.Collections.IEnumerator RainbowCoroutine()
+        {
+            float hue = 0f; // Start with a hue of 0
+            float hueIncrement = 0.001f; // Adjust this value to control the speed of color change
+
+            while (true)
+            {
+                hue += hueIncrement;
+                if (hue > 1f)
+                {
+                    hue -= 1f;
+                }
+
+                Color newColor = Color.HSVToRGB(hue, 1f, 1f);
+                _imgView.color = newColor;
+                _imgView.SetVerticesDirty();
+
+                yield return null;
+            }
+        }
+
+
+
+
+
 
         [UIAction("FunnyModalMoment")]
         private void FunnyModalMoment()
