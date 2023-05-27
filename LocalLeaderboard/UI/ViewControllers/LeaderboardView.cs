@@ -427,23 +427,29 @@ namespace LocalLeaderboard.UI.ViewControllers
                     playerID = user.Data.OculusID;
                     using (var client = new HttpClient())
                     {
-                        string patronListUrl = "https://raw.githubusercontent.com/speecil/Patrons/main/patrons.txt";
-                        string patronList = await client.GetStringAsync(patronListUrl);
-
-                        string[] patrons = patronList.Split(new[] { "\n" }, StringSplitOptions.None);
-                        foreach (var patron in patrons)
+                        try
                         {
-                            if(patron == playerID)
+                            string patronListUrl = "https://raw.githubusercontent.com/speecil/Patrons/main/patrons.txt";
+                            string patronList = await client.GetStringAsync(patronListUrl);
+                            string[] patrons = patronList.Split(new[] { "," }, StringSplitOptions.None);
+                            foreach (var patron in patrons)
                             {
-                                UserIsPatron = true;
-                                Plugin.Log.Info("USER IS PATRON (tysm)");
-                                headerText.text = playerID.ToUpper() + "'S LEADERBOARD";
-                                uwuToggle.SetActive(true);
+                                if (patron.Contains(playerID))
+                                {
+                                    UserIsPatron = true;
+                                    Plugin.Log.Info("USER IS PATRON (tysm)");
+                                    headerText.text = playerID.ToUpper() + "'S LEADERBOARD";
+                                    uwuToggle.SetActive(true);
+                                }
+                                else
+                                {
+                                    uwuToggle.SetActive(false);
+                                }
                             }
-                            else
-                            {
-                                uwuToggle.SetActive(false);
-                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Plugin.Log.Error("Failed to download the patron list!");
                         }
                     }
                 });
