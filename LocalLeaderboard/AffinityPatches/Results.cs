@@ -124,6 +124,8 @@ namespace LocalLeaderboard.AffinityPatches
             var replayFileName = filePath.Name;
 
             LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(levelCompletionResults), maxCombo, averageHitscore, didFail, replayFileName);
+            var lb = Resources.FindObjectsOfTypeAll<LeaderboardView>().FirstOrDefault();
+            lb.OnLeaderboardSet(lb.currentDifficultyBeatmap);
         }
     }
 }

@@ -49,6 +49,8 @@ namespace LocalLeaderboard.UI.ViewControllers
         private BeatLeader.Models.Replay.Replay _replay;
         private bool UserIsPatron = false;
 
+        SettingsConfig config = SettingsConfig.Instance;
+
         public IDifficultyBeatmap currentDifficultyBeatmap;
 
         [UIComponent("leaderboardTableView")]
@@ -185,7 +187,6 @@ namespace LocalLeaderboard.UI.ViewControllers
         [UIComponent("modifiersScoreText")]
         private TextMeshProUGUI modifiersScoreText;
 
-
         [UIComponent("infoModal")]
         private ModalView infoModal;
 
@@ -266,11 +267,12 @@ namespace LocalLeaderboard.UI.ViewControllers
         {
             get
             {
-                return SettingsConfig.Instance.BurgerDate;
+                return config.BurgerDate;
             }
             set
             {
-                SettingsConfig.Instance.BurgerDate = value;
+                if(config.BurgerDate == value) return; //  fuckery that makes it work dont remove
+                config.BurgerDate = value;
             }
         }
 
@@ -288,11 +290,11 @@ namespace LocalLeaderboard.UI.ViewControllers
         {
             get
             {
-                return SettingsConfig.Instance.rainbowsuwu;
+                return config.rainbowsuwu;
             }
             set
             {
-                SettingsConfig.Instance.rainbowsuwu = value;
+                config.rainbowsuwu = value;
             }
         }
 
@@ -302,9 +304,10 @@ namespace LocalLeaderboard.UI.ViewControllers
             _panelView.toggleRainbow(silly);
         }
 
-        [UIAction("SettingsChanged")]
+        [UIAction("BurgerChanged")]
         public void SettingsChanged(bool silly)
         {
+            dateoption = silly; // more fuckery that makes it work because bsml is a bitch
             OnLeaderboardSet(currentDifficultyBeatmap);
         }
 
@@ -379,7 +382,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         }
 
         private static Vector3 origPos;
-        protected override async void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+        protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
             base.DidActivate(firstActivation, addedToHierarchy, screenSystemEnabling);
             if (!this.isActiveAndEnabled) return;
@@ -546,7 +549,7 @@ namespace LocalLeaderboard.UI.ViewControllers
                 {
                     DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(unixTimestamp);
                     DateTime datePlayed = dateTimeOffset.LocalDateTime;
-                    formattedDate = datePlayed.ToString(SettingsConfig.Instance.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt");
+                    formattedDate = datePlayed.ToString(config.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt");
                     _panelView.lastPlayed.text = "Last Played: " + formattedDate;
                 }
             }
@@ -640,7 +643,7 @@ namespace LocalLeaderboard.UI.ViewControllers
                 DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(unixTimestamp);
                 DateTime datePlayed = dateTimeOffset.LocalDateTime;
 
-                formattedDate = string.Format("<color=#28b077>{0}</color></size>", datePlayed.ToString(SettingsConfig.Instance.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt"));
+                formattedDate = string.Format("<color=#28b077>{0}</color></size>", datePlayed.ToString(config.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt"));
             }
             string formattedAcc = string.Format(" - (<color=#ffd42a>{0:0.00}%</color>)", entry.acc);
             score = entry.score;

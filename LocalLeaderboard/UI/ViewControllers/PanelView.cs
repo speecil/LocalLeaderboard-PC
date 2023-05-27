@@ -4,6 +4,7 @@ using BeatSaberMarkupLanguage.Components;
 using BeatSaberMarkupLanguage.ViewControllers;
 using HMUI;
 using IPA.Utilities;
+using LeaderboardCore.Interfaces;
 using System.Collections;
 using System.Linq;
 using TMPro;
@@ -17,7 +18,9 @@ namespace LocalLeaderboard.UI.ViewControllers
     internal class PanelView : BSMLAutomaticViewController
     {
         private const float _skew = 0.18f;
+        private bool isRainbowCoroutineRunning = false;
         private Coroutine rainbowCoroutine;
+
         public bool uwu
         {
             get => SettingsConfig.Instance.rainbowsuwu;
@@ -84,6 +87,15 @@ namespace LocalLeaderboard.UI.ViewControllers
             }
         }
 
+        protected override void DidDeactivate(bool removedFromHierarchy, bool screenSystemDisabling)
+        {
+            base.DidDeactivate(removedFromHierarchy, screenSystemDisabling);
+            if (rainbowCoroutine != null)
+            {
+                StopCoroutine(rainbowCoroutine);
+            }
+        }
+
         public void toggleRainbow(bool value)
         {
             uwu = value;
@@ -125,15 +137,12 @@ namespace LocalLeaderboard.UI.ViewControllers
             }
         }
 
-
-
-
-
-
         [UIAction("FunnyModalMoment")]
         private void FunnyModalMoment()
         {
             lb.showModal();
         }
+
+
     }
 }
