@@ -4,6 +4,7 @@ using BeatSaberMarkupLanguage.Components;
 using BeatSaberMarkupLanguage.ViewControllers;
 using HMUI;
 using IPA.Utilities;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using Zenject;
@@ -12,12 +13,11 @@ namespace LocalLeaderboard.UI.ViewControllers
 {
     [HotReload(RelativePathToLayout = @"../Views/PanelView.bsml")]
     [ViewDefinition("LocalLeaderboard.UI.Views.PanelView.bsml")]
-    internal class PanelView : BSMLAutomaticViewController
+    public class PanelView : BSMLAutomaticViewController
     {
         private const float _skew = 0.18f;
         private bool isRainbowCoroutineRunning = false;
         private Coroutine rainbowCoroutine;
-
         public bool uwu
         {
             get => SettingsConfig.Instance.rainbowsuwu;
@@ -27,7 +27,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         private float hueIncrement = 0.001f;
 
         private ImageView _background;
-        private ImageView _imgView;
+        public ImageView _imgView;
 
         [UIComponent("container")]
         private Backgroundable _container;
@@ -78,60 +78,39 @@ namespace LocalLeaderboard.UI.ViewControllers
         protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
             base.DidActivate(firstActivation, addedToHierarchy, screenSystemEnabling);
-            if (uwu)
+            if (firstActivation)
             {
-                rainbowCoroutine = StartCoroutine(RainbowCoroutine());
+                this.gameObject.AddComponent<RainbowGradientUpdater>();
             }
         }
 
         protected override void DidDeactivate(bool removedFromHierarchy, bool screenSystemDisabling)
         {
             base.DidDeactivate(removedFromHierarchy, screenSystemDisabling);
-            if (rainbowCoroutine != null)
-            {
-                StopCoroutine(rainbowCoroutine);
-            }
         }
 
         public void toggleRainbow(bool value)
         {
             uwu = value;
-            if (uwu)
+
+            if (!uwu)
             {
-                if (rainbowCoroutine == null)
+                // Destroy the RainbowGradientUpdater component if uwu is false
+                RainbowGradientUpdater rainbowUpdater = GetComponent<RainbowGradientUpdater>();
+                if (rainbowUpdater != null)
                 {
-                    rainbowCoroutine = StartCoroutine(RainbowCoroutine());
+                    Destroy(rainbowUpdater);
+                    _imgView.color = new Color(0.156f, 0.69f, 0.46666f, 1);
+                    _imgView.SetVerticesDirty();
                 }
             }
             else
             {
-                if (rainbowCoroutine != null)
+                // Add the RainbowGradientUpdater component if uwu is true
+                if (GetComponent<RainbowGradientUpdater>() == null)
                 {
-                    StopCoroutine(rainbowCoroutine);
-                    rainbowCoroutine = null;
+                    this.gameObject.AddComponent<RainbowGradientUpdater>();
                 }
-                // Set the image color back to its default value
-                _imgView.color = new Color(0.156f, 0.69f, 0.46666f, 1);
-                _imgView.SetVerticesDirty();
-            }
-        }
-
-        private System.Collections.IEnumerator RainbowCoroutine()
-        {
-            if (!lb.UserIsPatron) yield break;
-            while (true)
-            {
-                hue += hueIncrement;
-                if (hue > 1f)
-                {
-                    hue -= 1f;
-                }
-
-                Color newColor = Color.HSVToRGB(hue, 1f, 1f);
-                _imgView.color = newColor;
-                _imgView.SetVerticesDirty();
-
-                yield return null;
             }
         }
 
@@ -141,6 +120,37 @@ namespace LocalLeaderboard.UI.ViewControllers
             lb.showModal();
         }
 
+    }
 
+    public class RainbowGradientUpdater : MonoBehaviour
+    {
+        public float speed = 0.18f; // Speed at which the gradient changes
+
+        private MeshRenderer meshRenderer;
+        private float hue;
+        private PanelView panelView;
+        private LeaderboardView leaderboardView;
+        private ImageView _imgView;
+
+        private void Start()
+        {
+            panelView = Resources.FindObjectsOfTypeAll<PanelView>().FirstOrDefault();
+            leaderboardView = Resources.FindObjectsOfTypeAll<LeaderboardView>().FirstOrDefault();
+        }
+
+        private void FixedUpdate()
+        {
+            if (!panelView.uwu) return;
+            if (!leaderboardView.UserIsPatron) return;
+            hue += speed * Time.deltaTime;
+            if (hue > 1f)
+            {
+                hue -= 1f;
+            }
+
+            Color color = Color.HSVToRGB(hue, 1f, 1f);
+            panelView._imgView.color = color;
+            panelView._imgView.SetVerticesDirty();
+        }
     }
 }
