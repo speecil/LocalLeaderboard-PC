@@ -58,7 +58,14 @@ namespace LocalLeaderboard.UI
 
         public void setScoreModalText(LLeaderboardEntry entry)
         {
-            dateScoreText.text = $"Date set: <size=6><color=#28b077>{entry.datePlayed}</color></size>";
+            string formattedDate = "Error";
+            if (long.TryParse(entry.datePlayed, out long unixTimestamp))
+            {
+                DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(unixTimestamp);
+                DateTime datePlayed = dateTimeOffset.LocalDateTime;
+                string format = SettingsConfig.Instance.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt";
+                dateScoreText.text = string.Format("Date set: <size=6><color=#28b077>{0}</color></size>", datePlayed.ToString(format));
+            }
             accScoreText.text = $"Accuracy: <size=6><color=#ffd42a>{entry.acc.ToString("F2")}%</color></size>";
             scoreScoreText.text = $"Score: <size=6>{entry.score}</size>";
             modifiersScoreText.text = $"Mods: <size=5>{entry.mods}</size>";

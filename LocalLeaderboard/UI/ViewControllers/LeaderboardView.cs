@@ -231,10 +231,10 @@ namespace LocalLeaderboard.UI.ViewControllers
             if (firstActivation)
             {
                 origPos = header.transform.localPosition;
-                _playerService.GetPatreonStatus((isPatron, playerName, username) =>
+                _playerService.GetPatreonStatus((isPatron, playerID, username) =>
                 {
                     UserIsPatron = isPatron;
-                    headerText.text = username.ToUpper() + "'S LEADERBOARD";
+                    if (isPatron) headerText.text = username.ToUpper() + "'S LEADERBOARD";
                     uwuToggle.SetActive(isPatron);
                     if (isPatron) Plugin.Log.Info("USER IS PATRON (tysm)");
                 });
