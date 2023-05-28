@@ -31,7 +31,7 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         private bool Ascending = true;
         public static LLeaderboardEntry[] buttonEntryArray = new LLeaderboardEntry[10];
-        private bool UserIsPatron = false;
+        public bool UserIsPatron = false;
 
         SettingsConfig config = SettingsConfig.Instance;
 

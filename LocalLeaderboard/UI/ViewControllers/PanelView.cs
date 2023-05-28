@@ -121,6 +121,7 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         private System.Collections.IEnumerator RainbowCoroutine()
         {
+            if (!lb.UserIsPatron) yield break;
             while (true)
             {
                 hue += hueIncrement;
