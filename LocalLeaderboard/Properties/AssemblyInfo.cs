@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("LocalLeaderboard")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A Beat Saber mod which allows you to view data from set plays")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Speecil")]
 [assembly: AssemblyProduct("LocalLeaderboard")]
 [assembly: AssemblyCopyright("Copyright ©  2023")]
 [assembly: AssemblyTrademark("")]
