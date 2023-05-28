@@ -1,9 +1,9 @@
-﻿using Tweening;
-using Zenject;
-using UnityEngine;
-using TMPro;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using TMPro;
+using Tweening;
+using UnityEngine;
+using Zenject;
 
 namespace LocalLeaderboard.Services
 {

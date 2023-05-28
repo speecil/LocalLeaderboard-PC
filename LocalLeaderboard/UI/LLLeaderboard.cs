@@ -1,7 +1,6 @@
 ﻿using HMUI;
 using LeaderboardCore.Managers;
 using LeaderboardCore.Models;
-using LeaderboardCore;
 using LocalLeaderboard.UI.ViewControllers;
 using System;
 

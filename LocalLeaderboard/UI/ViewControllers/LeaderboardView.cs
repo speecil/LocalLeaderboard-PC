@@ -1,6 +1,4 @@
-﻿using BeatLeader.Models.Replay;
-using BeatLeader;
-using BeatSaberMarkupLanguage;
+﻿using BeatSaberMarkupLanguage;
 using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Components;
 using BeatSaberMarkupLanguage.Parser;
@@ -10,28 +8,15 @@ using IPA.Utilities;
 using IPA.Utilities.Async;
 using LeaderboardCore.Interfaces;
 using LocalLeaderboard.Services;
-using ModestTree;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
-using static LeaderboardTableView;
 using LLeaderboardEntry = LocalLeaderboard.LeaderboardData.LeaderboardData.LeaderboardEntry;
-using Transform = UnityEngine.Transform;
-using Vector3 = UnityEngine.Vector3;
-using BeatLeader.Utils;
-using System.Reflection;
-using LocalLeaderboard.Services;
-using BeatLeader.Models;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Threading;
+using ScoreData = LeaderboardTableView.ScoreData;
 
 namespace LocalLeaderboard.UI.ViewControllers
 {
@@ -39,15 +24,14 @@ namespace LocalLeaderboard.UI.ViewControllers
     [ViewDefinition("LocalLeaderboard.UI.Views.LeaderboardView.bsml")]
     internal class LeaderboardView : BSMLAutomaticViewController, INotifyLeaderboardSet
     {
+        [Inject] private PanelView _panelView;
+        [Inject] private PlatformLeaderboardViewController _plvc;
+        [Inject] private TweeningService _tweeningService;
+        [Inject] private PlayerService _playerService;
+
         private bool Ascending = true;
-        private PanelView _panelView;
-        private PlatformLeaderboardViewController _plvc;
-        private TweeningService _tweeningService;
-        private LLeaderboardEntry[] buttonEntryArray = new LLeaderboardEntry[10];
-        private BeatLeader.Replayer.ReplayerMenuLoader _replayerMenuLoader;
-        private BeatLeader.Replayer.ReplayerLauncher _replayerLauncher;
-        private BeatLeader.Models.Replay.Replay _replay;
-        private bool UserIsPatron = false;
+        public static LLeaderboardEntry[] buttonEntryArray = new LLeaderboardEntry[10];
+        public bool UserIsPatron = false;
 
         SettingsConfig config = SettingsConfig.Instance;
 
@@ -89,148 +73,41 @@ namespace LocalLeaderboard.UI.ViewControllers
         [UIComponent("retryButton")]
         private Button retryButton;
 
-        [UIComponent("watchReplayButton")]
-        private Button watchReplayButton;
-
-        private static readonly string ReplaysFolderPath = Environment.CurrentDirectory + "\\UserData\\BeatLeader\\Replays\\";
-
-        void setScoreModalText(int pos)
-        {
-            dateScoreText.text = $"Date set: <size=6><color=#28b077>{buttonEntryArray[pos].datePlayed}</color></size>";
-            accScoreText.text = $"Accuracy: <size=6><color=#ffd42a>{buttonEntryArray[pos].acc.ToString("F2")}%</color></size>";
-            scoreScoreText.text = $"Score: <size=6>{buttonEntryArray[pos].score}</size>";
-            modifiersScoreText.text = $"Mods: <size=5>{buttonEntryArray[pos].mods}</size>";
-            
-            if (buttonEntryArray[pos].mods.IsEmpty()) modifiersScoreText.gameObject.SetActive(false);
-            else modifiersScoreText.gameObject.SetActive(true);
-
-            if (buttonEntryArray[pos].fullCombo) fcScoreText.text = "<color=green>Full Combo</color>";
-            else fcScoreText.text = string.Format("Mistakes: <size=6><color=red>{0}</color></size>", buttonEntryArray[pos].badCutCount + buttonEntryArray[pos].missCount);
-
-            failScoreText.gameObject.SetActive(buttonEntryArray[pos].didFail);
-            avgHitscoreScoreText.text = $"Average Hitscore: <size=6>{buttonEntryArray[pos].averageHitscore}</size>";
-            maxComboScoreText.text = $"Max Combo: <size=6>{buttonEntryArray[pos].maxCombo}</size>";
-            parserParams.EmitEvent("showScoreInfo");
-            currentModalView = buttonEntryArray[pos];
-
-            if (File.Exists(ReplaysFolderPath + buttonEntryArray[pos].bsorPath)) watchReplayButton.interactable = true;
-            else watchReplayButton.interactable = false;
-        }
-
-        private LLeaderboardEntry currentModalView;
-
-        [UIAction("replayStart")]
-        void replayStart() => silly(currentModalView);
-
-        private void silly(LLeaderboardEntry leaderboardEntry)
-        {
-            Plugin.Log.Info("STARTING REPLAY");
-            string fileLocation = ReplaysFolderPath + leaderboardEntry.bsorPath;
-            Plugin.Log.Info(fileLocation);
-            if(TryReadReplay(fileLocation, out var replay1))
-            {
-                parserParams.EmitEvent("hideScoreInfo");
-                _replayerMenuLoader.StartReplayAsync(replay1, null, null);
-            }
-        }
-
-        public static bool TryReadReplay(string filename, out Replay replay)
-        {
-            try
-            {
-                if (File.Exists(filename))
-                {
-                    Stream stream = File.Open(filename, FileMode.Open);
-                    int arrayLength = (int)stream.Length;
-                    byte[] buffer = new byte[arrayLength];
-                    stream.Read(buffer, 0, arrayLength);
-                    stream.Close();
-
-                    var method = typeof(BeatLeader.Plugin).Assembly.GetType("BeatLeader.Models.Replay.ReplayDecoder").GetMethod("Decode", BindingFlags.Public | BindingFlags.Static);
-                    replay = (Replay)method.Invoke(null, new object[] { buffer });
-
-                    return true;
-                }
-            }
-            catch (Exception e)
-            {
-                Plugin.Log.Debug(e);
-            }
-
-            replay = default;
-            return false;
-        }
-
-
-
-        [UIComponent("dateScoreText")]
-        private TextMeshProUGUI dateScoreText;
-
-        [UIComponent("accScoreText")]
-        private TextMeshProUGUI accScoreText;
-
-        [UIComponent("scoreScoreText")]
-        private TextMeshProUGUI scoreScoreText;
-
-        [UIComponent("fcScoreText")]
-        private TextMeshProUGUI fcScoreText;
-
-        [UIComponent("failScoreText")]
-        private TextMeshProUGUI failScoreText;
-
-        [UIComponent("avgHitscoreScoreText")]
-        private TextMeshProUGUI avgHitscoreScoreText;
-
-        [UIComponent("maxComboScoreText")]
-        private TextMeshProUGUI maxComboScoreText;
-
-        [UIComponent("modifiersScoreText")]
-        private TextMeshProUGUI modifiersScoreText;
+        [UIObject("uwuToggle")]
+        private GameObject uwuToggle;
 
         [UIComponent("infoModal")]
         private ModalView infoModal;
 
-        [UIObject("uwuToggle")]
-        private GameObject uwuToggle;
-
-        private List<ButtonHolder> _holders = null;
-
         [UIValue("buttonHolders")]
-        private List<ButtonHolder> holders => _holders ?? (_holders = Enumerable.Range(0, 10).Select(x => new ButtonHolder(x, setScoreModalText)).ToList());
+        [Inject] private List<ButtonHolder> holders;
+
+        [UIComponent("scoreInfoModal")]
+        [Inject] private ScoreInfoModal scoreInfoModal;
 
         [UIParams]
-        BSMLParserParams parserParams = null;
+        BSMLParserParams parserParams;
 
         public int page = 0;
         public int totalPages;
         public int sortMethod;
 
         [UIAction("OnPageUp")]
-        private void OnPageUp()
-        {
-            if (page > 0)
-            {
-                page--;
-                UpdatePageButtons();
-            }
-            OnLeaderboardSet(currentDifficultyBeatmap);
-        }
+        private void OnPageUp() => UpdatePageChanged(-1);
 
         [UIAction("OnPageDown")]
-        private void OnPageDown()
-        {
-            if (page < totalPages - 1)
-            {
-                page++;
-                UpdatePageButtons();
-            }
-            OnLeaderboardSet(currentDifficultyBeatmap);
-        }
+        private void OnPageDown() => UpdatePageChanged(1);
 
         private void UpdatePageButtons()
         {
             up_button.interactable = (page > 0);
             down_button.interactable = (page < totalPages - 1);
+        }
+
+        private void UpdatePageChanged(int inc)
+        {
+            page = Mathf.Clamp(page + inc, 0, totalPages - 1);
+            OnLeaderboardSet(currentDifficultyBeatmap);
         }
 
         [UIAction("changeSort")]
@@ -239,7 +116,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             sorter.gameObject.SetActive(true);
             if (!sorter.gameObject.activeSelf) return;
 
-            _tweeningService.RotateTransform(sorter.GetComponentInChildren<ImageView>().transform, 180f, 0.1f,  () =>
+            _tweeningService.RotateTransform(sorter.GetComponentInChildren<ImageView>().transform, 180f, 0.1f, () =>
             {
                 Ascending = !Ascending;
                 UnityMainThreadTaskScheduler.Factory.StartNew(() => OnLeaderboardSet(currentDifficultyBeatmap));
@@ -265,57 +142,33 @@ namespace LocalLeaderboard.UI.ViewControllers
         [UIValue("dateoption")]
         private bool dateoption
         {
-            get
-            {
-                return config.BurgerDate;
-            }
+            get => config.BurgerDate;
             set
             {
-                if(config.BurgerDate == value) return; //  fuckery that makes it work dont remove
-                config.BurgerDate = value;
+                config.BurgerDate = value; // fuck you i removed the line cope
+                OnLeaderboardSet(currentDifficultyBeatmap);
             }
         }
 
         [UIValue("PatreonCheck")]
-        private bool PatreonCheck
-        {
-            get
-            {
-                return UserIsPatron;
-            }
-        }
+        private bool PatreonCheck => UserIsPatron;
 
         [UIValue("rainbowsuwu")]
         private bool rainbowsuwu
         {
-            get
-            {
-                return config.rainbowsuwu;
-            }
+            get => config.rainbowsuwu;
             set
             {
                 config.rainbowsuwu = value;
+                _panelView.toggleRainbow(config.rainbowsuwu);
             }
-        }
-
-        [UIAction("ToggleRainbow")]
-        public void ToggleRainbow(bool silly)
-        {
-            _panelView.toggleRainbow(silly);
-        }
-
-        [UIAction("BurgerChanged")]
-        public void SettingsChanged(bool silly)
-        {
-            dateoption = silly; // more fuckery that makes it work because bsml is a bitch
-            OnLeaderboardSet(currentDifficultyBeatmap);
         }
 
         public void showModal()
         {
             parserParams.EmitEvent("hideSettings");
-            parserParams.EmitEvent("hideScoreInfo");
             parserParams.EmitEvent("showInfoModal");
+            scoreInfoModal.parserParams.EmitEvent("hideScoreInfo");
             infoModal.StartCoroutine(setcolor(websiteButton));
             infoModal.StartCoroutine(setcolor(discordButton));
             infoModal.StartCoroutine(setcolor(patreonButton));
@@ -350,7 +203,6 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         private ImageView _imgView;
         private GameObject _loadingControl;
-        private ImageView _imgView2;
 
         [UIAction("#post-parse")]
         private void PostParse()
@@ -371,16 +223,6 @@ namespace LocalLeaderboard.UI.ViewControllers
             ImageGradient(ref _imgView) = true;
         }
 
-        [Inject]
-        public void Inject(TweeningService tweeningService, PanelView panel, PlatformLeaderboardViewController plvc, BeatLeader.Replayer.ReplayerMenuLoader replayerMenuLoader, BeatLeader.Replayer.ReplayerLauncher replayerLauncher)
-        {
-            _tweeningService = tweeningService;
-            _panelView = panel;
-            _plvc = plvc;
-            _replayerMenuLoader = replayerMenuLoader;
-            _replayerLauncher = replayerLauncher;
-        }
-
         private static Vector3 origPos;
         protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
@@ -392,8 +234,13 @@ namespace LocalLeaderboard.UI.ViewControllers
             if (firstActivation)
             {
                 origPos = header.transform.localPosition;
-                Thread thread = new Thread(() => GetPatreonStatus());
-                thread.Start();
+                _playerService.GetPatreonStatus((isPatron, playerID, username) =>
+                {
+                    UserIsPatron = isPatron;
+                    if (isPatron) headerText.text = username.ToUpper() + "'S LEADERBOARD";
+                    uwuToggle.SetActive(isPatron);
+                    if (isPatron) Plugin.Log.Info("USER IS PATRON (tysm)");
+                });
             }
             header.transform.localPosition = new Vector3(-999, -999, -999);
         }
@@ -407,56 +254,9 @@ namespace LocalLeaderboard.UI.ViewControllers
             header.transform.localPosition = origPos;
             page = 0;
             parserParams.EmitEvent("hideInfoModal");
-            parserParams.EmitEvent("hideScoreInfo");
+            scoreInfoModal.parserParams.EmitEvent("hideScoreInfo");
             parserParams.EmitEvent("hideSettings");
         }
-
-        public void GetPatreonStatus()
-        {
-            string playerID = string.Empty;
-
-            if (File.Exists(Path.Combine(UnityGame.InstallPath, "Beat Saber_Data", "Plugins", "x86_64", "steam_api64.dll")))
-            {
-                //Steamworks.CSteamID steamID = Steamworks.SteamUser.GetSteamID();
-                //string playerId = steamID.m_SteamID.ToString();
-            }
-            else
-            {
-                Oculus.Platform.Users.GetLoggedInUser().OnComplete(async user =>
-                {
-                    playerID = user.Data.OculusID;
-                    using (var client = new HttpClient())
-                    {
-                        try
-                        {
-                            string patronListUrl = "https://raw.githubusercontent.com/speecil/Patrons/main/patrons.txt";
-                            string patronList = await client.GetStringAsync(patronListUrl);
-                            string[] patrons = patronList.Split(new[] { "," }, StringSplitOptions.None);
-                            foreach (var patron in patrons)
-                            {
-                                if (patron.Contains(playerID))
-                                {
-                                    UserIsPatron = true;
-                                    Plugin.Log.Info("USER IS PATRON (tysm)");
-                                    headerText.text = playerID.ToUpper() + "'S LEADERBOARD";
-                                    uwuToggle.SetActive(true);
-                                }
-                                else
-                                {
-                                    uwuToggle.SetActive(false);
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Plugin.Log.Error("Failed to download the patron list!");
-                        }
-                    }
-                });
-            }
-            Thread.CurrentThread.Join();
-        }
-
 
         void RichMyText(LeaderboardTableView tableView)
         {
@@ -518,12 +318,10 @@ namespace LocalLeaderboard.UI.ViewControllers
             string balls = mapType + difficulty.ToString();
             List<LLeaderboardEntry> leaderboardEntries = LeaderboardData.LeaderboardData.LoadBeatMapInfo(mapId, balls);
 
-
             totalPages = Mathf.CeilToInt((float)leaderboardEntries.Count / 10);
 
             try
             {
-
                 FuckOffButtons();
                 UpdatePageButtons();
                 SortLeaderboardEntries(leaderboardEntries);
@@ -533,7 +331,7 @@ namespace LocalLeaderboard.UI.ViewControllers
                 if (leaderboardEntries.Count > 0) HandleLeaderboardEntriesExistence(leaderboardEntries);
                 else HandleNoLeaderboardEntries();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Plugin.Log.Error(ex);
                 errorText.gameObject.SetActive(true);
@@ -619,7 +417,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         {
             foreach (LeaderboardTableCell cell in tableView.GetComponentsInChildren<LeaderboardTableCell>())
             {
-                if (!(cell.gameObject.activeSelf && leaderboardTransform.gameObject.activeSelf)) continue; 
+                if (!(cell.gameObject.activeSelf && leaderboardTransform.gameObject.activeSelf)) continue;
                 _tweeningService.FadeText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_playerNameText"), false, 0.4f);
                 _tweeningService.FadeText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_rankText"), false, 0.4f);
                 _tweeningService.FadeText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_scoreText"), false, 0.4f);
@@ -656,7 +454,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             string formattedCombo = "";
             if (entry.fullCombo) formattedCombo = " -<color=green> FC </color>";
             else formattedCombo = string.Format(" - <color=red>x{0} </color>", entry.badCutCount + entry.missCount);
-            
+
             string formattedMods = string.Format("  <size=60%>{0}</size>", entry.mods);
 
             string result = "<size=100%>" + formattedDate + formattedAcc + formattedCombo + formattedMods + "</size>";
@@ -667,9 +465,9 @@ namespace LocalLeaderboard.UI.ViewControllers
         internal class ButtonHolder
         {
             private int index;
-            private Action<int> onClick;
+            private Action<LLeaderboardEntry> onClick;
 
-            public ButtonHolder(int index, Action<int> endmylife)
+            public ButtonHolder(int index, Action<LLeaderboardEntry> endmylife)
             {
                 this.index = index;
                 onClick = endmylife;
@@ -679,7 +477,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             public Button infoButton;
 
             [UIAction("infoClick")]
-            private void infoClick() => onClick?.Invoke(index);
+            private void infoClick() => onClick?.Invoke(buttonEntryArray[index]);
         }
     }
 }

@@ -1,12 +1,10 @@
-﻿using LocalLeaderboard.UI.ViewControllers;
+﻿using LocalLeaderboard.Services;
 using LocalLeaderboard.UI;
-using System;
+using LocalLeaderboard.UI.ViewControllers;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Zenject;
-using LocalLeaderboard.Services;
+using ButtonHolder = LocalLeaderboard.UI.ViewControllers.LeaderboardView.ButtonHolder;
 
 namespace LocalLeaderboard.Installers
 {
@@ -18,6 +16,14 @@ namespace LocalLeaderboard.Installers
             Container.BindInterfacesAndSelfTo<PanelView>().FromNewComponentAsViewController().AsSingle();
             Container.BindInterfacesTo<LLLeaderboard>().AsSingle();
             Container.Bind<TweeningService>().AsSingle();
+            Container.Bind<ReplayService>().AsSingle();
+            Container.Bind<PlayerService>().AsSingle();
+
+            ScoreInfoModal scoreInfoModal = new ScoreInfoModal();
+            List<ButtonHolder> holder = Enumerable.Range(0, 10).Select(x => new ButtonHolder(x, scoreInfoModal.setScoreModalText)).ToList();
+            Container.Bind<ScoreInfoModal>().FromInstance(scoreInfoModal).AsSingle().WhenInjectedInto<LeaderboardView>();
+            Container.Bind<List<ButtonHolder>>().FromInstance(holder).AsSingle().WhenInjectedInto<LeaderboardView>();
+            Container.QueueForInject(scoreInfoModal);
         }
     }
 }
