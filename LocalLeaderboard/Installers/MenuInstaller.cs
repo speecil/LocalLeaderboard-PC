@@ -21,8 +21,8 @@ namespace LocalLeaderboard.Installers
 
             ScoreInfoModal scoreInfoModal = new ScoreInfoModal();
             List<ButtonHolder> holder = Enumerable.Range(0, 10).Select(x => new ButtonHolder(x, scoreInfoModal.setScoreModalText)).ToList();
-            Container.Bind<ScoreInfoModal>().FromInstance(scoreInfoModal).AsSingle();
-            Container.Bind<List<ButtonHolder>>().FromInstance(holder).AsSingle();
+            Container.Bind<ScoreInfoModal>().FromInstance(scoreInfoModal).WhenInjectedInto<LeaderboardView>();
+            Container.Bind<List<ButtonHolder>>().FromInstance(holder).WhenInjectedInto<LeaderboardView>();
         }
     }
 }

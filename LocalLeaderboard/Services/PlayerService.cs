@@ -28,17 +28,16 @@ namespace LocalLeaderboard.Services
             return taskCompletionSource.Task;
         }
 
-        public void GetPatreonStatus(Action<bool, string> callback)
+        private async void GetPatreonStatusAsync(Action<bool, string> callback)
         {
-            new Thread(async () =>
-            {
-                string playerName = await GetPlayerName();
-                string patronListUrl = "https://raw.githubusercontent.com/speecil/Patrons/main/patrons.txt";
-                string patronList = await new HttpClient().GetStringAsync(patronListUrl);
-                string[] patrons = patronList.Split(',');
-                bool isPatron = patrons.Contains(playerName);
-                await UnityMainThreadTaskScheduler.Factory.StartNew(() => callback(isPatron, playerName));
-            }).Start();
+            string playerName = await GetPlayerName();
+            string patronListUrl = "https://raw.githubusercontent.com/speecil/Patrons/main/patrons.txt";
+            string patronList = await new HttpClient().GetStringAsync(patronListUrl);
+            string[] patrons = patronList.Split(',');
+            bool isPatron = patrons.Contains(playerName);
+            await UnityMainThreadTaskScheduler.Factory.StartNew(() => callback(isPatron, playerName));
         }
+
+        public void GetPatreonStatus(Action<bool, string> callback) => Task.Run(() => GetPatreonStatusAsync(callback));
     }
 }
