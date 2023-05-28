@@ -33,7 +33,6 @@ namespace LocalLeaderboard.Services
             (string playerID, string username) = await GetPlayerInfo();
             string patronListUrl = "https://raw.githubusercontent.com/speecil/Patrons/main/patrons.txt";
 
-            // Append a timestamp query parameter to the URL
             string timestamp = DateTime.UtcNow.Ticks.ToString();
             patronListUrl += "?timestamp=" + timestamp;
 

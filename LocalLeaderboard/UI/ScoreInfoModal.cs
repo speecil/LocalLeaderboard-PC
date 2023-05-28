@@ -6,8 +6,10 @@ using HMUI;
 using LocalLeaderboard.Services;
 using ModestTree;
 using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
+using static UnityEngine.EventSystems.EventTrigger;
 using LLeaderboardEntry = LocalLeaderboard.LeaderboardData.LeaderboardData.LeaderboardEntry;
 
 
@@ -52,7 +54,6 @@ namespace LocalLeaderboard.UI
         public BSMLParserParams parserParams;
 
         [Inject] ReplayService _replayService;
-
         private static readonly string ReplaysFolderPath = Environment.CurrentDirectory + "\\UserData\\BeatLeader\\Replays\\";
         LLeaderboardEntry currentEntry;
 
@@ -93,8 +94,21 @@ namespace LocalLeaderboard.UI
             Plugin.Log.Info(fileLocation);
             if (_replayService.TryReadReplay(fileLocation, out var replay1))
             {
+                BeatLeader.Models.Player player = new BeatLeader.Models.Player();
+                player.avatar = "https://raw.githubusercontent.com/speecil/Patrons/main/Untitled%20design%20(16).png";
+                player.country = "AUS";
+                player.pp = 1;
+                player.rank = 1;
+                if (long.TryParse(leaderboardEntry.datePlayed, out long unixTimestamp))
+                {
+                    DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(unixTimestamp);
+                    DateTime datePlayed = dateTimeOffset.LocalDateTime;
+                    string format = SettingsConfig.Instance.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt";
+                    player.name = string.Format("You   Date: {0}", datePlayed.ToString(format));
+                }
                 parserParams.EmitEvent("hideScoreInfo");
-                _replayService.StartReplay(replay1);
+                _replayService.StartReplay(replay1, player);
+                //GameObject.Find("Replayer2DViewControllerScreen/Replayer2DViewController/BSMLHorizontalLayoutGroup/BSMLVerticalLayoutGroup/BSMLVerticalLayoutGroup/BSMLVerticalLayoutGroup/BSMLHorizontalLayoutGroup/BSMLVerticalLayoutGroup/BSMLHorizontalLayoutGroup/BSMLVerticalLayoutGroup/BSMLHorizontalLayoutGroup/BSMLText").GetComponent<TextMeshProUGUI>().richText = true;
             }
         }
     }

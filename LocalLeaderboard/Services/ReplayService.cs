@@ -37,6 +37,6 @@ namespace LocalLeaderboard.Services
             return false;
         }
 
-        public void StartReplay(Replay replay) => _replayerMenuLoader.StartReplayAsync(replay, null, null);
+        public void StartReplay(Replay replay, BeatLeader.Models.Player player) => _replayerMenuLoader.StartReplayAsync(replay, player, null);
     }
 }
