@@ -1,12 +1,8 @@
-﻿using LocalLeaderboard.Installers;
-using IPA;
-using SiraUtil.Zenject;
-using Zenject;
-using IPALogger = IPA.Logging.Logger;
-using System.Runtime.InteropServices;
+﻿using IPA;
 using IPA.Config.Stores;
-using IPA.Config;
-using LocalLeaderboard;
+using LocalLeaderboard.Installers;
+using SiraUtil.Zenject;
+using IPALogger = IPA.Logging.Logger;
 namespace LocalLeaderboard
 {
     [NoEnableDisable]

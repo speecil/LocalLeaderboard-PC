@@ -1,9 +1,9 @@
-﻿using LocalLeaderboard.UI.ViewControllers;
+﻿using LocalLeaderboard.Services;
 using LocalLeaderboard.UI;
-using Zenject;
-using LocalLeaderboard.Services;
+using LocalLeaderboard.UI.ViewControllers;
 using System.Collections.Generic;
 using System.Linq;
+using Zenject;
 using ButtonHolder = LocalLeaderboard.UI.ViewControllers.LeaderboardView.ButtonHolder;
 
 namespace LocalLeaderboard.Installers

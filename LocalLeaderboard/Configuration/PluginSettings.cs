@@ -1,6 +1,5 @@
 ﻿using IPA.Config.Stores;
 using System.Runtime.CompilerServices;
-using UnityEngine;
 
 [assembly: InternalsVisibleTo(GeneratedStore.AssemblyVisibilityTarget)]
 namespace LocalLeaderboard
@@ -18,7 +17,7 @@ namespace LocalLeaderboard
 
         public void ApplyValues()
         {
-            
+
         }
     }
 }

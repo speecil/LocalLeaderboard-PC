@@ -15,8 +15,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
-using ScoreData = LeaderboardTableView.ScoreData;
 using LLeaderboardEntry = LocalLeaderboard.LeaderboardData.LeaderboardData.LeaderboardEntry;
+using ScoreData = LeaderboardTableView.ScoreData;
 
 namespace LocalLeaderboard.UI.ViewControllers
 {
@@ -116,7 +116,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             sorter.gameObject.SetActive(true);
             if (!sorter.gameObject.activeSelf) return;
 
-            _tweeningService.RotateTransform(sorter.GetComponentInChildren<ImageView>().transform, 180f, 0.1f,  () =>
+            _tweeningService.RotateTransform(sorter.GetComponentInChildren<ImageView>().transform, 180f, 0.1f, () =>
             {
                 Ascending = !Ascending;
                 UnityMainThreadTaskScheduler.Factory.StartNew(() => OnLeaderboardSet(currentDifficultyBeatmap));
@@ -331,7 +331,7 @@ namespace LocalLeaderboard.UI.ViewControllers
                 if (leaderboardEntries.Count > 0) HandleLeaderboardEntriesExistence(leaderboardEntries);
                 else HandleNoLeaderboardEntries();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Plugin.Log.Error(ex);
                 errorText.gameObject.SetActive(true);
@@ -417,7 +417,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         {
             foreach (LeaderboardTableCell cell in tableView.GetComponentsInChildren<LeaderboardTableCell>())
             {
-                if (!(cell.gameObject.activeSelf && leaderboardTransform.gameObject.activeSelf)) continue; 
+                if (!(cell.gameObject.activeSelf && leaderboardTransform.gameObject.activeSelf)) continue;
                 _tweeningService.FadeText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_playerNameText"), false, 0.4f);
                 _tweeningService.FadeText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_rankText"), false, 0.4f);
                 _tweeningService.FadeText(cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_scoreText"), false, 0.4f);
@@ -454,7 +454,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             string formattedCombo = "";
             if (entry.fullCombo) formattedCombo = " -<color=green> FC </color>";
             else formattedCombo = string.Format(" - <color=red>x{0} </color>", entry.badCutCount + entry.missCount);
-            
+
             string formattedMods = string.Format("  <size=60%>{0}</size>", entry.mods);
 
             string result = "<size=100%>" + formattedDate + formattedAcc + formattedCombo + formattedMods + "</size>";

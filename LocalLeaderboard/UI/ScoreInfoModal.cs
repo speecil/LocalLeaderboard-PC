@@ -1,15 +1,13 @@
-﻿using System;
-using System.IO;
-using BeatSaberMarkupLanguage.Attributes;
+﻿using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Parser;
 using HMUI;
 using LocalLeaderboard.Services;
 using ModestTree;
+using System;
+using System.IO;
 using TMPro;
-using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
-using static UnityEngine.EventSystems.EventTrigger;
 using LLeaderboardEntry = LocalLeaderboard.LeaderboardData.LeaderboardData.LeaderboardEntry;
 
 
