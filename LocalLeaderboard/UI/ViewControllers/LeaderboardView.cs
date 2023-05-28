@@ -76,6 +76,9 @@ namespace LocalLeaderboard.UI.ViewControllers
         [UIObject("uwuToggle")]
         private GameObject uwuToggle;
 
+        [UIComponent("infoModal")]
+        private ModalView infoModal;
+
         [UIValue("buttonHolders")]
         [Inject] private List<ButtonHolder> holders;
 
@@ -166,9 +169,9 @@ namespace LocalLeaderboard.UI.ViewControllers
             parserParams.EmitEvent("hideSettings");
             parserParams.EmitEvent("showInfoModal");
             scoreInfoModal.parserParams.EmitEvent("hideScoreInfo");
-            scoreInfoModal.infoModal.StartCoroutine(setcolor(websiteButton));
-            scoreInfoModal.infoModal.StartCoroutine(setcolor(discordButton));
-            scoreInfoModal.infoModal.StartCoroutine(setcolor(patreonButton));
+            infoModal.StartCoroutine(setcolor(websiteButton));
+            infoModal.StartCoroutine(setcolor(discordButton));
+            infoModal.StartCoroutine(setcolor(patreonButton));
         }
 
         [UIAction("Retry")]
@@ -287,7 +290,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             var buttonText = button.transform.Find("Content/Text").gameObject.GetComponent<TextMeshProUGUI>();
             var bgColour = new Color(0.156f, 0.69f, 0.46666f, 1);
             var textColour = new Color(1f, 1f, 1f, 1);
-            while (scoreInfoModal.infoModal.gameObject.activeInHierarchy)
+            while (infoModal.gameObject.activeInHierarchy)
             {
                 bgImage.color0 = bgColour;
                 bgImage.color1 = bgColour;
