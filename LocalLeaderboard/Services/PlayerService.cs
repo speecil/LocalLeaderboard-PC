@@ -32,11 +32,26 @@ namespace LocalLeaderboard.Services
         {
             (string playerID, string username) = await GetPlayerInfo();
             string patronListUrl = "https://raw.githubusercontent.com/speecil/Patrons/main/patrons.txt";
-            string patronList = await new HttpClient().GetStringAsync(patronListUrl);
+
+            // Append a timestamp query parameter to the URL
+            string timestamp = DateTime.UtcNow.Ticks.ToString();
+            patronListUrl += "?timestamp=" + timestamp;
+
+            HttpClient httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.CacheControl = new System.Net.Http.Headers.CacheControlHeaderValue
+            {
+                NoCache = true
+            };
+
+            string patronList = await httpClient.GetStringAsync(patronListUrl);
             string[] patrons = patronList.Split(',');
             bool isPatron = patrons.Contains(playerID);
+
             await UnityMainThreadTaskScheduler.Factory.StartNew(() => callback(isPatron, playerID, username));
         }
+
+
+
 
         public void GetPatreonStatus(Action<bool, string, string> callback) => Task.Run(() => GetPatreonStatusAsync(callback));
     }
