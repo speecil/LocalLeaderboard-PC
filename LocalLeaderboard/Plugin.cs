@@ -14,6 +14,8 @@ namespace LocalLeaderboard
 
         public static bool UserIsPatron;
 
+        public static string userName;
+
         [Init]
         public Plugin(IPALogger logger, Zenjector zenjector, IPA.Config.Config conf)
         {
@@ -28,7 +30,6 @@ namespace LocalLeaderboard
         [OnEnable]
         public void OnEnable()
         {
-            SettingsConfig.Instance.ApplyValues();
         }
     }
 }

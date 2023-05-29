@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo(GeneratedStore.AssemblyVisibilityTarget)]
 namespace LocalLeaderboard
 {
-    internal class SettingsConfig
+    public class SettingsConfig
     {
         public static SettingsConfig Instance { get; set; }
 
@@ -12,12 +12,6 @@ namespace LocalLeaderboard
 
         public bool rainbowsuwu = false;
 
-
-        public virtual void Changed() => ApplyValues();
-
-        public void ApplyValues()
-        {
-
-        }
+        public bool nameHeaderToggle = false;
     }
 }

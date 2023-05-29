@@ -99,7 +99,8 @@
 					 pad='3'>
 					<text align='Top' font-size='5' bold='false' underlined='true' text='Settings'/>
 						<toggle-setting apply-on-change='true' text='American Dates' pref-width='45' value='dateoption' hover-hint='Save data using the terrible american date format'/>
-						<toggle-setting id='uwuToggle' apply-on-change='true' text='uwu mode :3' pref-width='45' value='rainbowsuwu' hover-hint='Hi patreon user, heres a fun lil thing'/>
+						<toggle-setting id='uwuToggle' apply-on-change='true' text='uwu mode :3' pref-width='45' value='rainbowsuwu' hover-hint='Hi patreon user, :3'/>
+						<toggle-setting id='nameHeaderToggle' apply-on-change='true' text='Name in header' pref-width='45' value='nameheaderoption' hover-hint='Hi patreon user, :3'/>
 				</vertical>
 			</modal>
 			<macro.as-host host='scoreInfoModal'>

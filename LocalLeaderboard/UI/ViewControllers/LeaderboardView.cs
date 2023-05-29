@@ -15,6 +15,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using LLeaderboardEntry = LocalLeaderboard.LeaderboardData.LeaderboardData.LeaderboardEntry;
 using ScoreData = LeaderboardTableView.ScoreData;
 
@@ -75,6 +76,9 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         [UIObject("uwuToggle")]
         private GameObject uwuToggle;
+
+        [UIObject("nameToggle")]
+        private GameObject nameToggle;
 
         [UIComponent("infoModal")]
         private ModalView infoModal;
@@ -164,6 +168,29 @@ namespace LocalLeaderboard.UI.ViewControllers
             }
         }
 
+        [UIValue("nameheaderoption")]
+        private bool nameheaderoption
+        {
+            get => config.nameHeaderToggle;
+            set
+            {
+                config.nameHeaderToggle = value;
+                setHeaderText(headerText, value);
+            }
+        }
+
+        void setHeaderText(TextMeshProUGUI text, bool patreon)
+        {
+            if (patreon && config.nameHeaderToggle)
+            {
+                text.text = Plugin.userName.ToUpper() + "'S LEADERBOARD";
+            }
+            else
+            {
+                text.text = "LOCAL LEADERBOARD";
+            }
+        }
+
         public void showModal()
         {
             parserParams.EmitEvent("hideSettings");
@@ -234,11 +261,15 @@ namespace LocalLeaderboard.UI.ViewControllers
             if (firstActivation)
             {
                 origPos = header.transform.localPosition;
+                Plugin.Log.Info("RIGHT BEFORE RUNNING PATREON SHIT");
                 _playerService.GetPatreonStatus((isPatron, playerID, username) =>
                 {
+                    Plugin.Log.Info("RUNNING PATREON SHIT");
+                    Plugin.userName = username;
                     UserIsPatron = isPatron;
-                    if (isPatron) headerText.text = username.ToUpper() + "'S LEADERBOARD";
+                    setHeaderText(headerText, isPatron);
                     uwuToggle.SetActive(isPatron);
+                    nameToggle.SetActive(isPatron);
                     if (isPatron) Plugin.Log.Info("USER IS PATRON (tysm)");
                 });
             }
@@ -457,8 +488,9 @@ namespace LocalLeaderboard.UI.ViewControllers
 
             string formattedMods = string.Format("  <size=60%>{0}</size>", entry.mods);
 
-            string result = "<size=100%>" + formattedDate + formattedAcc + formattedCombo + formattedMods + "</size>";
+            string result;
 
+            result = "<size=100%>" + formattedDate + formattedAcc + formattedCombo + formattedMods + "</size>";
             return new ScoreData(score, result, rank, false);
         }
 

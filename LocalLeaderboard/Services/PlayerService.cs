@@ -16,17 +16,19 @@ namespace LocalLeaderboard.Services
 
             if (File.Exists(Path.Combine(UnityGame.InstallPath, "Beat Saber_Data", "Plugins", "x86_64", "steam_api64.dll")))
             {
-                //Steamworks.SteamFriends.GetPersonaName();
-                taskCompletionSource.SetResult(("3033139560125578", "Speecil")); // i'm you now until you fix your references
+                Plugin.Log.Info("STEAM USER");
+                //var steamID = Steamworks.SteamUser.GetSteamID();
+                //var steamName = Steamworks.SteamFriends.GetPersonaName();
+                //taskCompletionSource.SetResult((steamID.ToString(), steamName));
             }
             else
             {
+                Plugin.Log.Info("OCULUS USER");
                 Oculus.Platform.Users.GetLoggedInUser().OnComplete(user => taskCompletionSource.SetResult((user.Data.ID.ToString(), user.Data.OculusID)));
             }
 
             return taskCompletionSource.Task;
         }
-
         private async void GetPatreonStatusAsync(Action<bool, string, string> callback)
         {
             (string playerID, string username) = await GetPlayerInfo();
@@ -47,10 +49,6 @@ namespace LocalLeaderboard.Services
 
             await UnityMainThreadTaskScheduler.Factory.StartNew(() => callback(isPatron, playerID, username));
         }
-
-
-
-
         public void GetPatreonStatus(Action<bool, string, string> callback) => Task.Run(() => GetPatreonStatusAsync(callback));
     }
 }
