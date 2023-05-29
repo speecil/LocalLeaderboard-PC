@@ -1,6 +1,7 @@
 ﻿using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Parser;
 using HMUI;
+using IPA.Loader;
 using LocalLeaderboard.Services;
 using ModestTree;
 using System;
@@ -51,7 +52,7 @@ namespace LocalLeaderboard.UI
         [UIParams]
         public BSMLParserParams parserParams;
 
-        [Inject] ReplayService _replayService;
+        [InjectOptional] ReplayService _replayService;
         private static readonly string ReplaysFolderPath = Environment.CurrentDirectory + "\\UserData\\BeatLeader\\Replays\\";
         LLeaderboardEntry currentEntry;
 
@@ -80,6 +81,8 @@ namespace LocalLeaderboard.UI
             maxComboScoreText.text = $"Max Combo: <size=6>{entry.maxCombo}</size>";
             parserParams.EmitEvent("showScoreInfo");
             currentEntry = entry;
+
+            if(!Plugin.beatLeaderInstalled) watchReplayButton.gameObject.SetActive(false);
 
             if (File.Exists(ReplaysFolderPath + entry.bsorPath)) watchReplayButton.interactable = true;
             else watchReplayButton.interactable = false;

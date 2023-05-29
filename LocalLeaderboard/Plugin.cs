@@ -1,7 +1,10 @@
 ﻿using IPA;
 using IPA.Config.Stores;
+using IPA.Loader;
 using LocalLeaderboard.Installers;
 using SiraUtil.Zenject;
+using System.Linq;
+using System.Reflection;
 using IPALogger = IPA.Logging.Logger;
 namespace LocalLeaderboard
 {
@@ -15,6 +18,8 @@ namespace LocalLeaderboard
         public static bool UserIsPatron;
 
         public static string userName;
+
+        public static bool beatLeaderInstalled;
 
         [Init]
         public Plugin(IPALogger logger, Zenjector zenjector, IPA.Config.Config conf)
@@ -30,6 +35,22 @@ namespace LocalLeaderboard
         [OnEnable]
         public void OnEnable()
         {
+            try
+            {
+                var method = typeof(BeatLeader.Plugin).Assembly.GetType("BeatLeader.Models.Replay.ReplayDecoder").GetMethod("Decode", BindingFlags.Public | BindingFlags.Static);
+                if(method != null)
+                {
+                    beatLeaderInstalled = true;
+                }
+                else
+                {
+                    beatLeaderInstalled = false;
+                }
+            }
+            catch
+            {
+                beatLeaderInstalled = false;
+            }
         }
     }
 }
