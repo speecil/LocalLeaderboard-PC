@@ -38,14 +38,7 @@ namespace LocalLeaderboard
             try
             {
                 var method = typeof(BeatLeader.Plugin).Assembly.GetType("BeatLeader.Models.Replay.ReplayDecoder").GetMethod("Decode", BindingFlags.Public | BindingFlags.Static);
-                if(method != null)
-                {
-                    beatLeaderInstalled = true;
-                }
-                else
-                {
-                    beatLeaderInstalled = false;
-                }
+                beatLeaderInstalled = method != null;
             }
             catch
             {

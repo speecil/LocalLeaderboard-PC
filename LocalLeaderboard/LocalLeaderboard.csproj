@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LocalLeaderboard</RootNamespace>
     <AssemblyName>LocalLeaderboard</AssemblyName>
-    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>portable</DebugType>
@@ -260,6 +260,7 @@
     <Compile Include="UI\ScoreInfoModal.cs" />
     <Compile Include="UI\ViewControllers\LeaderboardView.cs" />
     <Compile Include="UI\ViewControllers\PanelView.cs" />
+    <Compile Include="Utils\Constants.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="manifest.json" />

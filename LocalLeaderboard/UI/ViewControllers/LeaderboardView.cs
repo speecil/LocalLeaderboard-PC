@@ -15,7 +15,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using LocalLeaderboard.Utils;
 using LLeaderboardEntry = LocalLeaderboard.LeaderboardData.LeaderboardData.LeaderboardEntry;
 using ScoreData = LeaderboardTableView.ScoreData;
 
@@ -128,13 +128,13 @@ namespace LocalLeaderboard.UI.ViewControllers
         }
 
         [UIAction("Discord")]
-        private void Discord() => Application.OpenURL("https://discord.gg/2KyykDXpBk");
+        private void Discord() => Application.OpenURL(Constants.DISCORD_URL);
 
         [UIAction("Patreon")]
-        private void Patreon() => Application.OpenURL("https://patreon.com/speecil");
+        private void Patreon() => Application.OpenURL(Constants.PATREON_URL);
 
         [UIAction("Website")]
-        private void Website() => Application.OpenURL("https://speecil.dev");
+        private void Website() => Application.OpenURL(Constants.WEBSITE_URL);
 
         [UIAction("showSettings")]
         private void showSettings()
@@ -175,7 +175,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             set
             {
                 config.nameHeaderToggle = value;
-                setHeaderText(headerText, value);
+                setHeaderText(headerText, UserIsPatron);
             }
         }
 
@@ -243,9 +243,9 @@ namespace LocalLeaderboard.UI.ViewControllers
             Destroy(_loadingControl.transform.Find("DownloadingContainer").gameObject);
 
             _imgView = myHeader.background as ImageView;
-            _imgView.color = new Color(0.156f, 0.69f, 0.46666f, 1);
-            _imgView.color0 = new Color(0.156f, 0.69f, 0.46666f, 1);
-            _imgView.color1 = new Color(0.156f, 0.69f, 0.46666f, 1);
+            _imgView.color = Constants.SPEECIL_COLOUR;
+            _imgView.color0 = Constants.SPEECIL_COLOUR;
+            _imgView.color1 = Constants.SPEECIL_COLOUR;
             ImageSkew(ref _imgView) = 0.18f;
             ImageGradient(ref _imgView) = true;
         }
@@ -261,16 +261,14 @@ namespace LocalLeaderboard.UI.ViewControllers
             if (firstActivation)
             {
                 origPos = header.transform.localPosition;
-                Plugin.Log.Info("RIGHT BEFORE RUNNING PATREON SHIT");
-                _playerService.GetPatreonStatus((isPatron, playerID, username) =>
+                _playerService.GetPatreonStatus((isPatron, username) =>
                 {
-                    Plugin.Log.Info("RUNNING PATREON SHIT");
+                    Plugin.Log.Info(isPatron ? "USER IS PATRON (tysm)" : "CONSIDER GIVING ME MONEY"); 
                     Plugin.userName = username;
                     UserIsPatron = isPatron;
                     setHeaderText(headerText, isPatron);
                     uwuToggle.SetActive(isPatron);
                     nameToggle.SetActive(isPatron);
-                    if (isPatron) Plugin.Log.Info("USER IS PATRON (tysm)");
                 });
             }
             header.transform.localPosition = new Vector3(-999, -999, -999);
@@ -319,8 +317,8 @@ namespace LocalLeaderboard.UI.ViewControllers
             var bgBorder = button.transform.Find("Border").gameObject.GetComponent<ImageView>();
             var bgOutline = button.transform.Find("OutlineWrapper/Outline").gameObject.GetComponent<ImageView>();
             var buttonText = button.transform.Find("Content/Text").gameObject.GetComponent<TextMeshProUGUI>();
-            var bgColour = new Color(0.156f, 0.69f, 0.46666f, 1);
-            var textColour = new Color(1f, 1f, 1f, 1);
+            var bgColour = Constants.SPEECIL_COLOUR;
+            var textColour = Color.white;
             while (infoModal.gameObject.activeInHierarchy)
             {
                 bgImage.color0 = bgColour;

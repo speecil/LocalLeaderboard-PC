@@ -1,5 +1,6 @@
 ﻿using IPA.Utilities;
 using IPA.Utilities.Async;
+using LocalLeaderboard.Utils;
 using System;
 using System.IO;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace LocalLeaderboard.Services
         {
             TaskCompletionSource<(string, string)> taskCompletionSource = new TaskCompletionSource<(string, string)>();
 
-            if (File.Exists(Path.Combine(UnityGame.InstallPath, "Beat Saber_Data", "Plugins", "x86_64", "steam_api64.dll")))
+            if (File.Exists(Constants.STEAM_API_PATH))
             {
                 Plugin.Log.Info("STEAM USER");
                 //var steamID = Steamworks.SteamUser.GetSteamID();
@@ -29,26 +30,14 @@ namespace LocalLeaderboard.Services
 
             return taskCompletionSource.Task;
         }
-        private async void GetPatreonStatusAsync(Action<bool, string, string> callback)
+        private async void GetPatreonStatusAsync(Action<bool, string> callback)
         {
-            (string playerID, string username) = await GetPlayerInfo();
-            string patronListUrl = "https://raw.githubusercontent.com/speecil/Patrons/main/patrons.txt";
-
-            string timestamp = DateTime.UtcNow.Ticks.ToString();
-            patronListUrl += "?timestamp=" + timestamp;
-
-            HttpClient httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.CacheControl = new System.Net.Http.Headers.CacheControlHeaderValue
-            {
-                NoCache = true
-            };
-
-            string patronList = await httpClient.GetStringAsync(patronListUrl);
-            string[] patrons = patronList.Split(',');
-            bool isPatron = patrons.Contains(playerID);
-
-            await UnityMainThreadTaskScheduler.Factory.StartNew(() => callback(isPatron, playerID, username));
+            Plugin.Log.Info("GETTING PATREON STATUS");
+            (string playerID, string playerName) = await GetPlayerInfo();
+            string patronList = await new HttpClient().GetStringAsync(Constants.PATRON_LIST_URL);
+            bool isPatron = patronList.Split(',').Any(patron => patron.Trim() == playerID);
+            await UnityMainThreadTaskScheduler.Factory.StartNew(() => callback(isPatron, playerName));
         }
-        public void GetPatreonStatus(Action<bool, string, string> callback) => Task.Run(() => GetPatreonStatusAsync(callback));
+        public void GetPatreonStatus(Action<bool, string> callback) => Task.Run(() => GetPatreonStatusAsync(callback));
     }
 }

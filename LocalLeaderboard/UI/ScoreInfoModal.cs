@@ -3,6 +3,7 @@ using BeatSaberMarkupLanguage.Parser;
 using HMUI;
 using IPA.Loader;
 using LocalLeaderboard.Services;
+using LocalLeaderboard.Utils;
 using ModestTree;
 using System;
 using System.IO;
@@ -53,7 +54,7 @@ namespace LocalLeaderboard.UI
         public BSMLParserParams parserParams;
 
         [InjectOptional] ReplayService _replayService;
-        private static readonly string ReplaysFolderPath = Environment.CurrentDirectory + "\\UserData\\BeatLeader\\Replays\\";
+
         LLeaderboardEntry currentEntry;
 
         public void setScoreModalText(LLeaderboardEntry entry)
@@ -84,14 +85,14 @@ namespace LocalLeaderboard.UI
 
             if(!Plugin.beatLeaderInstalled) watchReplayButton.gameObject.SetActive(false);
 
-            if (File.Exists(ReplaysFolderPath + entry.bsorPath)) watchReplayButton.interactable = true;
+            if (File.Exists(Constants.REPLAY_PATH + entry.bsorPath)) watchReplayButton.interactable = true;
             else watchReplayButton.interactable = false;
         }
 
         private void silly(LLeaderboardEntry leaderboardEntry)
         {
             Plugin.Log.Info("STARTING REPLAY");
-            string fileLocation = ReplaysFolderPath + leaderboardEntry.bsorPath;
+            string fileLocation = Constants.REPLAY_PATH + leaderboardEntry.bsorPath;
             Plugin.Log.Info(fileLocation);
             if (_replayService.TryReadReplay(fileLocation, out var replay1))
             {

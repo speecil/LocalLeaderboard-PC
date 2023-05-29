@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using LocalLeaderboard.Utils;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -14,17 +15,17 @@ namespace LocalLeaderboard.LeaderboardData
         public static void createConfigIfNeeded()
         {
             if (LocalLeaderboardData != null) return;
-            if (File.Exists("./UserData/LocalLeaderboard/LocalLeaderboardData.json"))
+            if (File.Exists(Constants.CONFIG_PATH))
             {
-                string configJson = File.ReadAllText("./UserData/LocalLeaderboard/LocalLeaderboardData.json");
+                string configJson = File.ReadAllText(Constants.CONFIG_PATH);
                 LocalLeaderboardData = JObject.Parse(configJson);
             }
             else
             {
                 // Create a new empty JObject and file if the config file doesn't exist
                 LocalLeaderboardData = new JObject();
-                Directory.CreateDirectory("./UserData/LocalLeaderboard");
-                using (StreamWriter file = File.CreateText("./UserData/LocalLeaderboard/LocalLeaderboardData.json"))
+                Directory.CreateDirectory(Constants.CONFIG_DIR);
+                using (StreamWriter file = File.CreateText(Constants.CONFIG_PATH))
                 {
                     JsonSerializer serializer = new JsonSerializer();
                     serializer.Serialize(file, LocalLeaderboardData);
@@ -35,19 +36,16 @@ namespace LocalLeaderboard.LeaderboardData
         static void writeData()
         {
             Plugin.Log.Notice("WRITING DATA");
-            if (File.Exists("./UserData/LocalLeaderboard/LocalLeaderboardData.json"))
+            if (File.Exists(Constants.CONFIG_PATH))
             {
-                File.WriteAllText("./UserData/LocalLeaderboard/LocalLeaderboardData.json", LocalLeaderboardData.ToString());
+                File.WriteAllText(Constants.CONFIG_PATH, LocalLeaderboardData.ToString());
             }
             else
             {
                 createConfigIfNeeded();
-                File.WriteAllText("./UserData/LocalLeaderboard/LocalLeaderboardData.json", LocalLeaderboardData.ToString());
+                File.WriteAllText(Constants.CONFIG_PATH, LocalLeaderboardData.ToString());
             }
         }
-
-
-
 
         public struct LeaderboardEntry
         {
