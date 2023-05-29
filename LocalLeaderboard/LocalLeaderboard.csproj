@@ -300,6 +300,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Steamworks.NET.dll" />
+    <Content Include="UltraSecretFiles\password.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
