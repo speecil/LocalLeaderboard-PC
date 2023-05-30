@@ -91,6 +91,7 @@ namespace LocalLeaderboard.UI
 
         private void silly(LLeaderboardEntry leaderboardEntry)
         {
+            if (_replayService == null) return;
             Plugin.Log.Info("STARTING REPLAY");
             string fileLocation = Constants.REPLAY_PATH + leaderboardEntry.bsorPath;
             Plugin.Log.Info(fileLocation);

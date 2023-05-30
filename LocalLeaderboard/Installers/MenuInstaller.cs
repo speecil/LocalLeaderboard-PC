@@ -16,7 +16,11 @@ namespace LocalLeaderboard.Installers
             Container.BindInterfacesAndSelfTo<PanelView>().FromNewComponentAsViewController().AsSingle();
             Container.BindInterfacesTo<LLLeaderboard>().AsSingle();
             Container.Bind<TweeningService>().AsSingle();
-            Container.Bind<ReplayService>().AsSingle();
+
+            if (Plugin.GetAssemblyByName("BeatLeader") != null)
+            {
+                Container.Bind<ReplayService>().AsSingle();
+            }
             Container.Bind<PlayerService>().AsSingle();
 
             ScoreInfoModal scoreInfoModal = new ScoreInfoModal();

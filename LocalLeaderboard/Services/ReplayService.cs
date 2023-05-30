@@ -9,9 +9,11 @@ namespace LocalLeaderboard.Services
 {
     internal class ReplayService
     {
-        [Inject] private ReplayerMenuLoader _replayerMenuLoader;
+        [InjectOptional] private ReplayerMenuLoader _replayerMenuLoader;
         public bool TryReadReplay(string filename, out Replay replay)
         {
+            var method = Plugin.GetAssemblyByName("BeatLeader").GetType("BeatLeader.Models.Replay.ReplayDecoder").GetMethod("Decode", BindingFlags.Public | BindingFlags.Static);
+            if (method == null) { replay = default; return false; }
             try
             {
                 if (File.Exists(filename))
@@ -22,7 +24,6 @@ namespace LocalLeaderboard.Services
                     stream.Read(buffer, 0, arrayLength);
                     stream.Close();
 
-                    var method = typeof(BeatLeader.Plugin).Assembly.GetType("BeatLeader.Models.Replay.ReplayDecoder").GetMethod("Decode", BindingFlags.Public | BindingFlags.Static);
                     replay = (Replay)method.Invoke(null, new object[] { buffer });
 
                     return true;

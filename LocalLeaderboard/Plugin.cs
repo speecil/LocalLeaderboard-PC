@@ -3,6 +3,7 @@ using IPA.Config.Stores;
 using IPA.Loader;
 using LocalLeaderboard.Installers;
 using SiraUtil.Zenject;
+using System;
 using System.Linq;
 using System.Reflection;
 using IPALogger = IPA.Logging.Logger;
@@ -28,22 +29,23 @@ namespace LocalLeaderboard
             Log = logger;
             SettingsConfig.Instance = conf.Generated<SettingsConfig>();
             LeaderboardData.LeaderboardData.createConfigIfNeeded();
-            zenjector.Install<MenuInstaller>(Location.Menu);
-            zenjector.Install<AppInstaller>(Location.App);
-        }
-
-        [OnEnable]
-        public void OnEnable()
-        {
             try
             {
-                var method = typeof(BeatLeader.Plugin).Assembly.GetType("BeatLeader.Models.Replay.ReplayDecoder").GetMethod("Decode", BindingFlags.Public | BindingFlags.Static);
+                var method = GetAssemblyByName("BeatLeader");
                 beatLeaderInstalled = method != null;
             }
             catch
             {
                 beatLeaderInstalled = false;
             }
+            zenjector.Install<MenuInstaller>(Location.Menu);
+            zenjector.Install<AppInstaller>(Location.App);
+        }
+
+        public static Assembly GetAssemblyByName(string name)
+        {
+            return AppDomain.CurrentDomain.GetAssemblies().
+                   SingleOrDefault(assembly => assembly.GetName().Name == name);
         }
     }
 }

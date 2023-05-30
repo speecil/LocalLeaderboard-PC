@@ -8,5 +8,6 @@
   "gameVersion": "1.18.3",
   "dependsOn": {
     "BSIPA": "^4.2.0"
-  }
+  },
+  "loadAfter": ["BeatLeader"]
 }
