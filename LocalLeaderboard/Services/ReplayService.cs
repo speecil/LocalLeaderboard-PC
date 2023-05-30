@@ -1,6 +1,4 @@
-﻿using BeatLeader.Models.Replay;
-using BeatLeader.Replayer;
-using System;
+﻿using System;
 using System.IO;
 using System.Reflection;
 using Zenject;
@@ -9,8 +7,15 @@ namespace LocalLeaderboard.Services
 {
     internal class ReplayService
     {
-        [InjectOptional] private ReplayerMenuLoader _replayerMenuLoader;
-        public bool TryReadReplay(string filename, out Replay replay)
+        private object _replayerMenuLoader;
+
+        [Inject]
+        public void Inject(BeatLeader.Replayer.ReplayerMenuLoader replayerMenuLoader)
+        {
+            _replayerMenuLoader = replayerMenuLoader;
+        }
+
+        public bool TryReadReplay(string filename, out BeatLeader.Models.Replay.Replay replay)
         {
             var method = Plugin.GetAssemblyByName("BeatLeader").GetType("BeatLeader.Models.Replay.ReplayDecoder").GetMethod("Decode", BindingFlags.Public | BindingFlags.Static);
             if (method == null) { replay = default; return false; }
@@ -24,7 +29,7 @@ namespace LocalLeaderboard.Services
                     stream.Read(buffer, 0, arrayLength);
                     stream.Close();
 
-                    replay = (Replay)method.Invoke(null, new object[] { buffer });
+                    replay = (BeatLeader.Models.Replay.Replay)method.Invoke(null, new object[] { buffer });
 
                     return true;
                 }
@@ -38,10 +43,10 @@ namespace LocalLeaderboard.Services
             return false;
         }
 
-        public void StartReplay(Replay replay, BeatLeader.Models.Player player)
+        public void StartReplay(BeatLeader.Models.Replay.Replay replay, BeatLeader.Models.Player player)
         {
             if (_replayerMenuLoader == null) return;
-            _replayerMenuLoader.StartReplayAsync(replay, player, null);
+            ((BeatLeader.Replayer.ReplayerMenuLoader)_replayerMenuLoader).StartReplayAsync(replay, player, null);
         }
     }
 }

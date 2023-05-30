@@ -16,8 +16,8 @@ namespace LocalLeaderboard.Services
         {
             var steamID = "0";
             var steamName = "loser";
-            //steamID = Steamworks.SteamUser.GetSteamID().ToString();
-            //steamName = Steamworks.SteamFriends.GetPersonaName();
+            steamID = Steamworks.SteamUser.GetSteamID().ToString();
+            steamName = Steamworks.SteamFriends.GetPersonaName();
             return (steamID, steamName);
         }
 

@@ -83,7 +83,7 @@ namespace LocalLeaderboard.UI
             parserParams.EmitEvent("showScoreInfo");
             currentEntry = entry;
 
-            if(!Plugin.beatLeaderInstalled) watchReplayButton.gameObject.SetActive(false);
+            watchReplayButton.gameObject.SetActive(Plugin.beatLeaderInstalled);
 
             if (File.Exists(Constants.REPLAY_PATH + entry.bsorPath)) watchReplayButton.interactable = true;
             else watchReplayButton.interactable = false;

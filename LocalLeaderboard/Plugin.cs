@@ -29,23 +29,14 @@ namespace LocalLeaderboard
             Log = logger;
             SettingsConfig.Instance = conf.Generated<SettingsConfig>();
             LeaderboardData.LeaderboardData.createConfigIfNeeded();
-            try
-            {
-                var method = GetAssemblyByName("BeatLeader");
-                beatLeaderInstalled = method != null;
-            }
-            catch
-            {
-                beatLeaderInstalled = false;
-            }
+            beatLeaderInstalled = GetAssemblyByName("BeatLeader") != null;
             zenjector.Install<MenuInstaller>(Location.Menu);
             zenjector.Install<AppInstaller>(Location.App);
         }
 
         public static Assembly GetAssemblyByName(string name)
         {
-            return AppDomain.CurrentDomain.GetAssemblies().
-                   SingleOrDefault(assembly => assembly.GetName().Name == name);
+            return AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(assembly => assembly.GetName().Name == name);
         }
     }
 }
