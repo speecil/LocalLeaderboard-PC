@@ -11,29 +11,38 @@ namespace LocalLeaderboard.Services
 {
     internal class PlayerService
     {
+
+        public (string, string) OculusSkillIssue()
+        {
+            var steamID = "0";
+            var steamName = "loser";
+            steamID = Steamworks.SteamUser.GetSteamID().ToString();
+            steamName = Steamworks.SteamFriends.GetPersonaName();
+            return (steamID, steamName);
+        }
+
         public Task<(string, string)> GetPlayerInfo()
         {
+            Plugin.Log.Info("COLLECTING PLAYER INFO");
             TaskCompletionSource<(string, string)> taskCompletionSource = new TaskCompletionSource<(string, string)>();
-
             if (File.Exists(Constants.STEAM_API_PATH))
             {
                 Plugin.Log.Info("STEAM USER");
-                //var steamID = Steamworks.SteamUser.GetSteamID();
-                //var steamName = Steamworks.SteamFriends.GetPersonaName();
-                //taskCompletionSource.SetResult((steamID.ToString(), steamName));
+                (string steamID, string steamName) = OculusSkillIssue();
+                taskCompletionSource.SetResult((steamID, steamName));
             }
             else
             {
                 Plugin.Log.Info("OCULUS USER");
                 Oculus.Platform.Users.GetLoggedInUser().OnComplete(user => taskCompletionSource.SetResult((user.Data.ID.ToString(), user.Data.OculusID)));
-            }
-
+            }            
             return taskCompletionSource.Task;
         }
         private async void GetPatreonStatusAsync(Action<bool, string> callback)
         {
             Plugin.Log.Info("GETTING PATREON STATUS");
             (string playerID, string playerName) = await GetPlayerInfo();
+            Plugin.Log.Info("COLLECTED PLAYER INFO");
             string patronList = await new HttpClient().GetStringAsync(Constants.PATRON_LIST_URL);
             bool isPatron = patronList.Split(',').Any(patron => patron.Trim() == playerID);
             await UnityMainThreadTaskScheduler.Factory.StartNew(() => callback(isPatron, playerName));
