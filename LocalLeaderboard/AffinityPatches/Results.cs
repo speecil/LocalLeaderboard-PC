@@ -74,7 +74,7 @@ namespace LocalLeaderboard.AffinityPatches
             {
                 mods += "NA ";
             }
-            return mods;
+            return mods.TrimEnd();
         }
 
         [AffinityPostfix]
