@@ -3,11 +3,14 @@ using BeatSaberMarkupLanguage.Parser;
 using HMUI;
 using IPA.Loader;
 using LocalLeaderboard.Services;
+using LocalLeaderboard.UI.ViewControllers;
 using LocalLeaderboard.Utils;
 using ModestTree;
 using System;
+using System.Collections;
 using System.IO;
 using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
 using LLeaderboardEntry = LocalLeaderboard.LeaderboardData.LeaderboardData.LeaderboardEntry;
@@ -54,8 +57,44 @@ namespace LocalLeaderboard.UI
         public BSMLParserParams parserParams;
 
         [InjectOptional] ReplayService _replayService;
+        [Inject] LeaderboardView _leaderboardView;
 
         LLeaderboardEntry currentEntry;
+
+        const int scoreDetails = 4;
+
+        const float infoFontSize = 4.2f;
+
+        /*
+            I dont know why it wont work when i use the injected IEnumerator but this does and im tired
+            kms :sob:
+         */
+        private IEnumerator setButtoncolor(Button button)
+        {
+            var bgImage = button.transform.Find("BG").gameObject.GetComponent<ImageView>();
+            var bgBorder = button.transform.Find("Border").gameObject.GetComponent<ImageView>();
+            var bgOutline = button.transform.Find("OutlineWrapper/Outline").gameObject.GetComponent<ImageView>();
+            var buttonText = button.transform.Find("Content/Text").gameObject.GetComponent<TextMeshProUGUI>();
+            var bgColour = Constants.SPEECIL_COLOUR;
+            var textColour = Color.white;
+            while (infoModal.gameObject.activeInHierarchy)
+            {
+                bgImage.color0 = bgColour;
+                bgImage.color1 = bgColour;
+
+                bgBorder.color0 = bgColour;
+                bgBorder.color1 = bgColour;
+                bgBorder.color = bgColour;
+
+                bgOutline.color = bgColour;
+                bgOutline.color0 = bgColour;
+                bgOutline.color1 = bgColour;
+
+                buttonText.color = textColour;
+                yield return null;
+            }
+        }
+
 
         public void setScoreModalText(LLeaderboardEntry entry)
         {
@@ -65,21 +104,21 @@ namespace LocalLeaderboard.UI
                 DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(unixTimestamp);
                 DateTime datePlayed = dateTimeOffset.LocalDateTime;
                 string format = SettingsConfig.Instance.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt";
-                dateScoreText.text = string.Format("Date set: <size=6><color=#28b077>{0}</color></size>", datePlayed.ToString(format));
+                dateScoreText.text = string.Format("Date set: <size=4.2><color=#28b077>{0}</color></size>", datePlayed.ToString(format));
             }
-            accScoreText.text = $"Accuracy: <size=6><color=#ffd42a>{entry.acc.ToString("F2")}%</color></size>";
-            scoreScoreText.text = $"Score: <size=6>{entry.score}</size>";
-            modifiersScoreText.text = $"Mods: <size=5>{entry.mods}</size>";
+            accScoreText.text = $"Accuracy: <size={infoFontSize}><color=#ffd42a>{entry.acc.ToString("F2")}%</color></size>";
+            scoreScoreText.text = $"Score: <size={infoFontSize}>{entry.score}</size>";
+            modifiersScoreText.text = $"Mods: <size=4.4>{entry.mods}</size>";
 
             if (entry.mods.IsEmpty()) modifiersScoreText.gameObject.SetActive(false);
             else modifiersScoreText.gameObject.SetActive(true);
 
             if (entry.fullCombo) fcScoreText.text = "<color=green>Full Combo</color>";
-            else fcScoreText.text = string.Format("Mistakes: <size=6><color=red>{0}</color></size>", entry.badCutCount + entry.missCount);
+            else fcScoreText.text = string.Format("Mistakes: <size=4.2><color=red>{0}</color></size>", entry.badCutCount + entry.missCount);
 
             failScoreText.gameObject.SetActive(entry.didFail);
-            avgHitscoreScoreText.text = $"Average Hitscore: <size=6>{entry.averageHitscore}</size>";
-            maxComboScoreText.text = $"Max Combo: <size=6>{entry.maxCombo}</size>";
+            avgHitscoreScoreText.text = $"Average Hitscore: <size={infoFontSize}>{entry.averageHitscore}</size>";
+            maxComboScoreText.text = $"Max Combo: <size={infoFontSize}>{entry.maxCombo}</size>";
             parserParams.EmitEvent("showScoreInfo");
             currentEntry = entry;
 
@@ -87,6 +126,8 @@ namespace LocalLeaderboard.UI
 
             if (File.Exists(Constants.REPLAY_PATH + entry.bsorPath)) watchReplayButton.interactable = true;
             else watchReplayButton.interactable = false;
+
+            watchReplayButton.StartCoroutine(setButtoncolor(watchReplayButton));
         }
 
         private void silly(LLeaderboardEntry leaderboardEntry)

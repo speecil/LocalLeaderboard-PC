@@ -311,7 +311,7 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         private void FuckOffButtons() => holders.ForEach(holder => holder.infoButton.gameObject.SetActive(false));
 
-        private IEnumerator setcolor(Button button)
+        public IEnumerator setcolor(Button button)
         {
             var bgImage = button.transform.Find("BG").gameObject.GetComponent<ImageView>();
             var bgBorder = button.transform.Find("Border").gameObject.GetComponent<ImageView>();
