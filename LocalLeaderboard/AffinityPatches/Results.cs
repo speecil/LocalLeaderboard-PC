@@ -1,4 +1,5 @@
 ﻿using LocalLeaderboard.UI.ViewControllers;
+using LocalLeaderboard.Utils;
 using SiraUtil.Affinity;
 using System;
 using System.IO;
@@ -9,7 +10,7 @@ namespace LocalLeaderboard.AffinityPatches
 {
     internal class Results : IAffinity
     {
-        private static readonly string ReplaysFolderPath = Environment.CurrentDirectory + "\\UserData\\BeatLeader\\Replays\\";
+
         public static string GetModifiersString(LevelCompletionResults levelCompletionResults)
         {
             string mods = "";
@@ -111,11 +112,26 @@ namespace LocalLeaderboard.AffinityPatches
             bool didFail = levelCompletionResults.levelEndStateType == LevelCompletionResults.LevelEndStateType.Failed;
             int maxCombo = levelCompletionResults.okCount;
             int averageHitscore = (int)levelCompletionResults.averageCutScoreForNotesWithFullScoreScoringType;
-            var directory = new DirectoryInfo(ReplaysFolderPath);
-            var filePath = directory.GetFiles().OrderByDescending(f => f.LastWriteTime).First();
-            var replayFileName = filePath.Name;
 
-            LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(levelCompletionResults), maxCombo, averageHitscore, didFail, replayFileName);
+            string destinationFileName = "BL NOT INSTALLED";
+            if (Directory.Exists(Constants.BLREPLAY_PATH))
+            {
+                var directory = new DirectoryInfo(Constants.BLREPLAY_PATH);
+                var filePath = directory.GetFiles().OrderByDescending(f => f.LastWriteTime).First();
+                var replayFileName = filePath.Name;
+
+                if (!Directory.Exists(Constants.LLREPLAYS_PATH))
+                {
+                    Directory.CreateDirectory(Constants.LLREPLAYS_PATH);
+                }
+
+                string timestamp = DateTime.UtcNow.Ticks.ToString();
+                destinationFileName = Path.GetFileNameWithoutExtension(filePath.Name) + "_" + timestamp + Path.GetExtension(filePath.Name);
+                string destinationFilePath = Path.Combine(Constants.LLREPLAYS_PATH, destinationFileName);
+                File.Copy(filePath.FullName, destinationFilePath);
+            }
+
+            LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(levelCompletionResults), maxCombo, averageHitscore, didFail, destinationFileName);
             var lb = Resources.FindObjectsOfTypeAll<LeaderboardView>().FirstOrDefault();
             lb.OnLeaderboardSet(lb.currentDifficultyBeatmap);
         }
