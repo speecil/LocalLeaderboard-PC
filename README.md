@@ -1,8 +1,8 @@
-# Local Leaderboard (PC edition)
+# Local Leaderboard
 
 ## Description
 
-Featuring a clean and easy to use UI, the LocalLeaderboard mod saves all of your results from playing a level to a JSON file, which is then displayed in-game. The UI shows the date of a play, your accuracy, your score and your modifiers. The mod also allows you to sort by date or by high-score with an option for ascending or descending order.
+Featuring a clean and easy to use UI, the LocalLeaderboard mod saves all of your results from playing a level to a JSON file, which is then displayed in-game. The UI shows the date of a play, your accuracy, your score and your modifiers. The mod also allows you to sort by date or by high-score with an option for ascending or descending order. If you have the "BeatLeader" mod installed in conjunction with LocalLeaderboard, you will be able to watch the replay of the score as well.
 
 ## Features
 
