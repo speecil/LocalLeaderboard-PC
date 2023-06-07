@@ -10,7 +10,6 @@ namespace LocalLeaderboard.AffinityPatches
 {
     internal class Results : IAffinity
     {
-
         public static string GetModifiersString(LevelCompletionResults levelCompletionResults)
         {
             string mods = "";
@@ -114,7 +113,7 @@ namespace LocalLeaderboard.AffinityPatches
             int averageHitscore = (int)levelCompletionResults.averageCutScoreForNotesWithFullScoreScoringType;
 
             string destinationFileName = "BL NOT INSTALLED";
-            if (Directory.Exists(Constants.BLREPLAY_PATH))
+            if (Directory.Exists(Constants.BLREPLAY_PATH) && Plugin.beatLeaderInstalled)
             {
                 var directory = new DirectoryInfo(Constants.BLREPLAY_PATH);
                 var filePath = directory.GetFiles().OrderByDescending(f => f.LastWriteTime).First();

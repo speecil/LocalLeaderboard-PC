@@ -1,5 +1,4 @@
-﻿using IPA.Utilities;
-using IPA.Utilities.Async;
+﻿using IPA.Utilities.Async;
 using LocalLeaderboard.Utils;
 using System;
 using System.IO;
@@ -35,7 +34,7 @@ namespace LocalLeaderboard.Services
             {
                 Plugin.Log.Info("OCULUS USER");
                 Oculus.Platform.Users.GetLoggedInUser().OnComplete(user => taskCompletionSource.SetResult((user.Data.ID.ToString(), user.Data.OculusID)));
-            }            
+            }
             return taskCompletionSource.Task;
         }
         private async void GetPatreonStatusAsync(Action<bool, string> callback)

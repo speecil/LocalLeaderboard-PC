@@ -1,6 +1,5 @@
 ﻿using IPA;
 using IPA.Config.Stores;
-using IPA.Loader;
 using LocalLeaderboard.Installers;
 using SiraUtil.Zenject;
 using System;

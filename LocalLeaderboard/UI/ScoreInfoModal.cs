@@ -1,7 +1,6 @@
 ﻿using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Parser;
 using HMUI;
-using IPA.Loader;
 using LocalLeaderboard.Services;
 using LocalLeaderboard.UI.ViewControllers;
 using LocalLeaderboard.Utils;
@@ -67,7 +66,6 @@ namespace LocalLeaderboard.UI
 
         /*
             I dont know why it wont work when i use the injected IEnumerator but this does and im tired
-            kms :sob:
          */
         private IEnumerator setButtoncolor(Button button)
         {
