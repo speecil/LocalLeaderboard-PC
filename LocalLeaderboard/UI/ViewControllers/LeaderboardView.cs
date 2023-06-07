@@ -8,6 +8,7 @@ using IPA.Utilities;
 using IPA.Utilities.Async;
 using LeaderboardCore.Interfaces;
 using LocalLeaderboard.Services;
+using LocalLeaderboard.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,7 +16,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Zenject;
-using LocalLeaderboard.Utils;
 using LLeaderboardEntry = LocalLeaderboard.LeaderboardData.LeaderboardData.LeaderboardEntry;
 using ScoreData = LeaderboardTableView.ScoreData;
 
@@ -263,7 +263,7 @@ namespace LocalLeaderboard.UI.ViewControllers
                 origPos = header.transform.localPosition;
                 _playerService.GetPatreonStatus((isPatron, username) =>
                 {
-                    Plugin.Log.Info(isPatron ? "USER IS PATRON (tysm)" : "CONSIDER GIVING ME MONEY"); 
+                    Plugin.Log.Info(isPatron ? "USER IS PATRON (tysm)" : "CONSIDER GIVING ME MONEY");
                     Plugin.userName = username;
                     UserIsPatron = isPatron;
                     setHeaderText(headerText, isPatron);

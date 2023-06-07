@@ -1,7 +1,6 @@
 ﻿using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Parser;
 using HMUI;
-using IPA.Loader;
 using LocalLeaderboard.Services;
 using LocalLeaderboard.UI.ViewControllers;
 using LocalLeaderboard.Utils;
@@ -67,7 +66,6 @@ namespace LocalLeaderboard.UI
 
         /*
             I dont know why it wont work when i use the injected IEnumerator but this does and im tired
-            kms :sob:
          */
         private IEnumerator setButtoncolor(Button button)
         {
@@ -124,17 +122,20 @@ namespace LocalLeaderboard.UI
 
             watchReplayButton.gameObject.SetActive(Plugin.beatLeaderInstalled);
 
-            if (File.Exists(Constants.REPLAY_PATH + entry.bsorPath)) watchReplayButton.interactable = true;
+            if (File.Exists(Constants.LLREPLAYS_PATH + entry.bsorPath))
+            {
+                watchReplayButton.interactable = true;
+                watchReplayButton.StartCoroutine(setButtoncolor(watchReplayButton));
+            }
             else watchReplayButton.interactable = false;
 
-            watchReplayButton.StartCoroutine(setButtoncolor(watchReplayButton));
         }
 
         private void silly(LLeaderboardEntry leaderboardEntry)
         {
             if (_replayService == null) return;
             Plugin.Log.Info("STARTING REPLAY");
-            string fileLocation = Constants.REPLAY_PATH + leaderboardEntry.bsorPath;
+            string fileLocation = Constants.LLREPLAYS_PATH + leaderboardEntry.bsorPath;
             Plugin.Log.Info(fileLocation);
             if (_replayService.TryReadReplay(fileLocation, out var replay1))
             {
