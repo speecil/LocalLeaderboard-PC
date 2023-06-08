@@ -22,9 +22,12 @@ namespace LocalLeaderboard.LeaderboardData
             }
             else
             {
-                // Create a new empty JObject and file if the config file doesn't exist
                 LocalLeaderboardData = new JObject();
                 Directory.CreateDirectory(Constants.CONFIG_DIR);
+
+                // Add or replace the comment-like message at the top of the JSON data
+                LocalLeaderboardData["__comment"] = "Hey there, please do not manually edit this json file as its useless to do so and may break things - Speecil";
+
                 using (StreamWriter file = File.CreateText(Constants.CONFIG_PATH))
                 {
                     JsonSerializer serializer = new JsonSerializer();
