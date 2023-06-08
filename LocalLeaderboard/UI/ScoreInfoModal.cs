@@ -142,8 +142,8 @@ namespace LocalLeaderboard.UI
                 BeatLeader.Models.Player player = new BeatLeader.Models.Player();
                 player.avatar = "https://raw.githubusercontent.com/speecil/Patrons/main/Untitled%20design%20(16).png";
                 player.country = "AUS";
-                player.pp = 1;
-                player.rank = 1;
+                player.pp = leaderboardEntry.acc;
+                player.rank = leaderboardEntry.score;
                 if (long.TryParse(leaderboardEntry.datePlayed, out long unixTimestamp))
                 {
                     DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(unixTimestamp);
