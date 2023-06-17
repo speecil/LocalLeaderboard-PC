@@ -5,6 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
+    <LangVersion>9.0</LangVersion>
     <ProjectGuid>{D62608A6-2FAD-4C30-AF81-C08B2D5A8F7F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -251,7 +252,6 @@
     <Compile Include="AffinityPatches\Results.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Configuration\LeaderboardData.cs" />
-    <Compile Include="LocalLeaderboardController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\PlayerService.cs" />
     <Compile Include="Services\ReplayService.cs" />
@@ -261,6 +261,7 @@
     <Compile Include="UI\ViewControllers\LeaderboardView.cs" />
     <Compile Include="UI\ViewControllers\PanelView.cs" />
     <Compile Include="Utils\Constants.cs" />
+    <Compile Include="Utils\TimeUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="manifest.json" />

@@ -102,7 +102,16 @@ namespace LocalLeaderboard.UI
                 DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(unixTimestamp);
                 DateTime datePlayed = dateTimeOffset.LocalDateTime;
                 string format = SettingsConfig.Instance.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt";
-                dateScoreText.text = string.Format("Date set: <size=4.2><color=#28b077>{0}</color></size>", datePlayed.ToString(format));
+
+                if (SettingsConfig.Instance.useRelativeTime)
+                {
+                    TimeSpan relativeTime = TimeUtils.GetRelativeTime(entry.datePlayed);
+                    dateScoreText.text = string.Format("Date set: <size=4.8><color=#28b077>{0}</color></size>", TimeUtils.GetRelativeTimeString(relativeTime));
+                }
+                else
+                {
+                    dateScoreText.text = string.Format("Date set: <size=4.8><color=#28b077>{0}</color></size>", datePlayed.ToString(format));
+                }
             }
             accScoreText.text = $"Accuracy: <size={infoFontSize}><color=#ffd42a>{entry.acc.ToString("F2")}%</color></size>";
             scoreScoreText.text = $"Score: <size={infoFontSize}>{entry.score}</size>";

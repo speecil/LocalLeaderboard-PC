@@ -13,5 +13,7 @@ namespace LocalLeaderboard
         public bool rainbowsuwu = false;
 
         public bool nameHeaderToggle = false;
+
+        public bool useRelativeTime = false;
     }
 }

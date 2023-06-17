@@ -101,6 +101,7 @@
 						<toggle-setting apply-on-change='true' text='American Dates' pref-width='45' value='dateoption' hover-hint='Save data using the terrible american date format'/>
 						<toggle-setting id='uwuToggle' apply-on-change='true' text='uwu mode :3' pref-width='45' value='rainbowsuwu' hover-hint='Hi patreon user, :3'/>
 						<toggle-setting id='nameToggle' apply-on-change='true' text='Name in header' pref-width='45' value='nameheaderoption' hover-hint='Hi patreon user, :3'/>
+						<toggle-setting id='relativeToggle' apply-on-change='true' text='Use relative time' pref-width='45' value='useRelativeTime' hover-hint='Show the relative time as words instead of a date'/>
 				</vertical>
 			</modal>
 			<macro.as-host host='scoreInfoModal'>

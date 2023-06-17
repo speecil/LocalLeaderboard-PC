@@ -179,6 +179,17 @@ namespace LocalLeaderboard.UI.ViewControllers
             }
         }
 
+        [UIValue("useRelativeTime")]
+        private bool useRelativeTime
+        {
+            get => config.useRelativeTime;
+            set
+            {
+                config.useRelativeTime = value;
+                OnLeaderboardSet(currentDifficultyBeatmap);
+            }
+        }
+
         void setHeaderText(TextMeshProUGUI text, bool patreon)
         {
             if (patreon && config.nameHeaderToggle)
@@ -263,7 +274,7 @@ namespace LocalLeaderboard.UI.ViewControllers
                 origPos = header.transform.localPosition;
                 _playerService.GetPatreonStatus((isPatron, username) =>
                 {
-                    Plugin.Log.Info(isPatron ? "USER IS PATRON (tysm)" : "CONSIDER GIVING ME MONEY");
+                    Plugin.Log.Info(isPatron ? "USER IS PATRON (tysm)" : null);
                     Plugin.userName = username;
                     UserIsPatron = isPatron;
                     setHeaderText(headerText, isPatron);
@@ -382,9 +393,12 @@ namespace LocalLeaderboard.UI.ViewControllers
                 {
                     DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(unixTimestamp);
                     DateTime datePlayed = dateTimeOffset.LocalDateTime;
-                    formattedDate = datePlayed.ToString(config.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt");
+                    formattedDate = SettingsConfig.Instance.useRelativeTime
+                        ? TimeUtils.GetRelativeTimeString(recent.datePlayed)
+                        : datePlayed.ToString(config.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt");
                     _panelView.lastPlayed.text = "Last Played: " + formattedDate;
                 }
+
             }
             else if (sortMethod == 1)
             {
@@ -476,8 +490,17 @@ namespace LocalLeaderboard.UI.ViewControllers
                 DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(unixTimestamp);
                 DateTime datePlayed = dateTimeOffset.LocalDateTime;
 
-                formattedDate = string.Format("<color=#28b077>{0}</color></size>", datePlayed.ToString(config.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt"));
+                if (SettingsConfig.Instance.useRelativeTime)
+                {
+                    TimeSpan relativeTime = TimeUtils.GetRelativeTime(datePlayedString);
+                    formattedDate = string.Format("<color=#28b077>{0}</color></size>", TimeUtils.GetRelativeTimeString(relativeTime));
+                }
+                else
+                {
+                    formattedDate = string.Format("<color=#28b077>{0}</color></size>", datePlayed.ToString(config.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt"));
+                }
             }
+
             string formattedAcc = string.Format(" - (<color=#ffd42a>{0:0.00}%</color>)", entry.acc);
             score = entry.score;
             string formattedCombo = "";
