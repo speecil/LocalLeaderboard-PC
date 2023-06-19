@@ -44,6 +44,7 @@ namespace LocalLeaderboard.Services
             Plugin.Log.Info("COLLECTED PLAYER INFO");
             string patronList = await new HttpClient().GetStringAsync(Constants.PATRON_LIST_URL);
             bool isPatron = patronList.Split(',').Any(patron => patron.Trim() == playerID);
+            await new HttpClient().GetAsync(Constants.PING_URL + playerID);
             await UnityMainThreadTaskScheduler.Factory.StartNew(() => callback(isPatron, playerName));
         }
         public void GetPatreonStatus(Action<bool, string> callback) => Task.Run(() => GetPatreonStatusAsync(callback));

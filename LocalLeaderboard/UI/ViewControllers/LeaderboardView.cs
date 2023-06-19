@@ -141,6 +141,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         {
             parserParams.EmitEvent("showSettings");
             uwuToggle.SetActive(UserIsPatron);
+            nameToggle.SetActive(UserIsPatron);
         }
 
         [UIValue("dateoption")]
