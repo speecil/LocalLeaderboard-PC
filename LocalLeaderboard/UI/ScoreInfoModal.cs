@@ -119,8 +119,8 @@ namespace LocalLeaderboard.UI
             if (entry.mods.IsEmpty()) modifiersScoreText.gameObject.SetActive(false);
             else modifiersScoreText.gameObject.SetActive(true);
 
-            if (entry.fullCombo) fcScoreText.text = "<color=green>Full Combo</color>";
-            else fcScoreText.text = string.Format("Mistakes: <size=4.2><color=red>{0}</color></size>", entry.badCutCount + entry.missCount);
+            if (entry.fullCombo) fcScoreText.text = "<size=4><color=green>Full Combo!</color></size>";
+            else fcScoreText.text = string.Format("Mistakes: <size=4><color=red>{0}</color></size>", entry.badCutCount + entry.missCount);
 
             avgHitscoreScoreText.text = $"Avg Hitscore: <size={infoFontSize}>{entry.averageHitscore.ToString("F2")}</size>";
             maxComboScoreText.text = $"Max Combo: <size={infoFontSize}>{entry.maxCombo}</size>";

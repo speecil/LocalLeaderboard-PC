@@ -125,7 +125,7 @@
 						</horizontal>
 
 						<horizontal spacing="1">
-							<text rich-text="true" id="fcScoreText" font-size="4.2" text="FC" align="Center"/>
+							<text rich-text="true" id="fcScoreText" font-size="~font-size" text="FC" align="Center"/>
 						</horizontal>
 
 						<horizontal spacing="1">

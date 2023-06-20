@@ -525,11 +525,26 @@ namespace LocalLeaderboard.UI.ViewControllers
                 if (SettingsConfig.Instance.useRelativeTime)
                 {
                     TimeSpan relativeTime = TimeUtils.GetRelativeTime(datePlayedString);
-                    formattedDate = string.Format("<color=#28b077>{0}</color></size>", TimeUtils.GetRelativeTimeString(relativeTime));
+
+                    if (entry.didFail)
+                    {
+                        formattedDate = string.Format("<color=#f09f48>{0}</color></size>", TimeUtils.GetRelativeTimeString(relativeTime));
+                    }
+                    else
+                    {
+                        formattedDate = string.Format("<color=#28b077>{0}</color></size>", TimeUtils.GetRelativeTimeString(relativeTime));
+                    }
                 }
                 else
                 {
-                    formattedDate = string.Format("<color=#28b077>{0}</color></size>", datePlayed.ToString(config.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt"));
+                    if (entry.didFail)
+                    {
+                        formattedDate = string.Format("<color=#f09f48>{0}</color></size>", datePlayed.ToString(config.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt"));
+                    }
+                    else
+                    {
+                        formattedDate = string.Format("<color=#28b077>{0}</color></size>", datePlayed.ToString(config.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt"));
+                    }
                 }
             }
 
@@ -546,6 +561,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             result = "<size=100%>" + formattedDate + formattedAcc + formattedCombo + formattedMods + "</size>";
             return new ScoreData(score, result, rank, false);
         }
+
 
         internal class ButtonHolder
         {
