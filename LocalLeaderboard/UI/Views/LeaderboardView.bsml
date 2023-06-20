@@ -104,42 +104,47 @@
 						<toggle-setting id='relativeToggle' apply-on-change='true' text='Use relative time' pref-width='45' value='useRelativeTime' hover-hint='Show the relative time as words instead of a date'/>
 				</vertical>
 			</modal>
-			<macro.as-host host='scoreInfoModal'>
-				<modal child-expand-height="false" id='scoreInfo' show-event='showScoreInfo' hide-event='hideScoreInfo' size-delta-x='60' size-delta-y='42' clickerino-offerino-closerino='true'
-			move-to-center='true'>
-					<vertical spacing='-1'
-						vertical-fit='PreferredSize' horizontal-fit='PreferredSize' pad='3'>
-						
-						<!--  STYLE  -->
-						<macro.define name="font-size" value="4"/>
-						<!--  STYLE  -->
-						
-						<horizontal spacing='1'>
-							<text rich-text='true' id='dateScoreText' font-size="~font-size" text='DATE' align='Center'/>
+			<macro.as-host host="scoreInfoModal">
+				<modal id="scoreInfo" show-event="showScoreInfo" hide-event="hideScoreInfo" size-delta-x="60" size-delta-y="42" clickerino-offerino-closerino="true" move-to-center="true">
+					<vertical spacing="1" child-expand-height="true" child-expand-width="true" pad="3">
+
+						<!-- Style -->
+						<macro.define name="font-size" value="3.1"/>
+
+						<horizontal spacing="1">
+							<text rich-text="true" id="dateScoreText" font-size="~font-size" text="DATE" align="Center"/>
 						</horizontal>
-						<horizontal spacing='1'>
-							<text rich-text='true' id='accScoreText' font-size="~font-size" text='ACC' align='Center'/>
-							<text rich-text='true' id='scoreScoreText' font-size="~font-size" text='SCORE' align='Center'/>
+
+						<horizontal spacing="3">
+							<text rich-text="true" id="accScoreText" font-size="~font-size" text="ACC" align="Left"/>
+							<text rich-text="true" id="scoreScoreText" font-size="~font-size" text="SCORE" align="Right"/>
 						</horizontal>
-						<horizontal spacing='1'>
-							<text rich-text='true' id='modifiersScoreText' font-size="~font-size" text='MODS' align='Center'/>
+
+						<horizontal spacing="1">
+							<text rich-text="true" id="modifiersScoreText" font-size="~font-size" text="MODS" align="Center"/>
 						</horizontal>
-						<horizontal spacing='1'>
-							<text rich-text='true' id='fcScoreText' font-size="~font-size" text='FC' align='Center'/>
+
+						<horizontal spacing="1">
+							<text rich-text="true" id="fcScoreText" font-size="~font-size" text="FC" align="Center"/>
 						</horizontal>
-						<horizontal spacing='1'>
-							<text rich-text='true' font-color='red' id='failScoreText' font-size="~font-size" text='Fail' active='false' align='Center'/>
+
+						<horizontal spacing="1">
+							<text rich-text="true" font-color="red" id="failScoreText" font-size="4.2" text="Fail" active="false" align="Center"/>
 						</horizontal>
-						<horizontal spacing='3'>
-							<text rich-text='true' id='avgHitscoreScoreText' font-size="~font-size" text='AVGHIT' align='Left'/>
-							<text rich-text='true' id='maxComboScoreText' font-size="~font-size" text='MAXCOMBO' align='Right'/>
+
+						<horizontal spacing="3">
+							<text rich-text="true" id="avgHitscoreScoreText" font-size="~font-size" text="AVGHIT" align="Left"/>
+							<text rich-text="true" id="maxComboScoreText" font-size="~font-size" text="MAXCOMBO" align="Right"/>
 						</horizontal>
+
 						<horizontal>
-							<action-button on-click='replayStart' id='watchReplayButton' bold='false' all-uppercase='true' text='Watch Beatleader Replay' align='Center'/>
+							<action-button font-size="2.7" word-wrapping="true" preferred-width="25" on-click="replayStart" id="watchReplayButton" bold="false" all-uppercase="true" text="Watch Beatleader Replay" align="Center"/>
 						</horizontal>
+
 					</vertical>
 				</modal>
 			</macro.as-host>
+
 		</leaderboard>
 	</vertical>
 	<vertical anchor-pos-x="47" anchor-pos-y="5.4" spacing="-19.4">

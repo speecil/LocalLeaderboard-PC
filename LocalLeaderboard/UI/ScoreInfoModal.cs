@@ -122,7 +122,7 @@ namespace LocalLeaderboard.UI
             if (entry.fullCombo) fcScoreText.text = "<color=green>Full Combo</color>";
             else fcScoreText.text = string.Format("Mistakes: <size=4.2><color=red>{0}</color></size>", entry.badCutCount + entry.missCount);
 
-            avgHitscoreScoreText.text = $"Average Hitscore: <size={infoFontSize}>{entry.averageHitscore.ToString("F2")}</size>";
+            avgHitscoreScoreText.text = $"Avg Hitscore: <size={infoFontSize}>{entry.averageHitscore.ToString("F2")}</size>";
             maxComboScoreText.text = $"Max Combo: <size={infoFontSize}>{entry.maxCombo}</size>";
             parserParams.EmitEvent("showScoreInfo");
             currentEntry = entry;
