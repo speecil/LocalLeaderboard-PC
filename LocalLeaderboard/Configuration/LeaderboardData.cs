@@ -165,7 +165,7 @@ namespace LocalLeaderboard.LeaderboardData
             { "modifiers", mods },
             { "maxCombo", maxCombo },
             { "averageHitscore", averageHitscore },
-            { "didFail", averageHitscore },
+            { "didFail", didFail },
             { "bsorPath", bsorPath },
         };
 
