@@ -151,9 +151,8 @@ namespace LocalLeaderboard.UI.ViewControllers
         private void showSettings()
         {
             parserParams.EmitEvent("showSettings");
-            uwuToggle.gameObject.SetActive(UserIsPatron);
-            nameToggle.gameObject.SetActive(UserIsPatron);
-
+            uwuToggle.interactable = UserIsPatron;
+            nameToggle.interactable = UserIsPatron;
             settingsModal.StartCoroutine(setToggle(americanToggle));
             settingsModal.StartCoroutine(setToggle(uwuToggle));
             settingsModal.StartCoroutine(setToggle(relativeToggle));
@@ -177,7 +176,11 @@ namespace LocalLeaderboard.UI.ViewControllers
         [UIValue("rainbowsuwu")]
         private bool rainbowsuwu
         {
-            get => config.rainbowsuwu;
+            get
+            {
+                if (!UserIsPatron) return false;
+                return config.rainbowsuwu;
+            }
             set
             {
                 config.rainbowsuwu = value;
@@ -188,7 +191,11 @@ namespace LocalLeaderboard.UI.ViewControllers
         [UIValue("nameheaderoption")]
         private bool nameheaderoption
         {
-            get => config.nameHeaderToggle;
+            get
+            {
+                if (!UserIsPatron) return false;
+                return config.nameHeaderToggle;
+            }
             set
             {
                 config.nameHeaderToggle = value;
@@ -205,6 +212,12 @@ namespace LocalLeaderboard.UI.ViewControllers
                 config.useRelativeTime = value;
                 OnLeaderboardSet(currentDifficultyBeatmap);
             }
+        }
+
+        [UIValue("patreonHint")]
+        private string patreonHint
+        {
+            get => UserIsPatron ? "Hi patreon user :3" : "Patreon Access Only";
         }
 
         void setHeaderText(TextMeshProUGUI text, bool patreon)
@@ -295,8 +308,15 @@ namespace LocalLeaderboard.UI.ViewControllers
                     Plugin.userName = username;
                     UserIsPatron = isPatron;
                     setHeaderText(headerText, isPatron);
-                    uwuToggle.gameObject.SetActive(isPatron);
-                    nameToggle.gameObject.SetActive(isPatron);
+                    if (!isPatron)
+                    {
+                        SettingsConfig.Instance.rainbowsuwu = false;
+                        SettingsConfig.Instance.nameHeaderToggle = false;
+                    }
+                    uwuToggle.interactable = isPatron;
+                    nameToggle.interactable = isPatron;
+                    uwuToggle.Value = false;
+                    nameToggle.Value = false;
                 });
             }
             header.transform.localPosition = new Vector3(-999, -999, -999);
