@@ -3,9 +3,11 @@ using IPA.Config.Stores;
 using LocalLeaderboard.Installers;
 using SiraUtil.Zenject;
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using IPALogger = IPA.Logging.Logger;
+
 namespace LocalLeaderboard
 {
     [NoEnableDisable]
@@ -16,9 +18,7 @@ namespace LocalLeaderboard
         internal static IPALogger Log { get; private set; }
 
         public static bool UserIsPatron;
-
         public static string userName;
-
         public static bool beatLeaderInstalled;
 
         [Init]
@@ -28,9 +28,32 @@ namespace LocalLeaderboard
             Log = logger;
             SettingsConfig.Instance = conf.Generated<SettingsConfig>();
             LeaderboardData.LeaderboardData.createConfigIfNeeded();
-            beatLeaderInstalled = GetAssemblyByName("BeatLeader") != null;
+
+            if (!GetGameVersion().Contains("1.29"))
+            {
+                beatLeaderInstalled = false;
+                Plugin.Log.Info("VERSION BELOW 1.29.1");
+            }
+            else
+            {
+                beatLeaderInstalled = GetAssemblyByName("BeatLeader") != null;
+                Plugin.Log.Info("VERSION IS 1.29.1 OR ABOVE");
+            }
+
             zenjector.Install<MenuInstaller>(Location.Menu);
             zenjector.Install<AppInstaller>(Location.App);
+        }
+
+        public static string GetGameVersion()
+        {
+
+            string versionFilePath = "./BeatSaberVersion.txt";
+
+            if (File.Exists(versionFilePath))
+            {
+                return File.ReadAllText(versionFilePath);
+            }
+            return string.Empty;
         }
 
         public static Assembly GetAssemblyByName(string name)

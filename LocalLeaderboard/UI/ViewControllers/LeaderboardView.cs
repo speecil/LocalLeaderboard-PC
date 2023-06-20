@@ -1,6 +1,7 @@
 ﻿using BeatSaberMarkupLanguage;
 using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Components;
+using BeatSaberMarkupLanguage.Components.Settings;
 using BeatSaberMarkupLanguage.Parser;
 using BeatSaberMarkupLanguage.ViewControllers;
 using HMUI;
@@ -74,14 +75,23 @@ namespace LocalLeaderboard.UI.ViewControllers
         [UIComponent("retryButton")]
         private Button retryButton;
 
-        [UIObject("uwuToggle")]
-        private GameObject uwuToggle;
+        [UIComponent("uwuToggle")]
+        private ToggleSetting uwuToggle;
 
-        [UIObject("nameToggle")]
-        private GameObject nameToggle;
+        [UIComponent("nameToggle")]
+        private ToggleSetting nameToggle;
+
+        [UIComponent("americanToggle")]
+        private ToggleSetting americanToggle;
+
+        [UIComponent("relativeToggle")]
+        private ToggleSetting relativeToggle;
 
         [UIComponent("infoModal")]
         private ModalView infoModal;
+
+        [UIComponent("settingsModal")]
+        private ModalView settingsModal;
 
         [UIValue("buttonHolders")]
         [Inject] private List<ButtonHolder> holders;
@@ -91,6 +101,7 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         [UIParams]
         BSMLParserParams parserParams;
+
 
         public int page = 0;
         public int totalPages;
@@ -140,8 +151,13 @@ namespace LocalLeaderboard.UI.ViewControllers
         private void showSettings()
         {
             parserParams.EmitEvent("showSettings");
-            uwuToggle.SetActive(UserIsPatron);
-            nameToggle.SetActive(UserIsPatron);
+            uwuToggle.gameObject.SetActive(UserIsPatron);
+            nameToggle.gameObject.SetActive(UserIsPatron);
+
+            settingsModal.StartCoroutine(setToggle(americanToggle));
+            settingsModal.StartCoroutine(setToggle(uwuToggle));
+            settingsModal.StartCoroutine(setToggle(relativeToggle));
+            settingsModal.StartCoroutine(setToggle(nameToggle));
         }
 
         [UIValue("dateoption")]
@@ -279,8 +295,8 @@ namespace LocalLeaderboard.UI.ViewControllers
                     Plugin.userName = username;
                     UserIsPatron = isPatron;
                     setHeaderText(headerText, isPatron);
-                    uwuToggle.SetActive(isPatron);
-                    nameToggle.SetActive(isPatron);
+                    uwuToggle.gameObject.SetActive(isPatron);
+                    nameToggle.gameObject.SetActive(isPatron);
                 });
             }
             header.transform.localPosition = new Vector3(-999, -999, -999);
@@ -345,6 +361,21 @@ namespace LocalLeaderboard.UI.ViewControllers
                 bgOutline.color1 = bgColour;
 
                 buttonText.color = textColour;
+                yield return null;
+            }
+        }
+
+        public IEnumerator setToggle(ToggleSetting toggle)
+        {
+            var offColour = new Color(0, 0, 0, 0.5f);
+            var bgImage = toggle.gameObject.transform.Find("SwitchView/BackgroundImage/KnobSlideArea").GetComponentInChildren<ImageView>();
+            var bgColour = Constants.SPEECIL_COLOUR_BRIGHTER;
+            while (toggle.gameObject.activeInHierarchy)
+            {
+                if (toggle.Value)
+                {
+                    bgImage.color = bgColour;
+                }
                 yield return null;
             }
         }

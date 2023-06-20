@@ -93,7 +93,6 @@ namespace LocalLeaderboard.UI
             }
         }
 
-
         public void setScoreModalText(LLeaderboardEntry entry)
         {
             string formattedDate = "Error";
@@ -124,7 +123,7 @@ namespace LocalLeaderboard.UI
             else fcScoreText.text = string.Format("Mistakes: <size=4.2><color=red>{0}</color></size>", entry.badCutCount + entry.missCount);
 
             failScoreText.gameObject.SetActive(entry.didFail);
-            avgHitscoreScoreText.text = $"Average Hitscore: <size={infoFontSize}>{entry.averageHitscore}</size>";
+            avgHitscoreScoreText.text = $"Average Hitscore: <size={infoFontSize}>{entry.averageHitscore.ToString("F2")}</size>";
             maxComboScoreText.text = $"Max Combo: <size={infoFontSize}>{entry.maxCombo}</size>";
             parserParams.EmitEvent("showScoreInfo");
             currentEntry = entry;
@@ -137,7 +136,6 @@ namespace LocalLeaderboard.UI
                 watchReplayButton.StartCoroutine(setButtoncolor(watchReplayButton));
             }
             else watchReplayButton.interactable = false;
-
         }
 
         private void silly(LLeaderboardEntry leaderboardEntry)

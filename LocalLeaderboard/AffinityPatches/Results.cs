@@ -109,8 +109,8 @@ namespace LocalLeaderboard.AffinityPatches
             // new data modals balls
 
             bool didFail = levelCompletionResults.levelEndStateType == LevelCompletionResults.LevelEndStateType.Failed;
-            int maxCombo = levelCompletionResults.okCount;
-            int averageHitscore = (int)levelCompletionResults.averageCutScoreForNotesWithFullScoreScoringType;
+            int maxCombo = levelCompletionResults.maxCombo;
+            float averageHitscore = levelCompletionResults.averageCutScoreForNotesWithFullScoreScoringType;
 
             string destinationFileName = "BL NOT INSTALLED";
             if (Directory.Exists(Constants.BLREPLAY_PATH) && Plugin.beatLeaderInstalled)

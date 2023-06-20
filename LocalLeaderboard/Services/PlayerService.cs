@@ -5,18 +5,16 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-
 namespace LocalLeaderboard.Services
 {
     internal class PlayerService
     {
-
         public (string, string) OculusSkillIssue()
         {
             var steamID = "0";
             var steamName = "loser";
-            //steamID = Steamworks.SteamUser.GetSteamID().ToString();
-            //steamName = Steamworks.SteamFriends.GetPersonaName();
+            steamID = Steamworks.SteamUser.GetSteamID().ToString();
+            steamName = Steamworks.SteamFriends.GetPersonaName();
             return (steamID, steamName);
         }
 

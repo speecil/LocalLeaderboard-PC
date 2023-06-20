@@ -98,14 +98,14 @@
 				<vertical
 					 pad='3'>
 					<text align='Top' font-size='5' bold='false' underlined='true' text='Settings'/>
-						<toggle-setting apply-on-change='true' text='American Dates' pref-width='45' value='dateoption' hover-hint='Save data using the terrible american date format'/>
+						<toggle-setting id='americanToggle' apply-on-change='true' text='American Dates' pref-width='45' value='dateoption' hover-hint='Save data using the terrible american date format'/>
 						<toggle-setting id='uwuToggle' apply-on-change='true' text='uwu mode :3' pref-width='45' value='rainbowsuwu' hover-hint='Hi patreon user, :3'/>
 						<toggle-setting id='nameToggle' apply-on-change='true' text='Name in header' pref-width='45' value='nameheaderoption' hover-hint='Hi patreon user, :3'/>
 						<toggle-setting id='relativeToggle' apply-on-change='true' text='Use relative time' pref-width='45' value='useRelativeTime' hover-hint='Show the relative time as words instead of a date'/>
 				</vertical>
 			</modal>
 			<macro.as-host host='scoreInfoModal'>
-				<modal child-expand-height="false" id='scoreInfo' show-event='showScoreInfo' hide-event='hideScoreInfo' size-delta-x='58' size-delta-y='42' clickerino-offerino-closerino='true'
+				<modal child-expand-height="false" id='scoreInfo' show-event='showScoreInfo' hide-event='hideScoreInfo' size-delta-x='60' size-delta-y='42' clickerino-offerino-closerino='true'
 			move-to-center='true'>
 					<vertical spacing='-1'
 						vertical-fit='PreferredSize' horizontal-fit='PreferredSize' pad='3'>

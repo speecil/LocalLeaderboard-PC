@@ -59,11 +59,11 @@ namespace LocalLeaderboard.LeaderboardData
             public int score;
             public string mods;
             public int maxCombo;
-            public int averageHitscore;
+            public float averageHitscore;
             public bool didFail;
             public string bsorPath;
 
-            public LeaderboardEntry(int missCount, int badCutCount, float acc, bool fullCombo, string datePlayed, int score, string mods, int maxCombo, int averageHitscore, bool didFail, string bsorPath)
+            public LeaderboardEntry(int missCount, int badCutCount, float acc, bool fullCombo, string datePlayed, int score, string mods, int maxCombo, float averageHitscore, bool didFail, string bsorPath)
             {
                 this.missCount = missCount;
                 this.badCutCount = badCutCount;
@@ -79,7 +79,7 @@ namespace LocalLeaderboard.LeaderboardData
             }
         }
 
-        public static void AddBeatMap(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, int averageHitscore, bool didFail, string bsorPath)
+        public static void AddBeatMap(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, float averageHitscore, bool didFail, string bsorPath)
         {
             if (string.IsNullOrEmpty(mapID) || string.IsNullOrEmpty(diff))
             {
@@ -152,7 +152,7 @@ namespace LocalLeaderboard.LeaderboardData
 
 
 
-        public static void UpdateBeatMapInfo(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, int averageHitscore, bool didFail, string bsorPath)
+        public static void UpdateBeatMapInfo(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, float averageHitscore, bool didFail, string bsorPath)
         {
             var difficulty = new JObject
         {
@@ -202,7 +202,7 @@ namespace LocalLeaderboard.LeaderboardData
                     int? score = scoreData["score"]?.Value<int>();
                     string modifiers = scoreData["modifiers"]?.Value<string>();
                     int? maxCombo = scoreData["maxCombo"]?.Value<int>();
-                    int? averageHitscore = scoreData["averageHitscore"]?.Value<int>();
+                    float? averageHitscore = scoreData["averageHitscore"]?.Value<float>();
                     bool? didFail = scoreData["didFail"]?.Value<bool>();
                     string bsorPath = scoreData["bsorPath"]?.Value<string>();
 
