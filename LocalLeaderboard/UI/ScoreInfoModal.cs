@@ -49,6 +49,18 @@ namespace LocalLeaderboard.UI
         [UIComponent("watchReplayButton")]
         private Button watchReplayButton;
 
+        private string _replayHint = "Watch Replay";
+
+        [UIValue("replayHint")]
+        private string replayHint
+        {
+            get => _replayHint;
+            set
+            {
+                _replayHint = value;
+            }
+        }
+
         [UIAction("replayStart")]
         void replayStart() => silly(currentEntry);
 
@@ -126,16 +138,20 @@ namespace LocalLeaderboard.UI
             maxComboScoreText.text = $"Max Combo: <size={infoFontSize}>{entry.maxCombo}</size>";
             parserParams.EmitEvent("showScoreInfo");
             currentEntry = entry;
+            failScoreText.gameObject.SetActive(entry.didFail);
 
-            watchReplayButton.gameObject.SetActive(Plugin.beatLeaderInstalled);
 
             if (File.Exists(Constants.LLREPLAYS_PATH + entry.bsorPath))
             {
                 watchReplayButton.interactable = true;
+                replayHint = "Watch Replay!";
                 watchReplayButton.StartCoroutine(setButtoncolor(watchReplayButton));
             }
-            else watchReplayButton.interactable = false;
-            failScoreText.gameObject.SetActive(entry.didFail);
+            else
+            {
+                watchReplayButton.interactable = false;
+                replayHint = "Beatleader not installed or replay does not exist!";
+            }
         }
 
         private void silly(LLeaderboardEntry leaderboardEntry)
