@@ -578,7 +578,9 @@ namespace LocalLeaderboard.UI.ViewControllers
 
             string result;
 
-            result = "<size=100%>" + formattedDate + formattedAcc + formattedCombo + formattedMods + "</size>";
+            string size = SettingsConfig.Instance.useRelativeTime ? "120%" : "90%";
+
+            result = $"<size={size}>" + formattedDate + formattedAcc + formattedCombo + formattedMods + "</size>";
             return new ScoreData(score, result, rank, false);
         }
 
