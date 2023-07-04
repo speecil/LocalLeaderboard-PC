@@ -32,12 +32,10 @@ namespace LocalLeaderboard
             if (!GetGameVersion().Contains("1.29"))
             {
                 beatLeaderInstalled = false;
-                Plugin.Log.Info("VERSION BELOW 1.29.1");
             }
             else
             {
                 beatLeaderInstalled = GetAssemblyByName("BeatLeader") != null;
-                Plugin.Log.Info("VERSION IS 1.29.1 OR ABOVE");
             }
 
             zenjector.Install<MenuInstaller>(Location.Menu);

@@ -36,7 +36,7 @@ namespace LocalLeaderboard.Services
             }
             catch (Exception e)
             {
-                Plugin.Log.Debug(e);
+                Plugin.Log.Error(e);
             }
 
             replay = default;

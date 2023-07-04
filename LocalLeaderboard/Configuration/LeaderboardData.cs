@@ -37,7 +37,6 @@ namespace LocalLeaderboard.LeaderboardData
 
         static void writeData()
         {
-            Plugin.Log.Notice("WRITING DATA");
             if (File.Exists(Constants.CONFIG_PATH))
             {
                 File.WriteAllText(Constants.CONFIG_PATH, LocalLeaderboardData.ToString());

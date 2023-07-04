@@ -159,7 +159,6 @@ namespace LocalLeaderboard.UI
             if (_replayService == null) return;
             Plugin.Log.Info("STARTING REPLAY");
             string fileLocation = Constants.LLREPLAYS_PATH + leaderboardEntry.bsorPath;
-            Plugin.Log.Info(fileLocation);
             if (_replayService.TryReadReplay(fileLocation, out var replay1))
             {
                 BeatLeader.Models.Player player = new BeatLeader.Models.Player();

@@ -304,7 +304,6 @@ namespace LocalLeaderboard.UI.ViewControllers
                 origPos = header.transform.localPosition;
                 _playerService.GetPatreonStatus((isPatron, username) =>
                 {
-                    Plugin.Log.Info(isPatron ? "USER IS PATRON (tysm)" : null);
                     Plugin.userName = username;
                     UserIsPatron = isPatron;
                     setHeaderText(headerText, isPatron);
