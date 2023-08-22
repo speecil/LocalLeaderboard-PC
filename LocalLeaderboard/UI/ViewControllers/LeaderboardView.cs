@@ -29,7 +29,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         [Inject] private PanelView _panelView;
         [Inject] private PlatformLeaderboardViewController _plvc;
         [Inject] private TweeningService _tweeningService;
-        [Inject] private PlayerService _playerService;
+        //[Inject] private PlayerService _playerService;
 
         private bool Ascending = true;
         public static LLeaderboardEntry[] buttonEntryArray = new LLeaderboardEntry[10];
@@ -298,10 +298,9 @@ namespace LocalLeaderboard.UI.ViewControllers
             if (!this.isActiveAndEnabled) return;
             if (!_plvc) return;
             OnLeaderboardSet(currentDifficultyBeatmap);
-            var header = _plvc.transform.Find("HeaderPanel");
+            /*
             if (firstActivation)
             {
-                origPos = header.transform.localPosition;
                 _playerService.GetPatreonStatus((isPatron, username) =>
                 {
                     Plugin.userName = username;
@@ -318,7 +317,8 @@ namespace LocalLeaderboard.UI.ViewControllers
                     nameToggle.Value = false;
                 });
             }
-            header.transform.localPosition = new Vector3(-999, -999, -999);
+            */
+            _plvc.GetComponentInChildren<TextMeshProUGUI>().color = new Color(0, 0, 0, 0);
         }
 
         protected override void DidDeactivate(bool removedFromHierarchy, bool screenSystemDisabling)
@@ -326,8 +326,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             base.DidDeactivate(removedFromHierarchy, screenSystemDisabling);
             if (!_plvc) return;
             if (!_plvc.isActivated) return;
-            var header = _plvc.transform.Find("HeaderPanel");
-            header.transform.localPosition = origPos;
+            _plvc.GetComponentInChildren<TextMeshProUGUI>().color = Color.white;
             page = 0;
             parserParams.EmitEvent("hideInfoModal");
             scoreInfoModal.parserParams.EmitEvent("hideScoreInfo");

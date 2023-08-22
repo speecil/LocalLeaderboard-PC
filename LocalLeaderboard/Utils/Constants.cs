@@ -13,8 +13,6 @@ namespace LocalLeaderboard.Utils
         internal const string DISCORD_URL = "https://discord.gg/2KyykDXpBk";
         internal const string PATREON_URL = "https://patreon.com/speecil";
         internal const string WEBSITE_URL = "https://speecil.dev/localleaderboard.html";
-        internal const string PATRON_LIST_URL = "http://137.184.114.167:3000/patrons/list.txt";
-        internal const string PING_URL = "http://137.184.114.167:3000/ping/";
 
         internal static readonly Color SPEECIL_COLOUR = new Color(0.156f, 0.69f, 0.46666f, 1);
         internal static readonly Color SPEECIL_COLOUR_BRIGHTER = new Color((float)47 / 255, (float)212 / 255, (float)143 / 255, 1);

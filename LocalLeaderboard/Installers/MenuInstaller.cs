@@ -19,8 +19,6 @@ namespace LocalLeaderboard.Installers
 
             if (Plugin.beatLeaderInstalled) Container.Bind<ReplayService>().AsSingle();
 
-            Container.Bind<PlayerService>().AsSingle();
-
             ScoreInfoModal scoreInfoModal = new ScoreInfoModal();
             List<ButtonHolder> holder = Enumerable.Range(0, 10).Select(x => new ButtonHolder(x, scoreInfoModal.setScoreModalText)).ToList();
             Container.Bind<ScoreInfoModal>().FromInstance(scoreInfoModal).AsSingle().WhenInjectedInto<LeaderboardView>();
