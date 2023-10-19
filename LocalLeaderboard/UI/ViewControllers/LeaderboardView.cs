@@ -322,8 +322,8 @@ namespace LocalLeaderboard.UI.ViewControllers
         {
             base.DidDeactivate(removedFromHierarchy, screenSystemDisabling);
             if (!_plvc) return;
-            if (!_plvc.isActivated) return;
             _plvc.GetComponentInChildren<TextMeshProUGUI>().color = Color.white;
+            if (!_plvc.isActivated) return;
             page = 0;
             parserParams.EmitEvent("hideInfoModal");
             scoreInfoModal.parserParams.EmitEvent("hideScoreInfo");
