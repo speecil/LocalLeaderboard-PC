@@ -80,7 +80,20 @@ namespace LocalLeaderboard.UI.ViewControllers
             base.DidActivate(firstActivation, addedToHierarchy, screenSystemEnabling);
             if (firstActivation)
             {
-                this.gameObject.AddComponent<RainbowGradientUpdater>();
+                if(uwu && lb.UserIsPatron)
+                {
+                    if (GetComponent<RainbowGradientUpdater>() == null)
+                    {
+                        this.gameObject.AddComponent<RainbowGradientUpdater>();
+                    }
+                }
+                else
+                {
+                    if (GetComponent<RainbowGradientUpdater>() != null)
+                    {
+                        Destroy(GetComponent<RainbowGradientUpdater>());
+                    }
+                }
             }
         }
 
@@ -93,7 +106,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         {
             uwu = value;
 
-            if (!uwu)
+            if (!uwu || !SettingsConfig.Instance.rainbowsuwu)
             {
                 // Destroy the RainbowGradientUpdater component if uwu is false
                 RainbowGradientUpdater rainbowUpdater = GetComponent<RainbowGradientUpdater>();

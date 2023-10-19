@@ -17,10 +17,7 @@ namespace LocalLeaderboard.Services
 
         public bool TryReadReplay(string filename, out BeatLeader.Models.Replay.Replay replay)
         {
-            Plugin.Log.Info("TRYREADREPLAY");
-            //BeatLeader.Models.Replay.ReplayDecoder
             var method = Plugin.GetAssemblyByName("BeatLeader").GetType("BeatLeader.Models.Replay.ReplayDecoder").GetMethod("DecodeReplay", BindingFlags.Public | BindingFlags.Static);
-            Plugin.Log.Info("method attempt");
             if (method == null) { replay = default; Plugin.Log.Info("method null bruh"); return false;  }
             try
             {
@@ -33,7 +30,6 @@ namespace LocalLeaderboard.Services
                     stream.Close();
 
                     replay = (BeatLeader.Models.Replay.Replay)method.Invoke(null, new object[] { buffer });
-                    Plugin.Log.Info("SUCCESS READING REPLAY!");
                     return true;
                 }
             }
@@ -41,16 +37,13 @@ namespace LocalLeaderboard.Services
             {
                 Plugin.Log.Error(e);
             }
-            Plugin.Log.Info("FAILED TO READ REPLAY!");
             replay = default;
             return false;
         }
 
         public void StartReplay(BeatLeader.Models.Replay.Replay replay, BeatLeader.Models.Player player)
         {
-            Plugin.Log.Info("START REPLAY!");
             if (_replayerMenuLoader == null) return;
-            Plugin.Log.Info("AFTER NULL CHECK REPLAY!");
             ((BeatLeader.Replayer.ReplayerMenuLoader)_replayerMenuLoader).StartReplayAsync(replay, player, null);
         }
     }

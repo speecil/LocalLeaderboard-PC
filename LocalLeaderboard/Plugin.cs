@@ -17,7 +17,6 @@ namespace LocalLeaderboard
         internal static Plugin Instance { get; private set; }
         internal static IPALogger Log { get; private set; }
 
-        public static bool UserIsPatron;
         public static string userName;
         public static bool beatLeaderInstalled;
 

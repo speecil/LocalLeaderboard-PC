@@ -11,10 +11,8 @@ namespace LocalLeaderboard.Services
     {
         public (string, string) OculusSkillIssue()
         {
-            var steamID = "0";
-            var steamName = "loser";
-            steamID = Steamworks.SteamUser.GetSteamID().ToString();
-            steamName = Steamworks.SteamFriends.GetPersonaName();
+            string steamID = Steamworks.SteamUser.GetSteamID().ToString();
+            string steamName = Steamworks.SteamFriends.GetPersonaName();
             return (steamID, steamName);
         }
 
@@ -32,14 +30,13 @@ namespace LocalLeaderboard.Services
             }
             return taskCompletionSource.Task;
         }
-        private async void GetPatreonStatusAsync(Action<bool, string> callback)
+
+        private async void GetUserNameStatus(Action<bool, string> callback)
         {
             (string playerID, string playerName) = await GetPlayerInfo();
-            string patronList = await new HttpClient().GetStringAsync(Constants.PATRON_LIST_URL);
-            bool isPatron = patronList.Split(',').Any(patron => patron.Trim() == playerID);
-            await new HttpClient().GetAsync(Constants.PING_URL + playerID);
-            await UnityMainThreadTaskScheduler.Factory.StartNew(() => callback(isPatron, playerName));
+            const bool MANUALCHANGELMFAO = false;
+            await UnityMainThreadTaskScheduler.Factory.StartNew(() => callback(MANUALCHANGELMFAO, playerName));
         }
-        public void GetPatreonStatus(Action<bool, string> callback) => Task.Run(() => GetPatreonStatusAsync(callback));
+        public void GetPatreonStatus(Action<bool, string> callback) => Task.Run(() => GetUserNameStatus(callback));
     }
 }

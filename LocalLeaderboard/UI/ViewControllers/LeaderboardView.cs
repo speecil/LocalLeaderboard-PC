@@ -29,6 +29,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         [Inject] private PanelView _panelView;
         [Inject] private PlatformLeaderboardViewController _plvc;
         [Inject] private TweeningService _tweeningService;
+        [Inject] private PlayerService _playerService;
         //[Inject] private PlayerService _playerService;
 
         private bool Ascending = true;
@@ -184,7 +185,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             set
             {
                 config.rainbowsuwu = value;
-                _panelView.toggleRainbow(config.rainbowsuwu);
+                _panelView.toggleRainbow(value);
             }
         }
 
@@ -194,6 +195,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             get
             {
                 if (!UserIsPatron) return false;
+                setHeaderText(headerText, UserIsPatron);
                 return config.nameHeaderToggle;
             }
             set
@@ -298,14 +300,12 @@ namespace LocalLeaderboard.UI.ViewControllers
             if (!this.isActiveAndEnabled) return;
             if (!_plvc) return;
             OnLeaderboardSet(currentDifficultyBeatmap);
-            /*
             if (firstActivation)
             {
                 _playerService.GetPatreonStatus((isPatron, username) =>
                 {
                     Plugin.userName = username;
                     UserIsPatron = isPatron;
-                    setHeaderText(headerText, isPatron);
                     if (!isPatron)
                     {
                         SettingsConfig.Instance.rainbowsuwu = false;
@@ -313,11 +313,8 @@ namespace LocalLeaderboard.UI.ViewControllers
                     }
                     uwuToggle.interactable = isPatron;
                     nameToggle.interactable = isPatron;
-                    uwuToggle.Value = false;
-                    nameToggle.Value = false;
                 });
             }
-            */
             _plvc.GetComponentInChildren<TextMeshProUGUI>().color = new Color(0, 0, 0, 0);
         }
 
