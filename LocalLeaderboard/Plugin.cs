@@ -1,5 +1,6 @@
 ﻿using IPA;
 using IPA.Config.Stores;
+using IPA.Loader;
 using LocalLeaderboard.Installers;
 using SiraUtil.Zenject;
 using System;
@@ -39,18 +40,14 @@ namespace LocalLeaderboard
 
             zenjector.Install<MenuInstaller>(Location.Menu);
             zenjector.Install<AppInstaller>(Location.App);
+
+            Plugin.Log.Info(GetGameVersion());
+            Plugin.Log.Info(beatLeaderInstalled ? "BeatLeader Installed" : "BeatLeader Not Insalled");
         }
 
         public static string GetGameVersion()
         {
-
-            string versionFilePath = "./BeatSaberVersion.txt";
-
-            if (File.Exists(versionFilePath))
-            {
-                return File.ReadAllText(versionFilePath);
-            }
-            return string.Empty;
+            return IPA.Utilities.UnityGame.GameVersion.StringValue;
         }
 
         public static Assembly GetAssemblyByName(string name)

@@ -88,8 +88,7 @@
 
 					<horizontal spacing='1'>
 						<action-button pref-width='20' pref-height='10'  id='discordButton' text='Discord' on-click='Discord'/>
-						<action-button pref-width='20' pref-height='10' id='patreonButton' text='
-									   ' on-click='Patreon'/>
+						<action-button pref-width='20' pref-height='10' id='patreonButton' text='Patreon' on-click='Patreon'/>
 						<action-button pref-width='20' pref-height='10' id='websiteButton' text='Website' on-click='Website'/>
 					</horizontal>
 				</vertical>

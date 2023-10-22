@@ -17,6 +17,7 @@ namespace LocalLeaderboard.Services
 
         public bool TryReadReplay(string filename, out BeatLeader.Models.Replay.Replay replay)
         {
+            Plugin.Log.Info("TryReadReplay");
             var method = Plugin.GetAssemblyByName("BeatLeader").GetType("BeatLeader.Models.Replay.ReplayDecoder").GetMethod("DecodeReplay", BindingFlags.Public | BindingFlags.Static);
             if (method == null) { replay = default; Plugin.Log.Info("method null bruh"); return false;  }
             try
