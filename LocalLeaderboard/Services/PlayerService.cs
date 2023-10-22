@@ -34,7 +34,7 @@ namespace LocalLeaderboard.Services
         private async void GetUserNameStatus(Action<bool, string> callback)
         {
             (string playerID, string playerName) = await GetPlayerInfo();
-            const bool MANUALCHANGELMFAO = true;
+            const bool MANUALCHANGELMFAO = false;
             await UnityMainThreadTaskScheduler.Factory.StartNew(() => callback(MANUALCHANGELMFAO, playerName));
         }
         public void GetPatreonStatus(Action<bool, string> callback) => Task.Run(() => GetUserNameStatus(callback));
