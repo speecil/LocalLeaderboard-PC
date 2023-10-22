@@ -40,9 +40,6 @@ namespace LocalLeaderboard
 
             zenjector.Install<MenuInstaller>(Location.Menu);
             zenjector.Install<AppInstaller>(Location.App);
-
-            Plugin.Log.Info(GetGameVersion());
-            Plugin.Log.Info(beatLeaderInstalled ? "BeatLeader Installed" : "BeatLeader Not Insalled");
         }
 
         public static string GetGameVersion()
