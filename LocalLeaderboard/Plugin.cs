@@ -29,14 +29,7 @@ namespace LocalLeaderboard
             SettingsConfig.Instance = conf.Generated<SettingsConfig>();
             LeaderboardData.LeaderboardData.createConfigIfNeeded();
 
-            if (!GetGameVersion().Contains("1.29"))
-            {
-                beatLeaderInstalled = false;
-            }
-            else
-            {
-                beatLeaderInstalled = GetAssemblyByName("BeatLeader") != null;
-            }
+
 
             zenjector.Install<MenuInstaller>(Location.Menu);
             zenjector.Install<AppInstaller>(Location.App);

@@ -17,7 +17,7 @@ namespace LocalLeaderboard.Services
 
         public bool TryReadReplay(string filename, out BeatLeader.Models.Replay.Replay replay)
         {
-            Plugin.Log.Debug("TryReadReplay");
+            Plugin.Log.Info("TryReadReplay");
             var method = Plugin.GetAssemblyByName("BeatLeader").GetType("BeatLeader.Models.Replay.ReplayDecoder").GetMethod("DecodeReplay", BindingFlags.Public | BindingFlags.Static);
             if (method == null) { replay = default; Plugin.Log.Info("method null bruh"); return false;  }
             try
@@ -44,7 +44,10 @@ namespace LocalLeaderboard.Services
 
         public void StartReplay(BeatLeader.Models.Replay.Replay replay, BeatLeader.Models.Player player)
         {
-            if (_replayerMenuLoader == null) return;
+            if (_replayerMenuLoader == null){
+                Plugin.Log.Error("replayerMenuLoader null");
+                return;
+            }
             ((BeatLeader.Replayer.ReplayerMenuLoader)_replayerMenuLoader).StartReplayAsync(replay, player, null);
         }
     }

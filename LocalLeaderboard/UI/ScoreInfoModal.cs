@@ -140,7 +140,6 @@ namespace LocalLeaderboard.UI
             currentEntry = entry;
             failScoreText.gameObject.SetActive(entry.didFail);
 
-
             if (File.Exists(Constants.LLREPLAYS_PATH + entry.bsorPath))
             {
                 watchReplayButton.interactable = true;
@@ -156,11 +155,16 @@ namespace LocalLeaderboard.UI
 
         private void silly(LLeaderboardEntry leaderboardEntry)
         {
-            if (_replayService == null) return;
+            if (_replayService == null)
+            {
+                Plugin.Log.Info("REPLAY SERVICE NULL");
+                return;
+            }
             Plugin.Log.Info("STARTING REPLAY");
             string fileLocation = Constants.LLREPLAYS_PATH + leaderboardEntry.bsorPath;
             if (_replayService.TryReadReplay(fileLocation, out var replay1))
             {
+                parserParams.EmitEvent("hideScoreInfo");
                 BeatLeader.Models.Player player = new BeatLeader.Models.Player();
                 player.avatar = "https://raw.githubusercontent.com/speecil/Patrons/main/Untitled%20design%20(16).png";
                 player.country = "AUS";
@@ -173,7 +177,6 @@ namespace LocalLeaderboard.UI
                     string format = SettingsConfig.Instance.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt";
                     player.name = string.Format("You   Date: {0}", datePlayed.ToString(format));
                 }
-                parserParams.EmitEvent("hideScoreInfo");
                 _replayService.StartReplay(replay1, player);
                 //GameObject.Find("Replayer2DViewControllerScreen/Replayer2DViewController/BSMLHorizontalLayoutGroup/BSMLVerticalLayoutGroup/BSMLVerticalLayoutGroup/BSMLVerticalLayoutGroup/BSMLHorizontalLayoutGroup/BSMLVerticalLayoutGroup/BSMLHorizontalLayoutGroup/BSMLVerticalLayoutGroup/BSMLHorizontalLayoutGroup/BSMLText").GetComponent<TextMeshProUGUI>().richText = true;
             }

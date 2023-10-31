@@ -113,6 +113,27 @@ namespace LocalLeaderboard.AffinityPatches
             float averageHitscore = levelCompletionResults.averageCutScoreForNotesWithFullScoreScoringType;
 
             string destinationFileName = "BL NOT INSTALLED";
+
+            // check if directory exists for debug
+            if(Directory.Exists(Constants.BLREPLAY_PATH))
+            {
+                Plugin.Log.Notice("Directory Exists");
+            }
+            else
+            {
+                Plugin.Log.Error("Directory Does Not Exist");
+            }
+
+            // now check if beatleader is installed
+            if (Plugin.beatLeaderInstalled)
+            {
+                Plugin.Log.Notice("BeatLeader Installed");
+            }
+            else
+            {
+                Plugin.Log.Error("BeatLeader Not Installed");
+            }
+
             if (Directory.Exists(Constants.BLREPLAY_PATH) && Plugin.beatLeaderInstalled)
             {
                 var directory = new DirectoryInfo(Constants.BLREPLAY_PATH);

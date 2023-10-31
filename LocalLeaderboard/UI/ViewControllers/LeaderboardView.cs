@@ -302,6 +302,15 @@ namespace LocalLeaderboard.UI.ViewControllers
             OnLeaderboardSet(currentDifficultyBeatmap);
             if (firstActivation)
             {
+                // maybe calling this later will fix the issue
+                if (!Plugin.GetGameVersion().Contains("1.29"))
+                {
+                    Plugin.beatLeaderInstalled = false;
+                }
+                else
+                {
+                    Plugin.beatLeaderInstalled = Plugin.GetAssemblyByName("BeatLeader") != null;
+                }
                 _playerService.GetPatreonStatus((isPatron, username) =>
                 {
                     Plugin.userName = username;
