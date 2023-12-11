@@ -14,6 +14,7 @@ using SiraUtil.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -35,6 +36,8 @@ namespace LocalLeaderboard.UI.ViewControllers
         [Inject] private readonly SiraLog _log;
 
         //[Inject] private PlayerService _playerService;
+        
+        [InjectOptional] private List<IExternalDataService> _externalDataProviders;
 
         private bool Ascending = true;
         public static LLeaderboardEntry[] buttonEntryArray = new LLeaderboardEntry[10];
@@ -432,6 +435,15 @@ namespace LocalLeaderboard.UI.ViewControllers
             string mapType = difficultyBeatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName;
             string balls = mapType + difficulty.ToString();
             List<LLeaderboardEntry> leaderboardEntries = LeaderboardData.LeaderboardData.LoadBeatMapInfo(mapId, balls);
+            
+            if (_externalDataProviders != null)
+            {
+                foreach (var provider in _externalDataProviders)
+                {
+                    //TODO async loading
+                    leaderboardEntries.AddRange(provider.GetLeaderboardEntries(difficultyBeatmap, new CancellationToken()).Result);
+                }
+            }
 
             totalPages = Mathf.CeilToInt((float)leaderboardEntries.Count / 10);
 
