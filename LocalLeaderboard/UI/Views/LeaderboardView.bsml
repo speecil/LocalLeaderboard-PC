@@ -107,7 +107,9 @@
 			<macro.as-host host="scoreInfoModal">
 				<modal id="scoreInfo" show-event="showScoreInfo" hide-event="hideScoreInfo" size-delta-x="60" size-delta-y="42" clickerino-offerino-closerino="true" move-to-center="true">
 					<vertical spacing="1" child-expand-height="true" child-expand-width="true" pad="3">
-
+						<vertical id="normalModalInfo">
+							
+						
 						<!-- Style -->
 						<macro.define name="font-size" value="3.1"/>
 
@@ -136,9 +138,37 @@
 							<text rich-text="true" id="avgHitscoreScoreText" font-size="~font-size" text="AVGHIT" align="Left"/>
 							<text rich-text="true" id="maxComboScoreText" font-size="~font-size" text="MAXCOMBO" align="Right"/>
 						</horizontal>
+						</vertical>
+ 
+						<horizontal ignore-layout="true" anchor-pos-x="25.5" anchor-pos-y="17.5">
+							<action-button text="⟳" font-align="MidlineGeoAligned" font-size="5" align="MidlineGeoAligned" preferred-width="6" preferred-height="7" on-click="replayStart" id="watchReplayButton" hover-hint="~replayHint"/>
+						</horizontal>
 
-						<horizontal>
-							<action-button font-size="2.7" word-wrapping="true" preferred-width="25" on-click="replayStart" id="watchReplayButton" bold="false" all-uppercase="true" text="Watch Beatleader Replay" align="Center" hover-hint="~replayHint"/>
+						<macro.define name="sillysize" value="3.3" />
+						<vertical id="moreModalInfo" active="false" spacing="5" child-expand-height="true" child-expand-width="false" child-control-width="false" pad="3" child-align="MiddleCenter" pref-width="60">
+							<horizontal preferred-height="-2">
+								
+							</horizontal>
+							<horizontal spacing="3" child-align="MiddleCenter" child-control-width="true" horizontal-fit="PreferredSize">
+								<text font-size="~sillysize" rich-text="true" id="leftHandAverageScore" text="leftHandAverageScore" align="Center"/>
+								<text font-size="~sillysize" rich-text="true" id="rightHandAverageScore" text="rightHandAverageScore" align="Center"/>
+							</horizontal>
+							<horizontal spacing="3" child-align="MiddleCenter" child-control-width="true" horizontal-fit="PreferredSize">
+								<text font-size="~sillysize" rich-text="true" id="leftHandTimeDependency" text="leftHandTimeDependency" align="Center"/>
+								<text font-size="~sillysize" rich-text="true" id="rightHandTimeDependency" text="rightHandTimeDependency" align="Center"/>
+							</horizontal>
+							<horizontal spacing="3" child-align="MiddleCenter" child-control-width="true" horizontal-fit="PreferredSize">
+								<text font-size="~sillysize" rich-text="true" id="perfectStreak" text="perfectStreak" align="Center"/>
+								<text font-size="~sillysize" rich-text="true" id="pauses" text="perfectStreak" align="Center"/>
+							</horizontal>
+						</vertical>
+						<vertical min-height="8"/>
+
+						<horizontal ignore-layout="true" anchor-pos-y="-15">
+							<action-button preferred-height="8" preferred-width="20" rich-text="true" id="moreInfoButton" font-size="4" text="More Info" align="Bottom" on-click="moreInfoButtonCLICK" />
+						</horizontal>
+						<horizontal ignore-layout="true" anchor-pos-y="-15">
+							<button active="false" preferred-height="8" preferred-width="20" rich-text="true" id="backInfoButton" font-size="4" text="Back" align="Bottom" on-click="moreInfoButtonCLICK" />
 						</horizontal>
 
 					</vertical>
@@ -148,9 +178,9 @@
 		</leaderboard>
 	</vertical>
 	<vertical anchor-pos-x="47" anchor-pos-y="5.4" spacing="-19.4">
-		<macro.for-each hosts="buttonHolders">
+		<macro.for-each hosts="EntryHolders">
 			<horizontal min-height="8" child-expand-height="true" child-align="MiddleCenter">
-				<button-with-icon id="infoButton" on-click="infoClick" icon ="LocalLeaderboard.Images.info.png" hover-hint="Info" pref-width="10" pref-height="7"/>
+				<button-with-icon active="false" id="infoButton" on-click="infoClick" icon ="LocalLeaderboard.Images.info.png" hover-hint="Info" pref-width="10" pref-height="7"/>
 			</horizontal>
 		</macro.for-each>
 	</vertical>

@@ -4,7 +4,7 @@ using LocalLeaderboard.UI.ViewControllers;
 using System.Collections.Generic;
 using System.Linq;
 using Zenject;
-using ButtonHolder = LocalLeaderboard.UI.ViewControllers.LeaderboardView.ButtonHolder;
+using EntryHolder = LocalLeaderboard.UI.ViewControllers.LeaderboardView.EntryHolder;
 
 namespace LocalLeaderboard.Installers
 {
@@ -19,9 +19,9 @@ namespace LocalLeaderboard.Installers
             Container.Bind<PlayerService>().AsSingle();
             if (Plugin.GetAssemblyByName("BeatLeader") != null) Container.Bind<ReplayService>().AsSingle();
             ScoreInfoModal scoreInfoModal = new ScoreInfoModal();
-            List<ButtonHolder> holder = Enumerable.Range(0, 10).Select(x => new ButtonHolder(x, scoreInfoModal.setScoreModalText)).ToList();
+            List<EntryHolder> holder = Enumerable.Range(0, 10).Select(x => new EntryHolder(scoreInfoModal.setScoreModalText)).ToList();
             Container.Bind<ScoreInfoModal>().FromInstance(scoreInfoModal).AsSingle().WhenInjectedInto<LeaderboardView>();
-            Container.Bind<List<ButtonHolder>>().FromInstance(holder).AsSingle().WhenInjectedInto<LeaderboardView>();
+            Container.Bind<List<EntryHolder>>().FromInstance(holder).AsSingle().WhenInjectedInto<LeaderboardView>();
             Container.QueueForInject(scoreInfoModal);
         }
     }

@@ -11,6 +11,12 @@ namespace LocalLeaderboard.UI
         private readonly CustomLeaderboardManager _manager;
         private LeaderboardView _leaderboardView;
 
+        public override bool ShowForLevel(IPreviewBeatmapLevel selectedLevel)
+        {
+            return true;
+        }
+        protected override string leaderboardId => "LocalLeaderboard";
+
         internal LLLeaderboard(CustomLeaderboardManager customLeaderboardManager, PanelView panelView, LeaderboardView leaderboardView)
         {
             panelViewController = panelView;

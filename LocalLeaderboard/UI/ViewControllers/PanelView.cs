@@ -80,7 +80,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             base.DidActivate(firstActivation, addedToHierarchy, screenSystemEnabling);
             if (firstActivation)
             {
-                if(uwu && lb.UserIsPatron)
+                if (uwu && lb.UserIsPatron)
                 {
                     if (GetComponent<RainbowGradientUpdater>() == null)
                     {

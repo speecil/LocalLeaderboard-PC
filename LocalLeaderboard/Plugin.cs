@@ -1,10 +1,8 @@
 ﻿using IPA;
 using IPA.Config.Stores;
-using IPA.Loader;
 using LocalLeaderboard.Installers;
 using SiraUtil.Zenject;
 using System;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using IPALogger = IPA.Logging.Logger;
@@ -27,12 +25,11 @@ namespace LocalLeaderboard
             Instance = this;
             Log = logger;
             SettingsConfig.Instance = conf.Generated<SettingsConfig>();
-            LeaderboardData.LeaderboardData.createConfigIfNeeded();
-
-
-
+            LeaderboardData.LeaderboardData.Setup();
+            zenjector.UseLogger(logger);
             zenjector.Install<MenuInstaller>(Location.Menu);
             zenjector.Install<AppInstaller>(Location.App);
+            zenjector.Install<GameInstaller>(Location.GameCore);
         }
 
         public static string GetGameVersion()

@@ -15,6 +15,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Zenject;
 using LLeaderboardEntry = LocalLeaderboard.LeaderboardData.LeaderboardData.LeaderboardEntry;
@@ -94,8 +95,8 @@ namespace LocalLeaderboard.UI.ViewControllers
         [UIComponent("settingsModal")]
         private ModalView settingsModal;
 
-        [UIValue("buttonHolders")]
-        [Inject] private List<ButtonHolder> holders;
+        [UIValue("EntryHolders")]
+        [Inject] private List<EntryHolder> holders;
 
         [UIComponent("scoreInfoModal")]
         [Inject] private ScoreInfoModal scoreInfoModal;
@@ -352,16 +353,38 @@ namespace LocalLeaderboard.UI.ViewControllers
                 rankText.gameObject.SetActive(false);
                 scoreText.gameObject.SetActive(false);
 
+
+                ImageView seperator = cell.GetField<Image, LeaderboardTableCell>("_separatorImage") as ImageView;
+
+                cell.interactable = true;
+                EntryHolder EntryHolder = holders[cell.idx];
+
+                CellClicker clicky;
+
+                if (cell.gameObject.GetComponent<CellClicker>() == null)
+                {
+                    clicky = cell.gameObject.AddComponent<CellClicker>();
+                }
+                else
+                {
+                    clicky = cell.gameObject.GetComponent<CellClicker>();
+                }
+
+                clicky.onClick = EntryHolder.infoClick;
+                clicky.index = cell.idx;
+                clicky.seperator = seperator;
+
+                //clicky.Reset();
+
                 if (cell.gameObject.activeSelf && leaderboardTransform.gameObject.activeSelf)
                 {
                     _tweeningService.FadeText(nameText, true, 0.4f);
                     _tweeningService.FadeText(rankText, true, 0.4f);
                     _tweeningService.FadeText(scoreText, true, 0.4f);
                 }
+
             }
         }
-
-        private void FuckOffButtons() => holders.ForEach(holder => holder.infoButton.gameObject.SetActive(false));
 
         public IEnumerator setcolor(Button button)
         {
@@ -418,7 +441,6 @@ namespace LocalLeaderboard.UI.ViewControllers
 
             try
             {
-                FuckOffButtons();
                 UpdatePageButtons();
                 SortLeaderboardEntries(leaderboardEntries);
                 leaderboardTableView.SetScores(CreateLeaderboardData(leaderboardEntries, page), -1);
@@ -463,8 +485,6 @@ namespace LocalLeaderboard.UI.ViewControllers
                 if (leaderboardEntries.Count <= 0) return;
                 _panelView.lastPlayed.text = (Ascending ? "Lowest Acc : " : "Highest Acc : ") + leaderboardEntries[0].acc.ToString("F2") + "%";
             }
-
-
         }
 
         private void HandleLeaderboardEntriesExistence(List<LLeaderboardEntry> leaderboardEntries)
@@ -486,11 +506,6 @@ namespace LocalLeaderboard.UI.ViewControllers
             int startIndex = page * 10;
             int remainingEntries = leaderboardEntries.Count - startIndex;
             int maxEntriesPerPage = Mathf.Min(remainingEntries, 10);
-
-            for (int i = 0; i < maxEntriesPerPage; i++)
-            {
-                holders[i].infoButton.gameObject.SetActive(true);
-            }
         }
 
         private void HandleNoLeaderboardEntries()
@@ -589,22 +604,112 @@ namespace LocalLeaderboard.UI.ViewControllers
         }
 
 
-        internal class ButtonHolder
+        internal class EntryHolder
         {
-            private int index;
             private Action<LLeaderboardEntry> onClick;
 
-            public ButtonHolder(int index, Action<LLeaderboardEntry> endmylife)
+            public EntryHolder(Action<LLeaderboardEntry> endmylife)
             {
-                this.index = index;
                 onClick = endmylife;
             }
 
-            [UIComponent("infoButton")]
-            public Button infoButton;
+            //[UIComponent("infoButton")]
+            //public Button infoButton;
 
-            [UIAction("infoClick")]
-            private void infoClick() => onClick?.Invoke(buttonEntryArray[index]);
+            //[UIAction("infoClick")]
+            internal void infoClick(int index) => onClick?.Invoke(buttonEntryArray[index]);
+        }
+
+        public class CellClicker : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+        {
+            public Action<int> onClick;
+            public int index;
+            public ImageView seperator;
+            private Vector3 originalScale;
+            private bool isScaled = false;
+
+            private Color origColour = new Color(1, 1, 1, 1);
+            private Color origColour0 = new Color(1, 1, 1, 0.2509804f);
+            private Color origColour1 = new Color(1, 1, 1, 0);
+
+            private void Start()
+            {
+                originalScale = seperator.transform.localScale;
+            }
+
+            public void Reset()
+            {
+                seperator.color = origColour;
+                seperator.color0 = origColour0;
+                seperator.color1 = origColour1;
+                seperator.transform.localScale = originalScale;
+                isScaled = false;
+            }
+
+            public void OnPointerClick(PointerEventData data)
+            {
+                BeatSaberUI.BasicUIAudioManager.HandleButtonClickEvent();
+                onClick(index);
+            }
+
+            public void OnPointerEnter(PointerEventData eventData)
+            {
+                if (!isScaled)
+                {
+                    seperator.transform.localScale = originalScale * 1.8f;
+                    isScaled = true;
+                }
+
+                Color targetColor = Color.white;
+                Color targetColor0 = Color.white;
+                Color targetColor1 = new Color(1, 1, 1, 0);
+
+                float lerpDuration = 0.15f;
+
+                StopAllCoroutines();
+                StartCoroutine(LerpColors(seperator, seperator.color, targetColor, seperator.color0, targetColor0, seperator.color1, targetColor1, lerpDuration));
+            }
+
+            public void OnPointerExit(PointerEventData eventData)
+            {
+                if (isScaled)
+                {
+                    seperator.transform.localScale = originalScale;
+                    isScaled = false;
+                }
+
+                float lerpDuration = 0.05f;
+
+                StopAllCoroutines();
+                StartCoroutine(LerpColors(seperator, seperator.color, origColour, seperator.color0, origColour0, seperator.color1, origColour1, lerpDuration));
+            }
+
+
+            private IEnumerator LerpColors(ImageView target, Color startColor, Color endColor, Color startColor0, Color endColor0, Color startColor1, Color endColor1, float duration)
+            {
+                float elapsedTime = 0f;
+                while (elapsedTime < duration)
+                {
+                    float t = elapsedTime / duration;
+                    target.color = Color.Lerp(startColor, endColor, t);
+                    target.color0 = Color.Lerp(startColor0, endColor0, t);
+                    target.color1 = Color.Lerp(startColor1, endColor1, t);
+                    elapsedTime += Time.deltaTime;
+                    yield return null;
+                }
+                target.color = endColor;
+                target.color0 = endColor0;
+                target.color1 = endColor1;
+            }
+
+            private void OnDestroy()
+            {
+                StopAllCoroutines();
+                onClick = null;
+                seperator.color = origColour;
+                seperator.color0 = origColour0;
+                seperator.color1 = origColour1;
+            }
         }
     }
 }

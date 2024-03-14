@@ -12,7 +12,7 @@ namespace LocalLeaderboard.LeaderboardData
     {
         public static JObject LocalLeaderboardData;
 
-        public static void createConfigIfNeeded()
+        public static void Setup()
         {
             if (LocalLeaderboardData != null) return;
             if (File.Exists(Constants.CONFIG_PATH))
@@ -43,7 +43,7 @@ namespace LocalLeaderboard.LeaderboardData
             }
             else
             {
-                createConfigIfNeeded();
+                Setup();
                 File.WriteAllText(Constants.CONFIG_PATH, LocalLeaderboardData.ToString());
             }
         }
@@ -61,8 +61,15 @@ namespace LocalLeaderboard.LeaderboardData
             public float averageHitscore;
             public bool didFail;
             public string bsorPath;
+            public float avgAccRight;
+            public float avgAccLeft;
+            public int perfectStreak;
+            public float rightHandTimeDependency;
+            public float leftHandTimeDependency;
+            public float fcAcc;
+            public int pauses;
 
-            public LeaderboardEntry(int missCount, int badCutCount, float acc, bool fullCombo, string datePlayed, int score, string mods, int maxCombo, float averageHitscore, bool didFail, string bsorPath)
+            public LeaderboardEntry(int missCount, int badCutCount, float acc, bool fullCombo, string datePlayed, int score, string mods, int maxCombo, float averageHitscore, bool didFail, string bsorPath, float avgAccRight, float avgAccLeft, int perfectStreak, float rightHandTimeDependency, float leftHandTimeDependency, float fcAcc, int pauses)
             {
                 this.missCount = missCount;
                 this.badCutCount = badCutCount;
@@ -75,10 +82,17 @@ namespace LocalLeaderboard.LeaderboardData
                 this.averageHitscore = averageHitscore;
                 this.didFail = didFail;
                 this.bsorPath = bsorPath;
+                this.avgAccRight = avgAccRight;
+                this.avgAccLeft = avgAccLeft;
+                this.perfectStreak = perfectStreak;
+                this.rightHandTimeDependency = rightHandTimeDependency;
+                this.leftHandTimeDependency = leftHandTimeDependency;
+                this.fcAcc = fcAcc;
+                this.pauses = pauses;
             }
         }
 
-        public static void AddBeatMap(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, float averageHitscore, bool didFail, string bsorPath)
+        public static void AddBeatMap(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, float averageHitscore, bool didFail, string bsorPath, float avgAccRight, float avgAccLeft, int perfectStreak, float rightHandTimeDependency, float leftHandTimeDependency, float fcAcc, int pauses)
         {
             if (string.IsNullOrEmpty(mapID) || string.IsNullOrEmpty(diff))
             {
@@ -104,6 +118,13 @@ namespace LocalLeaderboard.LeaderboardData
                 { "averageHitscore", averageHitscore },
                 { "didFail", didFail },
                 { "bsorPath", bsorPath },
+                { "rightHandTimeDependency", rightHandTimeDependency },
+                { "leftHandTimeDependency", leftHandTimeDependency },
+                { "rightHandAverageScore", avgAccRight },
+                { "leftHandAverageScore", avgAccLeft},
+                { "perfectStreak", perfectStreak },
+                { "fcAccuracy", fcAcc },
+                { "pauses", pauses }
 
 
             });
@@ -123,6 +144,13 @@ namespace LocalLeaderboard.LeaderboardData
                 { "averageHitscore", averageHitscore },
                 { "didFail", didFail },
                 { "bsorPath", bsorPath },
+                { "rightHandTimeDependency", rightHandTimeDependency },
+                { "leftHandTimeDependency", leftHandTimeDependency },
+                { "rightHandAverageScore", avgAccRight },
+                { "leftHandAverageScore", avgAccLeft},
+                { "perfectStreak", perfectStreak },
+                { "fcAccuracy", fcAcc },
+                { "pauses", pauses }
 
 
             });
@@ -143,6 +171,13 @@ namespace LocalLeaderboard.LeaderboardData
             { "averageHitscore", averageHitscore },
             { "didFail", didFail },
             { "bsorPath", bsorPath },
+            { "rightHandTimeDependency", rightHandTimeDependency },
+            { "leftHandTimeDependency", leftHandTimeDependency },
+            { "rightHandAverageScore", avgAccRight },
+            { "leftHandAverageScore", avgAccLeft},
+            { "perfectStreak", perfectStreak },
+            { "fcAccuracy", fcAcc },
+            { "pauses", pauses }
         }) } };
                 LocalLeaderboardData.Add(mapID, mapData);
             }
@@ -151,7 +186,7 @@ namespace LocalLeaderboard.LeaderboardData
 
 
 
-        public static void UpdateBeatMapInfo(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, float averageHitscore, bool didFail, string bsorPath)
+        public static void UpdateBeatMapInfo(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, float averageHitscore, bool didFail, string bsorPath, float avgAccRight, float avgAccLeft, int perfectStreak, float rightHandTimeDependency, float leftHandTimeDependency, float fcAcc, int pauses)
         {
             var difficulty = new JObject
         {
@@ -166,11 +201,18 @@ namespace LocalLeaderboard.LeaderboardData
             { "averageHitscore", averageHitscore },
             { "didFail", didFail },
             { "bsorPath", bsorPath },
+            { "rightHandTimeDependency", rightHandTimeDependency },
+            { "leftHandTimeDependency", leftHandTimeDependency },
+            { "rightHandAverageScore", avgAccRight },
+            { "leftHandAverageScore", avgAccLeft},
+            { "perfectStreak", perfectStreak },
+            { "fcAccuracy", fcAcc },
+            { "pauses", pauses }
         };
 
             if (LocalLeaderboardData[mapID] == null)
             {
-                AddBeatMap(mapID, diff, missCount, badCutCount, fullCombo, datePlayed, acc, score, mods, maxCombo, averageHitscore, didFail, bsorPath);
+                AddBeatMap(mapID, diff, missCount, badCutCount, fullCombo, datePlayed, acc, score, mods, maxCombo, averageHitscore, didFail, bsorPath, avgAccRight, avgAccLeft, perfectStreak, rightHandTimeDependency, leftHandTimeDependency, fcAcc, pauses);
                 return;
             }
 
@@ -197,26 +239,40 @@ namespace LocalLeaderboard.LeaderboardData
                     int? badCutCount = scoreData["badCutCount"]?.Value<int>();
                     float? acc = scoreData["acc"]?.Value<float>();
                     bool? fullCombo = scoreData["fullCombo"]?.Value<bool>();
-                    string datePlayed = scoreData["datePlayed"]?.Value<string>();
+                    string? datePlayed = scoreData["datePlayed"]?.Value<string>();
                     int? score = scoreData["score"]?.Value<int>();
                     string modifiers = scoreData["modifiers"]?.Value<string>();
                     int? maxCombo = scoreData["maxCombo"]?.Value<int>();
                     float? averageHitscore = scoreData["averageHitscore"]?.Value<float>();
                     bool? didFail = scoreData["didFail"]?.Value<bool>();
-                    string bsorPath = scoreData["bsorPath"]?.Value<string>();
+                    string? bsorPath = scoreData["bsorPath"]?.Value<string>();
+                    float? avgAccRight = scoreData["rightHandAverageScore"]?.Value<float>();
+                    float? avgAccLeft = scoreData["leftHandAverageScore"]?.Value<float>();
+                    int? perfectStreak = scoreData["perfectStreak"]?.Value<int>();
+                    float? rightHandTimeDependency = scoreData["rightHandTimeDependency"]?.Value<float>();
+                    float? leftHandTimeDependency = scoreData["leftHandTimeDependency"]?.Value<float>();
+                    float? fcAcc = scoreData["fcAccuracy"]?.Value<float>();
+                    int? pauses = scoreData["pauses"]?.Value<int>();
 
                     leaderboard.Add(new LeaderboardEntry(
                         missCount ?? 0,
                         badCutCount ?? 0,
                         acc ?? 0f,
                         fullCombo ?? false,
-                        datePlayed,
+                        datePlayed ?? "",
                         score ?? 0,
-                        modifiers,
+                        modifiers ?? "",
                         maxCombo ?? 0,
                         averageHitscore ?? 0,
                         didFail ?? false,
-                        bsorPath ?? ""
+                        bsorPath ?? "",
+                        avgAccRight ?? 0,
+                        avgAccLeft ?? 0,
+                        perfectStreak ?? -1,
+                        rightHandTimeDependency ?? 0,
+                        leftHandTimeDependency ?? 0,
+                        fcAcc ?? 0,
+                        pauses ?? -1
                         ));
                 }
             }

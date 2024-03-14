@@ -1,6 +1,7 @@
 ﻿using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Parser;
 using HMUI;
+using LocalLeaderboard.AffinityPatches;
 using LocalLeaderboard.Services;
 using LocalLeaderboard.UI.ViewControllers;
 using LocalLeaderboard.Utils;
@@ -10,6 +11,7 @@ using System.Collections;
 using System.IO;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Zenject;
 using LLeaderboardEntry = LocalLeaderboard.LeaderboardData.LeaderboardData.LeaderboardEntry;
@@ -48,6 +50,36 @@ namespace LocalLeaderboard.UI
 
         [UIComponent("watchReplayButton")]
         private Button watchReplayButton;
+
+        [UIObject("normalModalInfo")]
+        private readonly GameObject normalModalInfo;
+
+        [UIObject("moreModalInfo")]
+        private readonly GameObject moreModalInfo;
+
+        [UIComponent("moreInfoButton")]
+        private readonly Button moreInfoButton;
+
+        [UIComponent("backInfoButton")]
+        private readonly Button backInfoButton;
+
+        [UIComponent("leftHandAverageScore")]
+        private readonly TextMeshProUGUI leftHandAverageScore;
+
+        [UIComponent("rightHandAverageScore")]
+        private readonly TextMeshProUGUI rightHandAverageScore;
+
+        [UIComponent("leftHandTimeDependency")]
+        private readonly TextMeshProUGUI leftHandTimeDependency;
+
+        [UIComponent("rightHandTimeDependency")]
+        private readonly TextMeshProUGUI rightHandTimeDependency;
+
+        [UIComponent("pauses")]
+        private readonly TextMeshProUGUI pauses;
+
+        [UIComponent("perfectStreak")]
+        private readonly TextMeshProUGUI perfectStreak;
 
         private string _replayHint = "Watch Replay";
 
@@ -104,9 +136,31 @@ namespace LocalLeaderboard.UI
                 yield return null;
             }
         }
+        private bool isMoreInfo = false;
 
+        [UIAction("moreInfoButtonCLICK")]
+        public void moreInfoButtonCLICK()
+        {
+            isMoreInfo = !isMoreInfo;
+            moreInfoButton.gameObject.SetActive(!isMoreInfo);
+            backInfoButton.gameObject.SetActive(isMoreInfo);
+            moreModalInfo.SetActive(isMoreInfo);
+            normalModalInfo.SetActive(!isMoreInfo);
+
+            if (!isMoreInfo)
+            {
+                moreInfoButton.StopAllCoroutines();
+                moreInfoButton.StartCoroutine(setButtoncolor(moreInfoButton));
+            }
+        }
         public void setScoreModalText(LLeaderboardEntry entry)
         {
+            isMoreInfo = false;
+            backInfoButton.gameObject.SetActive(false);
+            moreInfoButton.gameObject.SetActive(true);
+            moreModalInfo.SetActive(false);
+            normalModalInfo.SetActive(true);
+
             string formattedDate = "Error";
             if (long.TryParse(entry.datePlayed, out long unixTimestamp))
             {
@@ -140,6 +194,28 @@ namespace LocalLeaderboard.UI
             currentEntry = entry;
             failScoreText.gameObject.SetActive(entry.didFail);
 
+            if (entry.avgAccLeft != 0) leftHandAverageScore.text = $"Left Hand Acc: <size={infoFontSize}><color=#38f2a4>{entry.avgAccLeft:0.##}</color></size>"; else leftHandAverageScore.text = "";
+            if (entry.avgAccRight != 0) rightHandAverageScore.text = $"Right Hand Acc: <size={infoFontSize}><color=#38f2a4>{entry.avgAccRight:0.##}</color></size>"; else rightHandAverageScore.text = "";
+            if (entry.leftHandTimeDependency != 0) leftHandTimeDependency.text = $"Left Hand TD: <size={infoFontSize}><color=#38f2a4>{entry.leftHandTimeDependency:0.##}</color></size>"; else leftHandTimeDependency.text = "";
+            if (entry.rightHandTimeDependency != 0) rightHandTimeDependency.text = $"Right Hand TD: <size={infoFontSize}><color=#38f2a4>{entry.rightHandTimeDependency:0.##}</color></size>"; else rightHandTimeDependency.text = "";
+            if (entry.pauses != -1) pauses.text = $"Pauses: <size={infoFontSize}><color=#38f2a4>{entry.pauses}</color></size>"; else pauses.text = "";
+            if (entry.perfectStreak != -1) { perfectStreak.text = $"Perfect Streak: <size={infoFontSize}><color=#38f2a4>{entry.perfectStreak}</color></size>"; moreInfoButton.interactable = true; } else { perfectStreak.text = ""; moreInfoButton.interactable = false; }
+
+            if (moreInfoButton.interactable)
+            {
+                AttachTextHoverEffect(accScoreText.gameObject, true, accScoreText.text, $"<color=#ffd42a>FC</color> Accuracy: <size={infoFontSize}><color=#38f2a4><i>{entry.fcAcc:F2}%</color></size>", FontStyles.Normal);
+                AttachTextHoverEffect(leftHandAverageScore.gameObject, true, leftHandAverageScore.text, $"Left Hand Acc: <size={infoFontSize}><color=#38f2a4><i>{GetAccPercentFromHand(entry.avgAccLeft)}</color></size>", FontStyles.Normal);
+                AttachTextHoverEffect(rightHandAverageScore.gameObject, true, rightHandAverageScore.text, $"Right Hand Acc: <size={infoFontSize}><color=#38f2a4><i>{GetAccPercentFromHand(entry.avgAccRight)}</color></size>", FontStyles.Normal);
+                moreInfoButton.StartCoroutine(setButtoncolor(moreInfoButton));
+            }
+            else
+            {
+                RemoveTextHoverEffect(accScoreText.gameObject);
+                RemoveTextHoverEffect(leftHandAverageScore.gameObject);
+                RemoveTextHoverEffect(rightHandAverageScore.gameObject);
+            }
+
+
             if (File.Exists(Constants.LLREPLAYS_PATH + entry.bsorPath))
             {
                 watchReplayButton.interactable = true;
@@ -153,32 +229,107 @@ namespace LocalLeaderboard.UI
             }
         }
 
+        internal string GetAccPercentFromHand(float handAcc)
+        {
+            return GetAccPercentFromHandFloat(handAcc).ToString("0.00") + "%";
+        }
+        internal static float GetAccPercentFromHandFloat(float handAcc)
+        {
+            return (handAcc / 115) * 100;
+        }
+
         private void silly(LLeaderboardEntry leaderboardEntry)
         {
             if (_replayService == null)
             {
-                Plugin.Log.Info("REPLAY SERVICE NULL");
+                Plugin.Log.Error("REPLAY SERVICE NULL");
                 return;
             }
-            Plugin.Log.Info("STARTING REPLAY");
+            Plugin.Log.Notice("STARTING LOCALLEADERBOARD REPLAY");
             string fileLocation = Constants.LLREPLAYS_PATH + leaderboardEntry.bsorPath;
             if (_replayService.TryReadReplay(fileLocation, out var replay1))
             {
                 parserParams.EmitEvent("hideScoreInfo");
                 BeatLeader.Models.Player player = new BeatLeader.Models.Player();
-                player.avatar = "https://raw.githubusercontent.com/speecil/Patrons/main/Untitled%20design%20(16).png";
+                player.avatar = "https://raw.githubusercontent.com/speecil/LocalLeaderboard-PC/master/LocalLeaderboard/Images/LocalLeaderboard_logo.png";
                 player.country = "AUS";
                 player.pp = leaderboardEntry.acc;
                 player.rank = leaderboardEntry.score;
+                DateTime a = new DateTime();
+                string format = SettingsConfig.Instance.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt";
                 if (long.TryParse(leaderboardEntry.datePlayed, out long unixTimestamp))
                 {
                     DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(unixTimestamp);
                     DateTime datePlayed = dateTimeOffset.LocalDateTime;
-                    string format = SettingsConfig.Instance.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt";
-                    player.name = string.Format("You   Date: {0}", datePlayed.ToString(format));
+                    a = datePlayed;
+                    player.name = string.Format("<size=110%><u>You</u>   Date: <color=#28b077>{0}</color></size>", datePlayed.ToString(format));
                 }
+                ExtraSongData.coolReplayText = "<i><b><color=#28b077>LocalLeaderboard</color> <color=\"red\">REPLAY</color></b>   " + player.name;
+                player.name = string.Format("You   Date: {0}", a.ToString(format));
                 _replayService.StartReplay(replay1, player);
-                //GameObject.Find("Replayer2DViewControllerScreen/Replayer2DViewController/BSMLHorizontalLayoutGroup/BSMLVerticalLayoutGroup/BSMLVerticalLayoutGroup/BSMLVerticalLayoutGroup/BSMLHorizontalLayoutGroup/BSMLVerticalLayoutGroup/BSMLHorizontalLayoutGroup/BSMLVerticalLayoutGroup/BSMLHorizontalLayoutGroup/BSMLText").GetComponent<TextMeshProUGUI>().richText = true;
+            }
+        }
+
+        public TextHoverEffect AttachTextHoverEffect(GameObject gameObject, bool shouldChangeText = false, string oldText = "", string newText = "", FontStyles daStyle = FontStyles.Normal, FontStyles origStyle = FontStyles.Normal)
+        {
+            TextHoverEffect textHoverEffect = gameObject.GetComponent<TextHoverEffect>() ?? gameObject.AddComponent<TextHoverEffect>();
+            textHoverEffect.daComponent = gameObject.GetComponent<TextMeshProUGUI>();
+            textHoverEffect.shouldChangeText = shouldChangeText;
+            textHoverEffect.oldText = oldText;
+            textHoverEffect.newText = newText;
+            textHoverEffect.daStyle = daStyle;
+            textHoverEffect.origStyle = origStyle;
+            return textHoverEffect;
+        }
+
+        public bool RemoveTextHoverEffect(GameObject gameobject)
+        {
+            TextHoverEffect textHoverEffect = gameobject.GetComponent<TextHoverEffect>();
+            if (textHoverEffect != null)
+            {
+                UnityEngine.Object.Destroy(textHoverEffect);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
+    public class TextHoverEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+    {
+        public TextMeshProUGUI daComponent;
+        private bool isScaled;
+        public bool shouldChangeText = false;
+        public string oldText = "";
+        public string newText = "";
+        public FontStyles daStyle = FontStyles.Normal;
+        public FontStyles origStyle = FontStyles.Normal;
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            if (!isScaled)
+            {
+                if (shouldChangeText)
+                {
+                    daComponent.text = newText;
+                }
+                daComponent.fontStyle = daStyle;
+                isScaled = true;
+            }
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            if (isScaled)
+            {
+                if (shouldChangeText)
+                {
+                    daComponent.text = oldText;
+                }
+                daComponent.fontStyle = origStyle;
+                isScaled = false;
             }
         }
     }

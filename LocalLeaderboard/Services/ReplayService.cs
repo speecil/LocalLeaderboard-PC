@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LocalLeaderboard.AffinityPatches;
+using System;
 using System.IO;
 using System.Reflection;
 using Zenject;
@@ -19,7 +20,7 @@ namespace LocalLeaderboard.Services
         {
             Plugin.Log.Info("TryReadReplay");
             var method = Plugin.GetAssemblyByName("BeatLeader").GetType("BeatLeader.Models.Replay.ReplayDecoder").GetMethod("DecodeReplay", BindingFlags.Public | BindingFlags.Static);
-            if (method == null) { replay = default; Plugin.Log.Info("method null bruh"); return false;  }
+            if (method == null) { replay = default; Plugin.Log.Info("method null"); return false; }
             try
             {
                 if (File.Exists(filename))
@@ -44,10 +45,13 @@ namespace LocalLeaderboard.Services
 
         public void StartReplay(BeatLeader.Models.Replay.Replay replay, BeatLeader.Models.Player player)
         {
-            if (_replayerMenuLoader == null){
+            if (_replayerMenuLoader == null)
+            {
+                ExtraSongData.IsLocalLeaderboardReplay = false;
                 Plugin.Log.Error("replayerMenuLoader null");
                 return;
             }
+            ExtraSongData.IsLocalLeaderboardReplay = true;
             ((BeatLeader.Replayer.ReplayerMenuLoader)_replayerMenuLoader).StartReplayAsync(replay, player, null);
         }
     }

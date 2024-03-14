@@ -1,4 +1,5 @@
-﻿using LocalLeaderboard.UI.ViewControllers;
+﻿using IPA.Utilities;
+using LocalLeaderboard.UI.ViewControllers;
 using LocalLeaderboard.Utils;
 using SiraUtil.Affinity;
 using System;
@@ -10,6 +11,11 @@ namespace LocalLeaderboard.AffinityPatches
 {
     internal class Results : IAffinity
     {
+        float GetModifierScoreMultiplier(LevelCompletionResults results, GameplayModifiersModelSO modifiersModel)
+        {
+            return modifiersModel.GetTotalMultiplier(modifiersModel.CreateModifierParamsList(results.gameplayModifiers), results.energy);
+        }
+
         public static string GetModifiersString(LevelCompletionResults levelCompletionResults)
         {
             string mods = "";
@@ -105,34 +111,22 @@ namespace LocalLeaderboard.AffinityPatches
 
             string balls = mapType + difficulty.ToString(); // BeatMap Allocated Level Label String
 
+            int pauses = ExtraSongDataHolder.pauses;
+            float rightHandAverageScore = ExtraSongDataHolder.GetAverageFromList(ExtraSongDataHolder.rightHandAverageScore);
+            float leftHandAverageScore = ExtraSongDataHolder.GetAverageFromList(ExtraSongDataHolder.leftHandAverageScore);
+            int perfectStreak = ExtraSongDataHolder.perfectStreak;
 
-            // new data modals balls
+            float rightHandTimeDependency = ExtraSongDataHolder.GetAverageFromList(ExtraSongDataHolder.rightHandTimeDependency);
+            float leftHandTimeDependency = ExtraSongDataHolder.GetAverageFromList(ExtraSongDataHolder.leftHandTimeDependency);
+            float fcAcc;
+            if (fc) fcAcc = acc;
+            else fcAcc = ExtraSongDataHolder.GetFcAcc(GetModifierScoreMultiplier(levelCompletionResults, platformLeaderboardsModel.GetField<GameplayModifiersModelSO, PlatformLeaderboardsModel>("_gameplayModifiersModel")));
 
             bool didFail = levelCompletionResults.levelEndStateType == LevelCompletionResults.LevelEndStateType.Failed;
             int maxCombo = levelCompletionResults.maxCombo;
             float averageHitscore = levelCompletionResults.averageCutScoreForNotesWithFullScoreScoringType;
 
-            string destinationFileName = "BL NOT INSTALLED";
-
-            // check if directory exists for debug
-            if(Directory.Exists(Constants.BLREPLAY_PATH))
-            {
-                Plugin.Log.Notice("Directory Exists");
-            }
-            else
-            {
-                Plugin.Log.Error("Directory Does Not Exist");
-            }
-
-            // now check if beatleader is installed
-            if (Plugin.beatLeaderInstalled)
-            {
-                Plugin.Log.Notice("BeatLeader Installed");
-            }
-            else
-            {
-                Plugin.Log.Error("BeatLeader Not Installed");
-            }
+            string destinationFileName = "BL REPLAY NOT FOUND";
 
             if (Directory.Exists(Constants.BLREPLAY_PATH) && Plugin.beatLeaderInstalled)
             {
@@ -146,12 +140,12 @@ namespace LocalLeaderboard.AffinityPatches
                 }
 
                 string timestamp = DateTime.UtcNow.Ticks.ToString();
-                destinationFileName = Path.GetFileNameWithoutExtension(filePath.Name) + "_" + timestamp + Path.GetExtension(filePath.Name);
+                destinationFileName = Path.GetFileNameWithoutExtension(difficultyBeatmap.level.levelID + difficultyBeatmap.difficultyRank) + "_" + timestamp + Path.GetExtension(filePath.Name);
                 string destinationFilePath = Path.Combine(Constants.LLREPLAYS_PATH, destinationFileName);
-                File.Copy(filePath.FullName, destinationFilePath);
+                File.Copy(filePath.FullName, destinationFilePath, true);
             }
 
-            LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(levelCompletionResults), maxCombo, averageHitscore, didFail, destinationFileName);
+            LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(levelCompletionResults), maxCombo, averageHitscore, didFail, destinationFileName, rightHandAverageScore, leftHandAverageScore, perfectStreak, rightHandTimeDependency, leftHandTimeDependency, fcAcc, pauses);
             var lb = Resources.FindObjectsOfTypeAll<LeaderboardView>().FirstOrDefault();
             lb.OnLeaderboardSet(lb.currentDifficultyBeatmap);
         }
