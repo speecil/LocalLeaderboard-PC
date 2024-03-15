@@ -13,6 +13,7 @@ using LocalLeaderboard.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -646,9 +647,10 @@ namespace LocalLeaderboard.UI.ViewControllers
                 isScaled = false;
             }
 
+
             public void OnPointerClick(PointerEventData data)
             {
-                BeatSaberUI.BasicUIAudioManager.HandleButtonClickEvent();
+                BeatSaberUI.BasicUIAudioManager.GetType().GetRuntimeMethod("HandleButtonClickEvent", new Type[0]);
                 onClick(index);
             }
 

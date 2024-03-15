@@ -1,4 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using BeatLeader.Models;
+using ModestTree;
+using UnityEngine;
 
 namespace LocalLeaderboard.Utils
 {
@@ -15,7 +21,7 @@ namespace LocalLeaderboard.Utils
 
         public static TimeSpan GetRelativeTime(string timeSet)
         {
-            var dateTime = long.Parse(timeSet).AsUnixTime();
+            var dateTime = AsUnixTime(long.Parse(timeSet));
             return DateTime.UtcNow - dateTime;
         }
 
@@ -47,6 +53,11 @@ namespace LocalLeaderboard.Utils
                         return years <= 1 ? "1 year ago" : years + " years ago";
                     }
             }
+        }
+        public static DateTime AsUnixTime(long longvalue)
+        {
+            DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            return unixEpoch.AddSeconds(longvalue);
         }
     }
 }

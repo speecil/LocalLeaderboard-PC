@@ -24,7 +24,7 @@ namespace LocalLeaderboard.Services
             }
             else
             {
-                Oculus.Platform.Users.GetLoggedInUser().OnComplete(user => taskCompletionSource.SetResult((user.Data.ID.ToString(), user.Data.OculusID)));
+                //Oculus.Platform.Users.GetLoggedInUser().OnComplete(user => taskCompletionSource.SetResult((user.Data.ID.ToString(), user.Data.OculusID)));
             }
             return taskCompletionSource.Task;
         }
