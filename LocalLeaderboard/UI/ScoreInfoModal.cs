@@ -6,6 +6,7 @@ using LocalLeaderboard.Services;
 using LocalLeaderboard.UI.ViewControllers;
 using LocalLeaderboard.Utils;
 using ModestTree;
+using SiraUtil.Logging;
 using System;
 using System.Collections;
 using System.IO;
@@ -21,6 +22,8 @@ namespace LocalLeaderboard.UI
 {
     internal class ScoreInfoModal
     {
+        [Inject] private readonly SiraLog _log;
+
         [UIComponent("scoreInfo")]
         public ModalView infoModal;
 
@@ -242,10 +245,10 @@ namespace LocalLeaderboard.UI
         {
             if (_replayService == null)
             {
-                Plugin.Log.Error("REPLAY SERVICE NULL");
+                _log.Error("REPLAY SERVICE NULL");
                 return;
             }
-            Plugin.Log.Notice("STARTING LOCALLEADERBOARD REPLAY");
+            _log.Notice("STARTING LOCALLEADERBOARD REPLAY");
             string fileLocation = Constants.LLREPLAYS_PATH + leaderboardEntry.bsorPath;
             if (_replayService.TryReadReplay(fileLocation, out var replay1))
             {

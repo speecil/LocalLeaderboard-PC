@@ -2,15 +2,18 @@
 using LocalLeaderboard.UI.ViewControllers;
 using LocalLeaderboard.Utils;
 using SiraUtil.Affinity;
+using SiraUtil.Logging;
 using System;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using Zenject;
 
 namespace LocalLeaderboard.AffinityPatches
 {
     internal class Results : IAffinity
     {
+        [Inject] private readonly SiraLog _log;
         float GetModifierScoreMultiplier(LevelCompletionResults results, GameplayModifiersModelSO modifiersModel)
         {
             return modifiersModel.GetTotalMultiplier(modifiersModel.CreateModifierParamsList(results.gameplayModifiers), results.energy);
@@ -87,6 +90,7 @@ namespace LocalLeaderboard.AffinityPatches
         [AffinityPatch(typeof(LevelCompletionResultsHelper), nameof(LevelCompletionResultsHelper.ProcessScore))]
         private void Postfix(ref PlayerData playerData, ref PlayerLevelStatsData playerLevelStats, ref LevelCompletionResults levelCompletionResults, ref IReadonlyBeatmapData transformedBeatmapData, ref IDifficultyBeatmap difficultyBeatmap, ref PlatformLeaderboardsModel platformLeaderboardsModel)
         {
+            _log.Info("Results postfix called.");
             float maxScore = ScoreModel.ComputeMaxMultipliedScoreForBeatmap(transformedBeatmapData);
             float modifiedScore = levelCompletionResults.modifiedScore;
             if (modifiedScore == 0 || maxScore == 0)
@@ -96,6 +100,8 @@ namespace LocalLeaderboard.AffinityPatches
             int badCut = levelCompletionResults.badCutsCount;
             int misses = levelCompletionResults.missedCount;
             bool fc = levelCompletionResults.fullCombo;
+
+            _log.Info("Results: " + acc + " " + score + " " + badCut + " " + misses + " " + fc);
 
             DateTime currentDateTime = DateTime.Now;
             DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);

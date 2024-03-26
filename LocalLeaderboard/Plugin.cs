@@ -13,17 +13,12 @@ namespace LocalLeaderboard
     [Plugin(RuntimeOptions.SingleStartInit)]
     public class Plugin
     {
-        internal static Plugin Instance { get; private set; }
-        internal static IPALogger Log { get; private set; }
-
         public static string userName;
         public static bool beatLeaderInstalled;
 
         [Init]
         public Plugin(IPALogger logger, Zenjector zenjector, IPA.Config.Config conf)
         {
-            Instance = this;
-            Log = logger;
             SettingsConfig.Instance = conf.Generated<SettingsConfig>();
             LeaderboardData.LeaderboardData.Setup();
             zenjector.UseLogger(logger);

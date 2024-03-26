@@ -1,4 +1,5 @@
 ﻿using LocalLeaderboard.AffinityPatches;
+using SiraUtil.Logging;
 using System;
 using System.IO;
 using System.Reflection;
@@ -10,15 +11,17 @@ namespace LocalLeaderboard.Services
     {
         private object _replayerMenuLoader;
 
+        private SiraLog _log;
+
         [Inject]
-        public void Inject(BeatLeader.Replayer.ReplayerMenuLoader replayerMenuLoader)
+        public void Inject(BeatLeader.Replayer.ReplayerMenuLoader replayerMenuLoader, SiraLog log)
         {
             _replayerMenuLoader = replayerMenuLoader;
+            _log = log;
         }
 
         public bool TryReadReplay(string filename, out BeatLeader.Models.Replay.Replay replay)
         {
-            Plugin.Log.Info("TryReadReplay");
             try
             {
                 if (File.Exists(filename))
@@ -35,7 +38,7 @@ namespace LocalLeaderboard.Services
             }
             catch (Exception e)
             {
-                Plugin.Log.Error(e);
+                _log.Error(e);
             }
             replay = default;
             return false;
@@ -46,7 +49,7 @@ namespace LocalLeaderboard.Services
             if (_replayerMenuLoader == null)
             {
                 ExtraSongData.IsLocalLeaderboardReplay = false;
-                Plugin.Log.Error("replayerMenuLoader null");
+                _log.Error("replayerMenuLoader null");
                 return;
             }
             ExtraSongData.IsLocalLeaderboardReplay = true;

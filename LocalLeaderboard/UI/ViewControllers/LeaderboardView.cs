@@ -10,6 +10,7 @@ using IPA.Utilities.Async;
 using LeaderboardCore.Interfaces;
 using LocalLeaderboard.Services;
 using LocalLeaderboard.Utils;
+using SiraUtil.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -31,6 +32,8 @@ namespace LocalLeaderboard.UI.ViewControllers
         [Inject] private PlatformLeaderboardViewController _plvc;
         [Inject] private TweeningService _tweeningService;
         [Inject] private PlayerService _playerService;
+        [Inject] private readonly SiraLog _log;
+
         //[Inject] private PlayerService _playerService;
 
         private bool Ascending = true;
@@ -451,7 +454,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             }
             catch (Exception ex)
             {
-                Plugin.Log.Error(ex);
+                _log.Error(ex);
                 errorText.gameObject.SetActive(true);
                 errorText.text = "Error!";
                 retryButton.gameObject.SetActive(true);
