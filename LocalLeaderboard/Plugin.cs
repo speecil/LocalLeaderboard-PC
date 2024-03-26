@@ -5,6 +5,7 @@ using SiraUtil.Zenject;
 using System;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 using IPALogger = IPA.Logging.Logger;
 
 namespace LocalLeaderboard
@@ -29,7 +30,14 @@ namespace LocalLeaderboard
 
         public static string GetGameVersion()
         {
-            return IPA.Utilities.UnityGame.GameVersion.StringValue;
+            try
+            {
+                return Application.version;
+            }
+            catch
+            {
+                return "Unknown";
+            }
         }
 
         public static Assembly GetAssemblyByName(string name)
