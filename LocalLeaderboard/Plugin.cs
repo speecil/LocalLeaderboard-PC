@@ -34,7 +34,15 @@ namespace LocalLeaderboard
 
         public static string GetGameVersion()
         {
-            return IPA.Utilities.UnityGame.GameVersion.StringValue;
+            try
+            {
+                return IPA.Utilities.UnityGame.GameVersion.StringValue;
+            }
+            catch
+            {
+                Log.Info("Failed to get game version");
+                return "Unknown";
+            }
         }
 
         public static Assembly GetAssemblyByName(string name)

@@ -301,7 +301,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             base.DidActivate(firstActivation, addedToHierarchy, screenSystemEnabling);
             if (!this.isActiveAndEnabled) return;
             if (!_plvc) return;
-            OnLeaderboardSet(currentDifficultyBeatmap);
+            if (!_panelView.isActiveAndEnabled) return;
             if (firstActivation)
             {
                 // maybe calling this later will fix the issue
@@ -327,6 +327,7 @@ namespace LocalLeaderboard.UI.ViewControllers
                 });
             }
             _plvc.GetComponentInChildren<TextMeshProUGUI>().color = new Color(0, 0, 0, 0);
+            OnLeaderboardSet(currentDifficultyBeatmap);
         }
 
         protected override void DidDeactivate(bool removedFromHierarchy, bool screenSystemDisabling)
