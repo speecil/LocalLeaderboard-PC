@@ -19,8 +19,6 @@ namespace LocalLeaderboard.Services
         public bool TryReadReplay(string filename, out BeatLeader.Models.Replay.Replay replay)
         {
             Plugin.Log.Info("TryReadReplay");
-            var method = Plugin.GetAssemblyByName("BeatLeader").GetType("BeatLeader.Models.Replay.ReplayDecoder").GetMethod("DecodeReplay", BindingFlags.Public | BindingFlags.Static);
-            if (method == null) { replay = default; Plugin.Log.Info("method null"); return false; }
             try
             {
                 if (File.Exists(filename))
@@ -31,7 +29,7 @@ namespace LocalLeaderboard.Services
                     stream.Read(buffer, 0, arrayLength);
                     stream.Close();
 
-                    replay = (BeatLeader.Models.Replay.Replay)method.Invoke(null, new object[] { buffer });
+                    replay = BeatLeader.Models.Replay.ReplayDecoder.DecodeReplay(buffer);
                     return true;
                 }
             }
