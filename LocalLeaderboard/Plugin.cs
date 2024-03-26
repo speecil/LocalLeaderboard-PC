@@ -5,6 +5,7 @@ using SiraUtil.Zenject;
 using System;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 using IPALogger = IPA.Logging.Logger;
 
 namespace LocalLeaderboard
@@ -31,7 +32,7 @@ namespace LocalLeaderboard
         {
             try
             {
-                return IPA.Utilities.UnityGame.GameVersion.StringValue;
+                return Application.version;
             }
             catch
             {
