@@ -1,4 +1,5 @@
 ﻿using IPA.Utilities;
+using LocalLeaderboard.Services;
 using LocalLeaderboard.UI.ViewControllers;
 using LocalLeaderboard.Utils;
 using SiraUtil.Affinity;
@@ -11,9 +12,30 @@ namespace LocalLeaderboard.AffinityPatches
 {
     internal class Results : IAffinity
     {
-        float GetModifierScoreMultiplier(LevelCompletionResults results, GameplayModifiersModelSO modifiersModel)
+        public static float GetModifierScoreMultiplier(LevelCompletionResults results, GameplayModifiersModelSO modifiersModel)
         {
+            if(modifiersModel == null || results == null)
+            {
+                return 1;
+            }
             return modifiersModel.GetTotalMultiplier(modifiersModel.CreateModifierParamsList(results.gameplayModifiers), results.energy);
+        }
+
+        public static int GetOriginalIdentifier(BeatmapKey key)
+        {
+            if (key == null)
+            {
+                return 0;
+            }
+            return key.difficulty switch
+            {
+                BeatmapDifficulty.Easy => 1,
+                BeatmapDifficulty.Normal => 3,
+                BeatmapDifficulty.Hard => 5,
+                BeatmapDifficulty.Expert => 7,
+                BeatmapDifficulty.ExpertPlus => 9,
+                _ => 0,
+            };
         }
 
         public static string GetModifiersString(LevelCompletionResults levelCompletionResults)
@@ -84,18 +106,23 @@ namespace LocalLeaderboard.AffinityPatches
         }
 
         [AffinityPostfix]
-        [AffinityPatch(typeof(LevelCompletionResultsHelper), nameof(LevelCompletionResultsHelper.ProcessScore))]
-        private void Postfix(ref PlayerData playerData, ref PlayerLevelStatsData playerLevelStats, ref LevelCompletionResults levelCompletionResults, ref IReadonlyBeatmapData transformedBeatmapData, ref IDifficultyBeatmap difficultyBeatmap, ref PlatformLeaderboardsModel platformLeaderboardsModel)
+        [AffinityPatch(typeof(PrepareLevelCompletionResults), nameof(PrepareLevelCompletionResults.FillLevelCompletionResults))]
+        private void Postfix(ref LevelCompletionResults __result, ref IScoreController ____scoreController, ref GameplayModifiersModelSO ____gameplayModifiersModelSO, ref IReadonlyBeatmapData ____beatmapData)
         {
-            float maxScore = ScoreModel.ComputeMaxMultipliedScoreForBeatmap(transformedBeatmapData);
-            float modifiedScore = levelCompletionResults.modifiedScore;
+            if(ExtraSongDataHolder.beatmapKey == null || ExtraSongDataHolder.beatmapLevel == null || __result == null || ExtraSongData.IsLocalLeaderboardReplay || ____beatmapData == null || ____gameplayModifiersModelSO == null || ____scoreController == null)
+            {
+                ExtraSongData.IsLocalLeaderboardReplay = false;
+                return;
+            }
+            float maxScore = ScoreModel.ComputeMaxMultipliedScoreForBeatmap(____beatmapData);
+            float modifiedScore = __result.modifiedScore;
             if (modifiedScore == 0 || maxScore == 0)
                 return;
             float acc = (modifiedScore / maxScore) * 100;
-            int score = levelCompletionResults.modifiedScore;
-            int badCut = levelCompletionResults.badCutsCount;
-            int misses = levelCompletionResults.missedCount;
-            bool fc = levelCompletionResults.fullCombo;
+            int score = __result.modifiedScore;
+            int badCut = __result.badCutsCount;
+            int misses = __result.missedCount;
+            bool fc = __result.fullCombo;
 
             DateTime currentDateTime = DateTime.Now;
             DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -104,10 +131,10 @@ namespace LocalLeaderboard.AffinityPatches
 
             string currentTime = unixTimestampSeconds.ToString();
 
-            string mapId = difficultyBeatmap.level.levelID;
+            string mapId = ExtraSongDataHolder.beatmapLevel.levelID;
 
-            int difficulty = difficultyBeatmap.difficultyRank;
-            string mapType = playerLevelStats.beatmapCharacteristic.serializedName;
+            int difficulty = GetOriginalIdentifier(ExtraSongDataHolder.beatmapKey);
+            string mapType = ExtraSongDataHolder.beatmapKey.beatmapCharacteristic.serializedName;
 
             string balls = mapType + difficulty.ToString(); // BeatMap Allocated Level Label String
 
@@ -120,11 +147,11 @@ namespace LocalLeaderboard.AffinityPatches
             float leftHandTimeDependency = ExtraSongDataHolder.GetAverageFromList(ExtraSongDataHolder.leftHandTimeDependency);
             float fcAcc;
             if (fc) fcAcc = acc;
-            else fcAcc = ExtraSongDataHolder.GetFcAcc(GetModifierScoreMultiplier(levelCompletionResults, platformLeaderboardsModel.GetField<GameplayModifiersModelSO, PlatformLeaderboardsModel>("_gameplayModifiersModel")));
+            else fcAcc = ExtraSongDataHolder.GetFcAcc(GetModifierScoreMultiplier(__result, ____gameplayModifiersModelSO));
 
-            bool didFail = levelCompletionResults.levelEndStateType == LevelCompletionResults.LevelEndStateType.Failed;
-            int maxCombo = levelCompletionResults.maxCombo;
-            float averageHitscore = levelCompletionResults.averageCutScoreForNotesWithFullScoreScoringType;
+            bool didFail = __result.levelEndStateType == LevelCompletionResults.LevelEndStateType.Failed;
+            int maxCombo = __result.maxCombo;
+            float averageHitscore = __result.averageCutScoreForNotesWithFullScoreScoringType;
 
             string destinationFileName = "BL REPLAY NOT FOUND";
 
@@ -140,14 +167,14 @@ namespace LocalLeaderboard.AffinityPatches
                 }
 
                 string timestamp = DateTime.UtcNow.Ticks.ToString();
-                destinationFileName = Path.GetFileNameWithoutExtension(difficultyBeatmap.level.levelID + difficultyBeatmap.difficultyRank) + "_" + timestamp + Path.GetExtension(filePath.Name);
+                destinationFileName = Path.GetFileNameWithoutExtension(ExtraSongDataHolder.beatmapKey.levelId + difficulty) + "_" + timestamp + Path.GetExtension(filePath.Name);
                 string destinationFilePath = Path.Combine(Constants.LLREPLAYS_PATH, destinationFileName);
                 File.Copy(filePath.FullName, destinationFilePath, true);
             }
-
-            LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(levelCompletionResults), maxCombo, averageHitscore, didFail, destinationFileName, rightHandAverageScore, leftHandAverageScore, perfectStreak, rightHandTimeDependency, leftHandTimeDependency, fcAcc, pauses);
+            ExtraSongData.IsLocalLeaderboardReplay = false;
+            LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(__result), maxCombo, averageHitscore, didFail, destinationFileName, rightHandAverageScore, leftHandAverageScore, perfectStreak, rightHandTimeDependency, leftHandTimeDependency, fcAcc, pauses);
             var lb = Resources.FindObjectsOfTypeAll<LeaderboardView>().FirstOrDefault();
-            lb.OnLeaderboardSet(lb.currentDifficultyBeatmap);
+            lb.OnLeaderboardSet(lb.currentBeatmapKey);
         }
     }
 }

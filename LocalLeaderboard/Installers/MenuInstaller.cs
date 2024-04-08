@@ -17,7 +17,7 @@ namespace LocalLeaderboard.Installers
             Container.BindInterfacesTo<LLLeaderboard>().AsSingle();
             Container.Bind<TweeningService>().AsSingle();
             Container.Bind<PlayerService>().AsSingle();
-            if (!Plugin.GetGameVersion().Contains("1.34"))
+            if (!Plugin.GetGameVersion().Contains("1.35"))
             {
                 Plugin.beatLeaderInstalled = false;
             }
