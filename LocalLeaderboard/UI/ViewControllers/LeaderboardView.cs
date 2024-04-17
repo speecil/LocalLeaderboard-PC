@@ -14,6 +14,8 @@ using SiraUtil.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -35,6 +37,8 @@ namespace LocalLeaderboard.UI.ViewControllers
         [Inject] private readonly SiraLog _log;
 
         //[Inject] private PlayerService _playerService;
+        
+        [InjectOptional] private List<IExternalDataService> _externalDataProviders;
 
         private bool Ascending = true;
         public static LLeaderboardEntry[] buttonEntryArray = new LLeaderboardEntry[10];
@@ -268,7 +272,7 @@ namespace LocalLeaderboard.UI.ViewControllers
                 new IconSegmentedControl.DataItem(
                     Utilities.FindSpriteInAssembly("LocalLeaderboard.Images.clock.png"), "Date / Time"),
                 new IconSegmentedControl.DataItem(
-                    Utilities.FindSpriteInAssembly("LocalLeaderboard.Images.score.png"), "Highscore")
+                    Utilities.FindSpriteInAssembly("LocalLeaderboard.Images.score.png"), "ACC")
                 };
             }
         }
@@ -422,9 +426,16 @@ namespace LocalLeaderboard.UI.ViewControllers
                 yield return null;
             }
         }
+        
+        private CancellationTokenSource _refreshCTS;
 
-        public void OnLeaderboardSet(IDifficultyBeatmap difficultyBeatmap)
+        public async void OnLeaderboardSet(IDifficultyBeatmap difficultyBeatmap)
         {
+            _refreshCTS?.Cancel();
+            _refreshCTS?.Dispose();
+            _refreshCTS = new CancellationTokenSource();
+            var token = _refreshCTS.Token;
+            
             currentDifficultyBeatmap = difficultyBeatmap;
             if (!this.isActivated) return;
             string mapId = difficultyBeatmap.level.levelID;
@@ -432,15 +443,40 @@ namespace LocalLeaderboard.UI.ViewControllers
             string mapType = difficultyBeatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName;
             string balls = mapType + difficulty.ToString();
             List<LLeaderboardEntry> leaderboardEntries = LeaderboardData.LeaderboardData.LoadBeatMapInfo(mapId, balls);
-
-            totalPages = Mathf.CeilToInt((float)leaderboardEntries.Count / 10);
+            
+            if (token.IsCancellationRequested) return;
 
             try
             {
+                if (_externalDataProviders != null)
+                {
+                    foreach (var provider in _externalDataProviders)
+                    {
+                        leaderboardEntries.AddRange(await provider.GetLeaderboardEntries(difficultyBeatmap, token));
+                    }
+                    if (token.IsCancellationRequested) return;
+                }
+            }
+            catch (OperationCanceledException e) when (e.CancellationToken == token)
+            {
+                return;
+            }
+            catch (Exception e)
+            {
+                _log.Error($"Failed to get leaderboard entries from external data providers: {e}");
+                return;
+            }
+
+            try
+            {
+                leaderboardEntries = DedupeAndSortLeaderboardEntries(leaderboardEntries);
+                if (token.IsCancellationRequested) return; // these are some relatively long functions
+                totalPages = Mathf.CeilToInt((float)leaderboardEntries.Count / 10);
                 UpdatePageButtons();
-                SortLeaderboardEntries(leaderboardEntries);
                 leaderboardTableView.SetScores(CreateLeaderboardData(leaderboardEntries, page), -1);
+                if (token.IsCancellationRequested) return;
                 RichMyText(leaderboardTableView);
+                if (token.IsCancellationRequested) return;
 
                 if (leaderboardEntries.Count > 0) HandleLeaderboardEntriesExistence(leaderboardEntries);
                 else HandleNoLeaderboardEntries();
@@ -454,13 +490,58 @@ namespace LocalLeaderboard.UI.ViewControllers
             }
         }
 
-        private void SortLeaderboardEntries(List<LLeaderboardEntry> leaderboardEntries)
+        private List<LLeaderboardEntry> DedupeAndSortLeaderboardEntries(List<LLeaderboardEntry> leaderboardEntries)
         {
+            if (leaderboardEntries.Count <= 0) return leaderboardEntries;
+
+            List<LLeaderboardEntry> intermediate = new List<LLeaderboardEntry>(leaderboardEntries.Count);
+
+            LLeaderboardEntry? prev = null;
+            foreach (var entry in leaderboardEntries.OrderBy(entry => entry, new LeaderboardEntryDatePlayedComparer()))
+            {
+                if (prev == null)
+                {
+                    intermediate.Add(entry);
+                }
+                else 
+                {
+                    var previous = prev.Value;
+                    if (entry.IsSamePlay(previous))
+                    {
+                        //TODO if we have multiple duplicated external entries, try aggregate the data.
+                        // it is fine for now, as we only have one external provider
+                        if (!entry.isExternal)
+                        {
+                            // replace the duplicated previous with this internal one
+                            intermediate[intermediate.Count - 1] = entry;
+                        }
+                    }
+                    else
+                    {
+                        // not a duplicate
+                        intermediate.Add(entry);
+                    }
+                }
+                
+                prev = entry;
+            }
+            
+            List<LLeaderboardEntry> sortedResults;
             if (sortMethod == 0)
             {
-                if (leaderboardEntries.Count <= 0) return;
-                LLeaderboardEntry recent = leaderboardEntries[leaderboardEntries.Count - 1];
-                if (!Ascending) leaderboardEntries.Reverse();
+                LLeaderboardEntry recent;
+                if (Ascending)
+                {
+                    // sortedResults = intermediate.OrderBy(entry => entry, new LeaderboardEntryDatePlayedComparer()).ToList();
+                    sortedResults = new List<LLeaderboardEntry>(intermediate);// already sorted
+                    recent = sortedResults[sortedResults.Count - 1];
+                }
+                else
+                {
+                    sortedResults = intermediate.OrderByDescending(entry => entry, new LeaderboardEntryDatePlayedComparer()).ToList();
+                    recent = sortedResults[0];
+                }
+                
                 long unixTimestamp;
                 string formattedDate = "Error";
                 if (long.TryParse(recent.datePlayed, out unixTimestamp))
@@ -476,11 +557,23 @@ namespace LocalLeaderboard.UI.ViewControllers
             }
             else if (sortMethod == 1)
             {
-                if (Ascending) leaderboardEntries.Sort((first, second) => first.acc.CompareTo(second.acc));
-                else leaderboardEntries.Sort((first, second) => second.acc.CompareTo(first.acc));
-                if (leaderboardEntries.Count <= 0) return;
-                _panelView.lastPlayed.text = (Ascending ? "Lowest Acc : " : "Highest Acc : ") + leaderboardEntries[0].acc.ToString("F2") + "%";
+                if (Ascending)
+                {
+                    sortedResults = intermediate.OrderBy(entry => entry, new LeaderboardEntryAccComparer()).ToList();
+                }
+                else
+                {
+                    sortedResults = intermediate.OrderByDescending(entry => entry, new LeaderboardEntryAccComparer()).ToList();
+                }
+                
+                _panelView.lastPlayed.text = (Ascending ? "Lowest Acc : " : "Highest Acc : ") + sortedResults[0].acc.ToString("F2") + "%";
             }
+            else
+            {
+                sortedResults = intermediate.ToList();
+            }
+
+            return sortedResults;
         }
 
         private void HandleLeaderboardEntriesExistence(List<LLeaderboardEntry> leaderboardEntries)
@@ -587,7 +680,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             score = entry.score;
             string formattedCombo = "";
             if (entry.fullCombo) formattedCombo = " -<color=green> FC </color>";
-            else formattedCombo = string.Format(" - <color=red>x{0} </color>", entry.badCutCount + entry.missCount);
+            else formattedCombo = entry.badCutCount + entry.missCount < 0 ? "" : $" - <color=red>x{entry.badCutCount + entry.missCount} </color>";
 
             string formattedMods = string.Format("  <size=60%>{0}</size>", entry.mods);
 
