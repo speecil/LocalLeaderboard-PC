@@ -492,10 +492,14 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         private void SortLeaderboardEntries(List<LLeaderboardEntry> leaderboardEntries)
         {
+            if (leaderboardEntries.Count <= 0) return;
+            
             if (sortMethod == 0)
             {
-                if (leaderboardEntries.Count <= 0) return;
-                LLeaderboardEntry recent = leaderboardEntries[leaderboardEntries.Count - 1];
+                leaderboardEntries.Sort((first, second) =>
+                    long.TryParse(first.datePlayed, out var fl) && long.TryParse(second.datePlayed, out var sl) ? fl.CompareTo(sl) : 0);
+                var recent = leaderboardEntries[leaderboardEntries.Count - 1];
+                
                 if (!Ascending) leaderboardEntries.Reverse();
                 long unixTimestamp;
                 string formattedDate = "Error";
