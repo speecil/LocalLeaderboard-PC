@@ -274,6 +274,7 @@
     <Compile Include="UI\ViewControllers\LeaderboardView.cs" />
     <Compile Include="UI\ViewControllers\PanelView.cs" />
     <Compile Include="Utils\Constants.cs" />
+    <Compile Include="Utils\LeaderboardEntryComparers.cs" />
     <Compile Include="Utils\ScoreUtil.cs" />
     <Compile Include="Utils\TimeUtils.cs" />
   </ItemGroup>

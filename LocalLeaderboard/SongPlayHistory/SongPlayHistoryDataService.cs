@@ -112,7 +112,8 @@ namespace LocalLeaderboard.SongPlayHistory
                     0,
                     0,
                     0,
-                    -1
+                    -1,
+                    true
                 );
                 
                 entries.Add(entry);

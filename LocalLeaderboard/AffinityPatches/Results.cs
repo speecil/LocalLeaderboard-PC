@@ -103,10 +103,7 @@ namespace LocalLeaderboard.AffinityPatches
 
             _log.Info("Results: " + acc + " " + score + " " + badCut + " " + misses + " " + fc);
 
-            DateTime currentDateTime = DateTime.Now;
-            DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-            long unixTimestampSeconds = (long)(currentDateTime.ToUniversalTime() - unixEpoch).TotalSeconds;
+            long unixTimestampSeconds = DateTimeOffset.Now.ToUnixTimeSeconds();
 
             string currentTime = unixTimestampSeconds.ToString();
 

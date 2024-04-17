@@ -14,6 +14,7 @@ using SiraUtil.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using TMPro;
 using UnityEngine;
@@ -271,7 +272,7 @@ namespace LocalLeaderboard.UI.ViewControllers
                 new IconSegmentedControl.DataItem(
                     Utilities.FindSpriteInAssembly("LocalLeaderboard.Images.clock.png"), "Date / Time"),
                 new IconSegmentedControl.DataItem(
-                    Utilities.FindSpriteInAssembly("LocalLeaderboard.Images.score.png"), "Highscore")
+                    Utilities.FindSpriteInAssembly("LocalLeaderboard.Images.score.png"), "ACC")
                 };
             }
         }
@@ -466,13 +467,12 @@ namespace LocalLeaderboard.UI.ViewControllers
                 return;
             }
 
-            totalPages = Mathf.CeilToInt((float)leaderboardEntries.Count / 10);
-
             try
             {
-                UpdatePageButtons();
-                SortLeaderboardEntries(leaderboardEntries);
+                leaderboardEntries = DedupeAndSortLeaderboardEntries(leaderboardEntries);
                 if (token.IsCancellationRequested) return; // these are some relatively long functions
+                totalPages = Mathf.CeilToInt((float)leaderboardEntries.Count / 10);
+                UpdatePageButtons();
                 leaderboardTableView.SetScores(CreateLeaderboardData(leaderboardEntries, page), -1);
                 if (token.IsCancellationRequested) return;
                 RichMyText(leaderboardTableView);
@@ -490,17 +490,58 @@ namespace LocalLeaderboard.UI.ViewControllers
             }
         }
 
-        private void SortLeaderboardEntries(List<LLeaderboardEntry> leaderboardEntries)
+        private List<LLeaderboardEntry> DedupeAndSortLeaderboardEntries(List<LLeaderboardEntry> leaderboardEntries)
         {
-            if (leaderboardEntries.Count <= 0) return;
+            if (leaderboardEntries.Count <= 0) return leaderboardEntries;
+
+            List<LLeaderboardEntry> intermediate = new List<LLeaderboardEntry>(leaderboardEntries.Count);
+
+            LLeaderboardEntry? prev = null;
+            foreach (var entry in leaderboardEntries.OrderBy(entry => entry, new LeaderboardEntryDatePlayedComparer()))
+            {
+                if (prev == null)
+                {
+                    intermediate.Add(entry);
+                }
+                else 
+                {
+                    var previous = prev.Value;
+                    if (entry.IsSamePlay(previous))
+                    {
+                        //TODO if we have multiple duplicated external entries, try aggregate the data.
+                        // it is fine for now, as we only have one external provider
+                        if (!entry.isExternal)
+                        {
+                            // replace the duplicated previous with this internal one
+                            intermediate[intermediate.Count - 1] = entry;
+                        }
+                    }
+                    else
+                    {
+                        // not a duplicate
+                        intermediate.Add(entry);
+                    }
+                }
+                
+                prev = entry;
+            }
             
+            List<LLeaderboardEntry> sortedResults;
             if (sortMethod == 0)
             {
-                leaderboardEntries.Sort((first, second) =>
-                    long.TryParse(first.datePlayed, out var fl) && long.TryParse(second.datePlayed, out var sl) ? fl.CompareTo(sl) : 0);
-                var recent = leaderboardEntries[leaderboardEntries.Count - 1];
+                LLeaderboardEntry recent;
+                if (Ascending)
+                {
+                    // sortedResults = intermediate.OrderBy(entry => entry, new LeaderboardEntryDatePlayedComparer()).ToList();
+                    sortedResults = new List<LLeaderboardEntry>(intermediate);// already sorted
+                    recent = sortedResults[sortedResults.Count - 1];
+                }
+                else
+                {
+                    sortedResults = intermediate.OrderByDescending(entry => entry, new LeaderboardEntryDatePlayedComparer()).ToList();
+                    recent = sortedResults[0];
+                }
                 
-                if (!Ascending) leaderboardEntries.Reverse();
                 long unixTimestamp;
                 string formattedDate = "Error";
                 if (long.TryParse(recent.datePlayed, out unixTimestamp))
@@ -516,11 +557,23 @@ namespace LocalLeaderboard.UI.ViewControllers
             }
             else if (sortMethod == 1)
             {
-                if (Ascending) leaderboardEntries.Sort((first, second) => first.acc.CompareTo(second.acc));
-                else leaderboardEntries.Sort((first, second) => second.acc.CompareTo(first.acc));
-                if (leaderboardEntries.Count <= 0) return;
-                _panelView.lastPlayed.text = (Ascending ? "Lowest Acc : " : "Highest Acc : ") + leaderboardEntries[0].acc.ToString("F2") + "%";
+                if (Ascending)
+                {
+                    sortedResults = intermediate.OrderBy(entry => entry, new LeaderboardEntryAccComparer()).ToList();
+                }
+                else
+                {
+                    sortedResults = intermediate.OrderByDescending(entry => entry, new LeaderboardEntryAccComparer()).ToList();
+                }
+                
+                _panelView.lastPlayed.text = (Ascending ? "Lowest Acc : " : "Highest Acc : ") + sortedResults[0].acc.ToString("F2") + "%";
             }
+            else
+            {
+                sortedResults = intermediate.ToList();
+            }
+
+            return sortedResults;
         }
 
         private void HandleLeaderboardEntriesExistence(List<LLeaderboardEntry> leaderboardEntries)

@@ -69,7 +69,9 @@ namespace LocalLeaderboard.LeaderboardData
             public float fcAcc;
             public int pauses;
 
-            public LeaderboardEntry(int missCount, int badCutCount, float acc, bool fullCombo, string datePlayed, int score, string mods, int maxCombo, float averageHitscore, bool didFail, string bsorPath, float avgAccRight, float avgAccLeft, int perfectStreak, float rightHandTimeDependency, float leftHandTimeDependency, float fcAcc, int pauses)
+            public bool isExternal;
+
+            public LeaderboardEntry(int missCount, int badCutCount, float acc, bool fullCombo, string datePlayed, int score, string mods, int maxCombo, float averageHitscore, bool didFail, string bsorPath, float avgAccRight, float avgAccLeft, int perfectStreak, float rightHandTimeDependency, float leftHandTimeDependency, float fcAcc, int pauses, bool isExternal)
             {
                 this.missCount = missCount;
                 this.badCutCount = badCutCount;
@@ -89,6 +91,13 @@ namespace LocalLeaderboard.LeaderboardData
                 this.leftHandTimeDependency = leftHandTimeDependency;
                 this.fcAcc = fcAcc;
                 this.pauses = pauses;
+                this.isExternal = isExternal;
+            }
+
+            public bool IsSamePlay(LeaderboardEntry other)
+            {
+                // If the scores are the same and the time played is within 10 seconds of each other, consider them the same play.
+                return score == other.score && long.TryParse(datePlayed, out var x) && long.TryParse(other.datePlayed, out var y) && Math.Abs(x - y) <= 10;
             }
         }
 
@@ -274,7 +283,8 @@ namespace LocalLeaderboard.LeaderboardData
                         rightHandTimeDependency ?? 0,
                         leftHandTimeDependency ?? 0,
                         fcAcc ?? 0,
-                        pauses ?? -1
+                        pauses ?? -1,
+                        false
                         ));
                 }
             }
