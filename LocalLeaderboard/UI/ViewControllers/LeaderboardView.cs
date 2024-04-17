@@ -425,9 +425,16 @@ namespace LocalLeaderboard.UI.ViewControllers
                 yield return null;
             }
         }
+        
+        private CancellationTokenSource _refreshCTS;
 
-        public void OnLeaderboardSet(IDifficultyBeatmap difficultyBeatmap)
+        public async void OnLeaderboardSet(IDifficultyBeatmap difficultyBeatmap)
         {
+            _refreshCTS?.Cancel();
+            _refreshCTS?.Dispose();
+            _refreshCTS = new CancellationTokenSource();
+            var token = _refreshCTS.Token;
+            
             currentDifficultyBeatmap = difficultyBeatmap;
             if (!this.isActivated) return;
             string mapId = difficultyBeatmap.level.levelID;
@@ -436,13 +443,27 @@ namespace LocalLeaderboard.UI.ViewControllers
             string balls = mapType + difficulty.ToString();
             List<LLeaderboardEntry> leaderboardEntries = LeaderboardData.LeaderboardData.LoadBeatMapInfo(mapId, balls);
             
-            if (_externalDataProviders != null)
+            if (token.IsCancellationRequested) return;
+
+            try
             {
-                foreach (var provider in _externalDataProviders)
+                if (_externalDataProviders != null)
                 {
-                    //TODO async loading
-                    leaderboardEntries.AddRange(provider.GetLeaderboardEntries(difficultyBeatmap, new CancellationToken()).Result);
+                    foreach (var provider in _externalDataProviders)
+                    {
+                        leaderboardEntries.AddRange(await provider.GetLeaderboardEntries(difficultyBeatmap, token));
+                    }
+                    if (token.IsCancellationRequested) return;
                 }
+            }
+            catch (OperationCanceledException e) when (e.CancellationToken == token)
+            {
+                return;
+            }
+            catch (Exception e)
+            {
+                _log.Error($"Failed to get leaderboard entries from external data providers: {e}");
+                return;
             }
 
             totalPages = Mathf.CeilToInt((float)leaderboardEntries.Count / 10);
@@ -451,8 +472,11 @@ namespace LocalLeaderboard.UI.ViewControllers
             {
                 UpdatePageButtons();
                 SortLeaderboardEntries(leaderboardEntries);
+                if (token.IsCancellationRequested) return; // these are some relatively long functions
                 leaderboardTableView.SetScores(CreateLeaderboardData(leaderboardEntries, page), -1);
+                if (token.IsCancellationRequested) return;
                 RichMyText(leaderboardTableView);
+                if (token.IsCancellationRequested) return;
 
                 if (leaderboardEntries.Count > 0) HandleLeaderboardEntriesExistence(leaderboardEntries);
                 else HandleNoLeaderboardEntries();
