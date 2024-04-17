@@ -1,4 +1,5 @@
 ﻿using IPA.Utilities;
+using IPA.Utilities.Async;
 using LocalLeaderboard.UI.ViewControllers;
 using LocalLeaderboard.Utils;
 using SiraUtil.Affinity;
@@ -6,6 +7,7 @@ using SiraUtil.Logging;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
@@ -91,6 +93,19 @@ namespace LocalLeaderboard.AffinityPatches
         private void Postfix(ref PlayerData playerData, ref PlayerLevelStatsData playerLevelStats, ref LevelCompletionResults levelCompletionResults, ref IReadonlyBeatmapData transformedBeatmapData, ref IDifficultyBeatmap difficultyBeatmap, ref PlatformLeaderboardsModel platformLeaderboardsModel)
         {
             _log.Info("Results postfix called.");
+            // i hate this
+            PlayerData localPlayerData = playerData;
+            PlayerLevelStatsData localPlayerLevelStats = playerLevelStats;
+            LevelCompletionResults localLevelCompletionResults = levelCompletionResults;
+            IReadonlyBeatmapData localTransformedBeatmapData = transformedBeatmapData;
+            IDifficultyBeatmap localDifficultyBeatmap = difficultyBeatmap;
+            PlatformLeaderboardsModel localPlatformLeaderboardsModel = platformLeaderboardsModel;
+            UnityMainThreadTaskScheduler.Factory.StartNew(async () => await PostfixTask(localPlayerData, localPlayerLevelStats, localLevelCompletionResults, localTransformedBeatmapData, localDifficultyBeatmap, localPlatformLeaderboardsModel));
+        }
+
+        private async Task PostfixTask(PlayerData playerData,  PlayerLevelStatsData playerLevelStats,  LevelCompletionResults levelCompletionResults,  IReadonlyBeatmapData transformedBeatmapData, IDifficultyBeatmap difficultyBeatmap, PlatformLeaderboardsModel platformLeaderboardsModel)
+        {
+            await Task.Delay(500); // this is literally only so i can get the replay 100% of the time instead of gambling on the replay being saved in time
             float maxScore = ScoreModel.ComputeMaxMultipliedScoreForBeatmap(transformedBeatmapData);
             float modifiedScore = levelCompletionResults.modifiedScore;
             if (modifiedScore == 0 || maxScore == 0)
