@@ -599,7 +599,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             score = entry.score;
             string formattedCombo = "";
             if (entry.fullCombo) formattedCombo = " -<color=green> FC </color>";
-            else formattedCombo = string.Format(" - <color=red>x{0} </color>", entry.badCutCount + entry.missCount);
+            else formattedCombo = entry.badCutCount + entry.missCount < 0 ? "" : $" - <color=red>x{entry.badCutCount + entry.missCount} </color>";
 
             string formattedMods = string.Format("  <size=60%>{0}</size>", entry.mods);
 

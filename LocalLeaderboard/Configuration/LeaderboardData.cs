@@ -254,16 +254,18 @@ namespace LocalLeaderboard.LeaderboardData
                     float? fcAcc = scoreData["fcAccuracy"]?.Value<float>();
                     int? pauses = scoreData["pauses"]?.Value<int>();
 
+                    if (score == null) continue;  // If score is null, this is invalid and should be ignored.
+                    
                     leaderboard.Add(new LeaderboardEntry(
-                        missCount ?? 0,
-                        badCutCount ?? 0,
+                        missCount ?? -1,
+                        badCutCount ?? -1,
                         acc ?? 0f,
                         fullCombo ?? false,
                         datePlayed ?? "",
                         score ?? 0,
                         modifiers ?? "",
-                        maxCombo ?? 0,
-                        averageHitscore ?? 0,
+                        maxCombo ?? -1,
+                        averageHitscore ?? -1,
                         didFail ?? false,
                         bsorPath ?? "",
                         avgAccRight ?? 0,
