@@ -653,27 +653,16 @@ namespace LocalLeaderboard.UI.ViewControllers
                 if (SettingsConfig.Instance.useRelativeTime)
                 {
                     TimeSpan relativeTime = TimeUtils.GetRelativeTime(datePlayedString);
-
-                    if (entry.didFail)
-                    {
-                        formattedDate = string.Format("<color=#f09f48>{0}</color></size>", TimeUtils.GetRelativeTimeString(relativeTime));
-                    }
-                    else
-                    {
-                        formattedDate = string.Format("<color=#28b077>{0}</color></size>", TimeUtils.GetRelativeTimeString(relativeTime));
-                    }
+                    string colorCode = entry.isExternal ? "#a94cf5" : (entry.didFail ? "#f09f48" : "#28b077");
+                    formattedDate = string.Format("<color={0}>{1}</color></size>", colorCode, TimeUtils.GetRelativeTimeString(relativeTime));
                 }
                 else
                 {
-                    if (entry.didFail)
-                    {
-                        formattedDate = string.Format("<color=#f09f48>{0}</color></size>", datePlayed.ToString(config.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt"));
-                    }
-                    else
-                    {
-                        formattedDate = string.Format("<color=#28b077>{0}</color></size>", datePlayed.ToString(config.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt"));
-                    }
+                    string colorCode = entry.didFail ? "#f09f48" : "#28b077";
+                    string dateFormat = config.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt";
+                    formattedDate = string.Format("<color={0}>{1}</color></size>", colorCode, datePlayed.ToString(dateFormat));
                 }
+
             }
 
             string formattedAcc = string.Format(" - (<color=#ffd42a>{0:0.00}%</color>)", entry.acc);
