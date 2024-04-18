@@ -2,19 +2,18 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
-using Tweening;
 using UnityEngine;
 using Zenject;
-using Tween = balls.Tweening.Tween;
-using TimeTweeningManager = balls.Tweening.TimeTweeningManager;
-using FloatTween = balls.Tweening.FloatTween;
 using EaseTyped = balls.EaseType;
+using FloatTween = balls.Tweening.FloatTween;
+using TimeTweeningManager = balls.Tweening.TimeTweeningManager;
+using Tween = balls.Tweening.Tween;
 namespace LocalLeaderboard.Services
 {
     internal class TweeningService
     {
-        [Inject] private TimeTweeningManager _tweeningManager;
-        private HashSet<Transform> activeRotationTweens = new HashSet<Transform>();
+        [Inject] private readonly TimeTweeningManager _tweeningManager;
+        private readonly HashSet<Transform> activeRotationTweens = new();
 
         public void RotateTransform(Transform transform, float rotationAmount, float time, Action callback = null)
         {

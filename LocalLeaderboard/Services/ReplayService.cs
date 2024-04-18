@@ -2,7 +2,6 @@
 using SiraUtil.Logging;
 using System;
 using System.IO;
-using System.Reflection;
 using Zenject;
 
 namespace LocalLeaderboard.Services
@@ -10,8 +9,6 @@ namespace LocalLeaderboard.Services
     internal class ReplayService
     {
         private object _replayerMenuLoader;
-        private SiraLog _log;
-
         private SiraLog _log;
 
         [Inject]

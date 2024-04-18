@@ -1,16 +1,15 @@
-﻿using Zenject;
-using LocalLeaderboard.Services;
-using LocalLeaderboard.SongPlayHistory;
+﻿using LocalLeaderboard.SongPlayHistory;
 using SiraUtil.Logging;
+using Zenject;
 
 namespace LocalLeaderboard.Installers
 {
-    public class SPHInstaller: Installer
+    public class SPHInstaller : Installer
     {
-        
+
         [Inject]
-        private SiraLog _logger;
-        
+        private readonly SiraLog _logger;
+
         public override void InstallBindings()
         {
             _logger.Notice("Binding SongPlayHistoryDataService");

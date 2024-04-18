@@ -7,6 +7,6 @@ namespace LocalLeaderboard.Services
 {
     internal interface IExternalDataService
     {
-        public Task<IList<LLeaderboardEntry>> GetLeaderboardEntries(IDifficultyBeatmap beatmap, CancellationToken token);
+        public Task<IList<LLeaderboardEntry>> GetLeaderboardEntries(BeatmapKey beatmap, CancellationToken token);
     }
 }

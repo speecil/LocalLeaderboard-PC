@@ -14,7 +14,7 @@ namespace LocalLeaderboard.Utils
         internal const string PATREON_URL = "https://patreon.com/speecil";
         internal const string WEBSITE_URL = "https://speecil.dev/localleaderboard.html";
 
-        internal static readonly Color SPEECIL_COLOUR = new Color(0.156f, 0.69f, 0.46666f, 1);
-        internal static readonly Color SPEECIL_COLOUR_BRIGHTER = new Color((float)47 / 255, (float)212 / 255, (float)143 / 255, 1);
+        internal static readonly Color SPEECIL_COLOUR = new(0.156f, 0.69f, 0.46666f, 1);
+        internal static readonly Color SPEECIL_COLOUR_BRIGHTER = new((float)47 / 255, (float)212 / 255, (float)143 / 255, 1);
     }
 }

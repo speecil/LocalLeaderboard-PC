@@ -15,7 +15,6 @@ namespace LocalLeaderboard
     public class Plugin
     {
         public static string userName;
-        public static bool beatLeaderInstalled;
 
         [Init]
         public Plugin(IPALogger logger, Zenjector zenjector, IPA.Config.Config conf)

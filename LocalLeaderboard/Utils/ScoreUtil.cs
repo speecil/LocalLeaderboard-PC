@@ -14,7 +14,7 @@ namespace LocalLeaderboard.Utils
                     noteCount = 0;
                     break;
                 }
-                effectiveNoteCount += multiplier * multiplier * 2 + multiplier;
+                effectiveNoteCount += (multiplier * multiplier * 2) + multiplier;
                 noteCount -= multiplier * 2;
             }
             effectiveNoteCount += noteCount * multiplier;

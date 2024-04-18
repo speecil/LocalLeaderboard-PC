@@ -1,60 +1,59 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using LocalLeaderboard.Services;
+﻿using LocalLeaderboard.Services;
 using LocalLeaderboard.Utils;
 using SiraUtil.Logging;
 using SongPlayHistory.Model;
 using SongPlayHistory.SongPlayData;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Zenject;
 using LLeaderboardEntry = LocalLeaderboard.LeaderboardData.LeaderboardData.LeaderboardEntry;
 
 
 namespace LocalLeaderboard.SongPlayHistory
 {
-    internal class SongPlayHistoryDataService: IExternalDataService
+    internal class SongPlayHistoryDataService : IExternalDataService
     {
 
         [Inject]
-        private SiraLog _logger;
-        
-        [InjectOptional]
-        private IRecordManager _recordManager;
-        
-        [InjectOptional]
-        private IScoringCacheManager _scoringCacheManager;
-        
-        public async Task<IList<LLeaderboardEntry>> GetLeaderboardEntries(IDifficultyBeatmap beatmap, CancellationToken token)
-        {
+        private readonly SiraLog _logger;
 
+        [InjectOptional]
+        private readonly IRecordManager _recordManager;
+
+        [InjectOptional]
+        private readonly IScoringCacheManager _scoringCacheManager;
+
+        public async Task<IList<LLeaderboardEntry>> GetLeaderboardEntries(BeatmapKey beatmap, CancellationToken token)
+        {
             if (_recordManager == null || _scoringCacheManager == null)
             {
                 return new List<LLeaderboardEntry>();
             }
-            
-            var records = _recordManager.GetRecords(beatmap);
+
+            IList<ISongPlayRecord> records = _recordManager.GetRecords(beatmap);
             var scoringCache = await _scoringCacheManager.GetScoringInfo(beatmap, token);
-            
-            var entries = new List<LLeaderboardEntry>(records.Count);
-            foreach (var record in records)
+
+            List<LLeaderboardEntry> entries = new(records.Count);
+            foreach (ISongPlayRecord record in records)
             {
-                var playTime = record.LocalTime.ToUniversalTime();
-                var unixTimeSeconds = new DateTimeOffset(playTime).ToUnixTimeSeconds();
-                
-                var modsString = "";
-                var param = record.Params;
-                
+                DateTime playTime = record.LocalTime.ToUniversalTime();
+                long unixTimeSeconds = new DateTimeOffset(playTime).ToUnixTimeSeconds();
+
+                string modsString = "";
+                SongPlayParam param = record.Params;
+
                 if (param.HasFlag(SongPlayParam.SubmissionDisabled)) continue;
-                
+
                 if (param != SongPlayParam.None)
                 {
                     if (record.LevelEnd == LevelEndType.Cleared && record.ModifiedScore == record.RawScore)
                     {
                         param &= ~SongPlayParam.NoFail;
                     }
-                    
-                    var mods = new List<string>(10);
+
+                    List<string> mods = new(10);
                     if (param.HasFlag(SongPlayParam.BatteryEnergy)) mods.Add("BE");
                     if (param.HasFlag(SongPlayParam.NoFail)) mods.Add("NF");
                     if (param.HasFlag(SongPlayParam.InstaFail)) mods.Add("IF");
@@ -70,13 +69,13 @@ namespace LocalLeaderboard.SongPlayHistory
                     if (param.HasFlag(SongPlayParam.GhostNotes)) mods.Add("GN");
                     if (param.HasFlag(SongPlayParam.SmallCubes)) mods.Add("SN");
                     if (param.HasFlag(SongPlayParam.ProMode)) mods.Add("PRO");
-                    
-                    
+
+
                     modsString = string.Join(" ", mods);
                 }
-                
+
                 float denominator;
-                
+
                 if (record.LevelEnd == LevelEndType.Cleared)
                 {
                     denominator = scoringCache.MaxMultipliedScore;
@@ -93,8 +92,8 @@ namespace LocalLeaderboard.SongPlayHistory
                 {
                     denominator = 0;
                 }
-                
-                var entry = new LLeaderboardEntry(
+
+                LLeaderboardEntry entry = new(
                     -1,
                     -1,
                     denominator == 0 ? 0f : record.RawScore / denominator * 100,
@@ -115,7 +114,7 @@ namespace LocalLeaderboard.SongPlayHistory
                     -1,
                     true
                 );
-                
+
                 entries.Add(entry);
             }
 

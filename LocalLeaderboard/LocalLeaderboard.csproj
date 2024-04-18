@@ -104,6 +104,7 @@
       <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\Helpers.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Hive.Versioning, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="HMRendering, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <Private>False</Private>
       <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\HMRendering.dll</HintPath>
