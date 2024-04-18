@@ -1,10 +1,14 @@
-﻿using System;
+﻿extern alias balls;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using Tweening;
 using UnityEngine;
 using Zenject;
-
+using Tween = balls.Tweening.Tween;
+using TimeTweeningManager = balls.Tweening.TimeTweeningManager;
+using FloatTween = balls.Tweening.FloatTween;
+using EaseTyped = balls.EaseType;
 namespace LocalLeaderboard.Services
 {
     internal class TweeningService
@@ -21,7 +25,7 @@ namespace LocalLeaderboard.Services
             Tween tween = new FloatTween(startRotation, endRotation, (float u) =>
             {
                 transform.rotation = Quaternion.Euler(0f, 0f, u);
-            }, 0.1f, EaseType.Linear, 0f);
+            }, 0.1f, EaseTyped.Linear, 0f);
             tween.onCompleted = () =>
             {
                 callback?.Invoke();
@@ -45,7 +49,7 @@ namespace LocalLeaderboard.Services
             Tween tween = new FloatTween(startAlpha, endAlpha, (float u) =>
             {
                 text.color = text.color.ColorWithAlpha(u);
-            }, 0.4f, EaseType.Linear, 0f);
+            }, 0.4f, EaseTyped.Linear, 0f);
             tween.onCompleted = () =>
             {
                 if (text == null) return;

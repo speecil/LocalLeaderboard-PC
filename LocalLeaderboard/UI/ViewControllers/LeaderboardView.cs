@@ -8,6 +8,7 @@ using HMUI;
 using IPA.Utilities;
 using IPA.Utilities.Async;
 using LeaderboardCore.Interfaces;
+using LocalLeaderboard.AffinityPatches;
 using LocalLeaderboard.Services;
 using LocalLeaderboard.Utils;
 using SiraUtil.Logging;
@@ -16,6 +17,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -46,7 +48,7 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         SettingsConfig config = SettingsConfig.Instance;
 
-        public IDifficultyBeatmap currentDifficultyBeatmap;
+        public BeatmapKey currentBeatmapKey;
 
         [UIComponent("leaderboardTableView")]
         private LeaderboardTableView leaderboardTableView = null;
@@ -131,7 +133,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         private void UpdatePageChanged(int inc)
         {
             page = Mathf.Clamp(page + inc, 0, totalPages - 1);
-            OnLeaderboardSet(currentDifficultyBeatmap);
+            OnLeaderboardSet(currentBeatmapKey);
         }
 
         [UIAction("changeSort")]
@@ -143,7 +145,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             _tweeningService.RotateTransform(sorter.GetComponentInChildren<ImageView>().transform, 180f, 0.1f, () =>
             {
                 Ascending = !Ascending;
-                UnityMainThreadTaskScheduler.Factory.StartNew(() => OnLeaderboardSet(currentDifficultyBeatmap));
+                UnityMainThreadTaskScheduler.Factory.StartNew(() => OnLeaderboardSet(currentBeatmapKey));
             });
         }
 
@@ -175,7 +177,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             set
             {
                 config.BurgerDate = value; // fuck you i removed the line cope
-                OnLeaderboardSet(currentDifficultyBeatmap);
+                OnLeaderboardSet(currentBeatmapKey);
             }
         }
 
@@ -220,7 +222,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             set
             {
                 config.useRelativeTime = value;
-                OnLeaderboardSet(currentDifficultyBeatmap);
+                OnLeaderboardSet(currentBeatmapKey);
             }
         }
 
@@ -253,13 +255,13 @@ namespace LocalLeaderboard.UI.ViewControllers
         }
 
         [UIAction("Retry")]
-        private void Retry() => OnLeaderboardSet(currentDifficultyBeatmap);
+        private void Retry() => OnLeaderboardSet(currentBeatmapKey);
 
         [UIAction("OnIconSelected")]
         private void OnIconSelected(SegmentedControl segmentedControl, int index)
         {
             sortMethod = index;
-            OnLeaderboardSet(currentDifficultyBeatmap);
+            OnLeaderboardSet(currentBeatmapKey);
         }
 
         [UIValue("leaderboardIcons")]
@@ -325,7 +327,7 @@ namespace LocalLeaderboard.UI.ViewControllers
                 });
             }
             _plvc.GetComponentInChildren<TextMeshProUGUI>().color = new Color(0, 0, 0, 0);
-            OnLeaderboardSet(currentDifficultyBeatmap);
+            OnLeaderboardSet(currentBeatmapKey);
         }
 
         protected override void DidDeactivate(bool removedFromHierarchy, bool screenSystemDisabling)
@@ -429,18 +431,17 @@ namespace LocalLeaderboard.UI.ViewControllers
         
         private CancellationTokenSource _refreshCTS;
 
-        public async void OnLeaderboardSet(IDifficultyBeatmap difficultyBeatmap)
+        public async void OnLeaderboardSet(BeatmapKey difficultyBeatmap)
         {
+            currentBeatmapKey = difficultyBeatmap;
             _refreshCTS?.Cancel();
             _refreshCTS?.Dispose();
             _refreshCTS = new CancellationTokenSource();
             var token = _refreshCTS.Token;
-            
-            currentDifficultyBeatmap = difficultyBeatmap;
             if (!this.isActivated) return;
-            string mapId = difficultyBeatmap.level.levelID;
-            int difficulty = difficultyBeatmap.difficultyRank;
-            string mapType = difficultyBeatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName;
+            string mapId = difficultyBeatmap.levelId;
+            int difficulty = Results.GetOriginalIdentifier(difficultyBeatmap);
+            string mapType = difficultyBeatmap.beatmapCharacteristic.serializedName;
             string balls = mapType + difficulty.ToString();
             List<LLeaderboardEntry> leaderboardEntries = LeaderboardData.LeaderboardData.LoadBeatMapInfo(mapId, balls);
             
@@ -724,9 +725,10 @@ namespace LocalLeaderboard.UI.ViewControllers
                 isScaled = false;
             }
 
+
             public void OnPointerClick(PointerEventData data)
             {
-                BeatSaberUI.BasicUIAudioManager.HandleButtonClickEvent();
+                BeatSaberUI.BasicUIAudioManager.GetType().GetRuntimeMethod("HandleButtonClickEvent", new Type[0]);
                 onClick(index);
             }
 

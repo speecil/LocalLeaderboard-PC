@@ -10,6 +10,7 @@ namespace LocalLeaderboard.Services
     internal class ReplayService
     {
         private object _replayerMenuLoader;
+        private SiraLog _log;
 
         private SiraLog _log;
 

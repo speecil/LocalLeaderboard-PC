@@ -11,7 +11,7 @@ namespace LocalLeaderboard.UI
         private readonly CustomLeaderboardManager _manager;
         private LeaderboardView _leaderboardView;
 
-        public override bool ShowForLevel(IPreviewBeatmapLevel selectedLevel)
+        public override bool ShowForLevel(BeatmapKey? selectedLevel)
         {
             return true;
         }

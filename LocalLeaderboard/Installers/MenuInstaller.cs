@@ -24,7 +24,8 @@ namespace LocalLeaderboard.Installers
             Container.BindInterfacesTo<LLLeaderboard>().AsSingle();
             Container.Bind<TweeningService>().AsSingle();
             Container.Bind<PlayerService>().AsSingle();
-            if (!Plugin.GetGameVersion().Contains("1.34"))
+
+            if (!Plugin.GetGameVersion().Contains("1.35"))
             {
                 Plugin.beatLeaderInstalled = false;
             }
@@ -33,6 +34,7 @@ namespace LocalLeaderboard.Installers
                 Plugin.beatLeaderInstalled = Plugin.GetAssemblyByName("BeatLeader") != null;
             }
             if (Plugin.beatLeaderInstalled) Container.Bind<ReplayService>().AsSingle();
+
             
             if (Plugin.GetAssemblyByName("BeatLeader") != null) Container.Bind<ReplayService>().AsSingle();
             var sph = PluginManager.GetPluginFromId("SongPlayHistory");
@@ -40,8 +42,8 @@ namespace LocalLeaderboard.Installers
             {
                 _logger.Debug("Found supported SPH, installing SPHInstaller");
                 Container.Install<SPHInstaller>();
-            } 
-            
+            }     
+
             ScoreInfoModal scoreInfoModal = new ScoreInfoModal();
             List<EntryHolder> holder = Enumerable.Range(0, 10).Select(x => new EntryHolder(scoreInfoModal.setScoreModalText)).ToList();
             Container.Bind<ScoreInfoModal>().FromInstance(scoreInfoModal).AsSingle().WhenInjectedInto<LeaderboardView>();
