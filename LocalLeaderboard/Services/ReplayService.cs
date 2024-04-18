@@ -12,6 +12,8 @@ namespace LocalLeaderboard.Services
         private object _replayerMenuLoader;
         private SiraLog _log;
 
+        private SiraLog _log;
+
         [Inject]
         public void Inject(BeatLeader.Replayer.ReplayerMenuLoader replayerMenuLoader, SiraLog log)
         {
@@ -21,7 +23,6 @@ namespace LocalLeaderboard.Services
 
         public bool TryReadReplay(string filename, out BeatLeader.Models.Replay.Replay replay)
         {
-            _log.Info("TryReadReplay");
             try
             {
                 if (File.Exists(filename))

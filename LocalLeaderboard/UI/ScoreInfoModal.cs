@@ -24,7 +24,6 @@ namespace LocalLeaderboard.UI
     {
         [Inject] private readonly SiraLog _log;
 
-
         [UIComponent("scoreInfo")]
         public ModalView infoModal;
 
@@ -190,10 +189,10 @@ namespace LocalLeaderboard.UI
             else modifiersScoreText.gameObject.SetActive(true);
 
             if (entry.fullCombo) fcScoreText.text = "<size=4><color=green>Full Combo!</color></size>";
-            else fcScoreText.text = string.Format("Mistakes: <size=4><color=red>{0}</color></size>", entry.badCutCount + entry.missCount);
+            else fcScoreText.text = entry.badCutCount + entry.missCount < 0 ? "" : $"Mistakes: <size=4><color=red>{entry.badCutCount + entry.missCount}</color></size>";
 
-            avgHitscoreScoreText.text = $"Avg Hitscore: <size={infoFontSize}>{entry.averageHitscore.ToString("F2")}</size>";
-            maxComboScoreText.text = $"Max Combo: <size={infoFontSize}>{entry.maxCombo}</size>";
+            avgHitscoreScoreText.text = entry.averageHitscore < 0 ? "" : $"Avg Hitscore: <size={infoFontSize}>{entry.averageHitscore.ToString("F2")}</size>";
+            maxComboScoreText.text = entry.maxCombo < 0 ? "" : $"Max Combo: <size={infoFontSize}>{entry.maxCombo}</size>";
             parserParams.EmitEvent("showScoreInfo");
             currentEntry = entry;
             failScoreText.gameObject.SetActive(entry.didFail);
@@ -203,7 +202,16 @@ namespace LocalLeaderboard.UI
             if (entry.leftHandTimeDependency != 0) leftHandTimeDependency.text = $"Left Hand TD: <size={infoFontSize}><color=#38f2a4>{entry.leftHandTimeDependency:0.##}</color></size>"; else leftHandTimeDependency.text = "";
             if (entry.rightHandTimeDependency != 0) rightHandTimeDependency.text = $"Right Hand TD: <size={infoFontSize}><color=#38f2a4>{entry.rightHandTimeDependency:0.##}</color></size>"; else rightHandTimeDependency.text = "";
             if (entry.pauses != -1) pauses.text = $"Pauses: <size={infoFontSize}><color=#38f2a4>{entry.pauses}</color></size>"; else pauses.text = "";
-            if (entry.perfectStreak != -1) { perfectStreak.text = $"Perfect Streak: <size={infoFontSize}><color=#38f2a4>{entry.perfectStreak}</color></size>"; moreInfoButton.interactable = true; } else { perfectStreak.text = ""; moreInfoButton.interactable = false; }
+            if (entry.perfectStreak != -1)
+            {
+                perfectStreak.text = $"Perfect Streak: <size={infoFontSize}><color=#38f2a4>{entry.perfectStreak}</color></size>"; 
+                moreInfoButton.interactable = true;
+            }
+            else
+            {
+                perfectStreak.text = ""; 
+                moreInfoButton.interactable = false;
+            }
 
             if (moreInfoButton.interactable)
             {

@@ -1,17 +1,23 @@
-﻿using IPA.Utilities;
+using IPA.Utilities;
+using IPA.Utilities.Async;
 using LocalLeaderboard.Services;
 using LocalLeaderboard.UI.ViewControllers;
 using LocalLeaderboard.Utils;
 using SiraUtil.Affinity;
+using SiraUtil.Logging;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
+using Zenject;
 
 namespace LocalLeaderboard.AffinityPatches
 {
     internal class Results : IAffinity
     {
+        [Inject] private readonly SiraLog _log;
+        
         public static float GetModifierScoreMultiplier(LevelCompletionResults results, GameplayModifiersModelSO modifiersModel)
         {
             if(modifiersModel == null || results == null)
@@ -109,6 +115,20 @@ namespace LocalLeaderboard.AffinityPatches
         [AffinityPatch(typeof(PrepareLevelCompletionResults), nameof(PrepareLevelCompletionResults.FillLevelCompletionResults))]
         private void Postfix(ref LevelCompletionResults __result, ref IScoreController ____scoreController, ref GameplayModifiersModelSO ____gameplayModifiersModelSO, ref IReadonlyBeatmapData ____beatmapData)
         {
+            _log.Info("Results postfix called.");
+            // i hate this
+            PlayerData localPlayerData = playerData;
+            PlayerLevelStatsData localPlayerLevelStats = playerLevelStats;
+            LevelCompletionResults localLevelCompletionResults = levelCompletionResults;
+            IReadonlyBeatmapData localTransformedBeatmapData = transformedBeatmapData;
+            IDifficultyBeatmap localDifficultyBeatmap = difficultyBeatmap;
+            PlatformLeaderboardsModel localPlatformLeaderboardsModel = platformLeaderboardsModel;
+            UnityMainThreadTaskScheduler.Factory.StartNew(async () => await PostfixTask(localPlayerData, localPlayerLevelStats, localLevelCompletionResults, localTransformedBeatmapData, localDifficultyBeatmap, localPlatformLeaderboardsModel));
+        }
+
+        private async Task PostfixTask(PlayerData playerData,  PlayerLevelStatsData playerLevelStats,  LevelCompletionResults levelCompletionResults,  IReadonlyBeatmapData transformedBeatmapData, IDifficultyBeatmap difficultyBeatmap, PlatformLeaderboardsModel platformLeaderboardsModel)
+        {
+            await Task.Delay(500); // this is literally only so i can get the replay 100% of the time instead of gambling on the replay being saved in time
             if(ExtraSongDataHolder.beatmapKey == null || ExtraSongDataHolder.beatmapLevel == null || __result == null || ExtraSongData.IsLocalLeaderboardReplay || ____beatmapData == null || ____gameplayModifiersModelSO == null || ____scoreController == null)
             {
                 ExtraSongData.IsLocalLeaderboardReplay = false;
@@ -116,6 +136,7 @@ namespace LocalLeaderboard.AffinityPatches
             }
             float maxScore = ScoreModel.ComputeMaxMultipliedScoreForBeatmap(____beatmapData);
             float modifiedScore = __result.modifiedScore;
+
             if (modifiedScore == 0 || maxScore == 0)
                 return;
             float acc = (modifiedScore / maxScore) * 100;
@@ -124,10 +145,9 @@ namespace LocalLeaderboard.AffinityPatches
             int misses = __result.missedCount;
             bool fc = __result.fullCombo;
 
-            DateTime currentDateTime = DateTime.Now;
-            DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            _log.Info("Results: " + acc + " " + score + " " + badCut + " " + misses + " " + fc);
 
-            long unixTimestampSeconds = (long)(currentDateTime.ToUniversalTime() - unixEpoch).TotalSeconds;
+            long unixTimestampSeconds = DateTimeOffset.Now.ToUnixTimeSeconds();
 
             string currentTime = unixTimestampSeconds.ToString();
 

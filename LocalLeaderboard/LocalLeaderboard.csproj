@@ -129,6 +129,11 @@
       <HintPath>$(BeatSaberDir)\Plugins\SiraUtil.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="SongPlayHistory">
+      <Private>False</Private>
+      <HintPath>$(BeatSaberDir)\Plugins\SongPlayHistory.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="Steamworks.NET, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <Private>False</Private>
       <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\Steamworks.NET.dll</HintPath>
@@ -288,17 +293,22 @@
     <Compile Include="Installers\GameInstaller.cs" />
     <Compile Include="Installers\MenuInstaller.cs" />
     <Compile Include="AffinityPatches\Results.cs" />
+    <Compile Include="Installers\SPHInstaller.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Configuration\LeaderboardData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\IExternalDataService.cs" />
     <Compile Include="Services\PlayerService.cs" />
     <Compile Include="Services\ReplayService.cs" />
     <Compile Include="Services\TweeningService.cs" />
+    <Compile Include="SongPlayHistory\SongPlayHistoryDataService.cs" />
     <Compile Include="UI\LLLeaderboard.cs" />
     <Compile Include="UI\ScoreInfoModal.cs" />
     <Compile Include="UI\ViewControllers\LeaderboardView.cs" />
     <Compile Include="UI\ViewControllers\PanelView.cs" />
     <Compile Include="Utils\Constants.cs" />
+    <Compile Include="Utils\LeaderboardEntryComparers.cs" />
+    <Compile Include="Utils\ScoreUtil.cs" />
     <Compile Include="Utils\TimeUtils.cs" />
   </ItemGroup>
   <ItemGroup>
