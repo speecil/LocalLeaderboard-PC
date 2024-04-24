@@ -126,7 +126,7 @@ namespace LocalLeaderboard.AffinityPatches
 
         private async Task PostfixTask( LevelCompletionResults __result,  IScoreController ____scoreController,  GameplayModifiersModelSO ____gameplayModifiersModelSO,  IReadonlyBeatmapData ____beatmapData)
         {
-            await Task.Delay(500); // this is literally only so i can get the replay 100% of the time instead of gambling on the replay being saved in time
+            await Task.Delay(150); // this is literally only so i can get the replay 100% of the time instead of gambling on the replay being saved in time
             if(ExtraSongDataHolder.IDifficultyBeatmap == null || ExtraSongDataHolder.IDifficultyBeatmap == null || __result == null || ExtraSongData.IsLocalLeaderboardReplay || ____beatmapData == null || ____gameplayModifiersModelSO == null || ____scoreController == null)
             {
                 ExtraSongData.IsLocalLeaderboardReplay = false;
