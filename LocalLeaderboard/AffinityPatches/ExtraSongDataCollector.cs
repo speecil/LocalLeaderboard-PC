@@ -15,8 +15,8 @@ namespace LocalLeaderboard.AffinityPatches
     internal class ExtraSongData : IAffinity
     {
         [Inject] private readonly SiraLog _log;
-        [Inject] internal readonly BeatmapKey _key;
-        [Inject] internal readonly BeatmapLevel _beatmapLevel;
+        [Inject] internal readonly IDifficultyBeatmap _key;
+
         internal int currentPerfectHits = 0;
         internal int highestPerfectStreak = 0;
 
@@ -33,8 +33,8 @@ namespace LocalLeaderboard.AffinityPatches
             ExtraSongDataHolder.reset();
             currentPerfectHits = 0;
             highestPerfectStreak = 0;
-            ExtraSongDataHolder.beatmapKey = _key;
-            ExtraSongDataHolder.beatmapLevel = _beatmapLevel;
+            ExtraSongDataHolder.IDifficultyBeatmap = _key;
+
             if (IsLocalLeaderboardReplay)
             {
                 try
@@ -136,8 +136,7 @@ namespace LocalLeaderboard.AffinityPatches
         internal static List<float> leftHandTimeDependency = new();
         internal static List<Tuple<int, int>> totalBlocksHit = new();
         internal static int perfectStreak = 0;
-        internal static BeatmapKey beatmapKey;
-        internal static BeatmapLevel beatmapLevel;
+        internal static IDifficultyBeatmap IDifficultyBeatmap;
 
         internal static void reset()
         {

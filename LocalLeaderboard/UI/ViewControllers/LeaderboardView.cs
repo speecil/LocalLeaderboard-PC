@@ -48,7 +48,7 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         SettingsConfig config = SettingsConfig.Instance;
 
-        public BeatmapKey currentBeatmapKey;
+        public IDifficultyBeatmap currentIDifficultyBeatmap;
 
         [UIComponent("leaderboardTableView")]
         private LeaderboardTableView leaderboardTableView = null;
@@ -133,7 +133,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         private void UpdatePageChanged(int inc)
         {
             page = Mathf.Clamp(page + inc, 0, totalPages - 1);
-            OnLeaderboardSet(currentBeatmapKey);
+            OnLeaderboardSet(currentIDifficultyBeatmap);
         }
 
         [UIAction("changeSort")]
@@ -145,7 +145,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             _tweeningService.RotateTransform(sorter.GetComponentInChildren<ImageView>().transform, 180f, 0.1f, () =>
             {
                 Ascending = !Ascending;
-                UnityMainThreadTaskScheduler.Factory.StartNew(() => OnLeaderboardSet(currentBeatmapKey));
+                UnityMainThreadTaskScheduler.Factory.StartNew(() => OnLeaderboardSet(currentIDifficultyBeatmap));
             });
         }
 
@@ -177,7 +177,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             set
             {
                 config.BurgerDate = value; // fuck you i removed the line cope
-                OnLeaderboardSet(currentBeatmapKey);
+                OnLeaderboardSet(currentIDifficultyBeatmap);
             }
         }
 
@@ -222,7 +222,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             set
             {
                 config.useRelativeTime = value;
-                OnLeaderboardSet(currentBeatmapKey);
+                OnLeaderboardSet(currentIDifficultyBeatmap);
             }
         }
 
@@ -255,13 +255,13 @@ namespace LocalLeaderboard.UI.ViewControllers
         }
 
         [UIAction("Retry")]
-        private void Retry() => OnLeaderboardSet(currentBeatmapKey);
+        private void Retry() => OnLeaderboardSet(currentIDifficultyBeatmap);
 
         [UIAction("OnIconSelected")]
         private void OnIconSelected(SegmentedControl segmentedControl, int index)
         {
             sortMethod = index;
-            OnLeaderboardSet(currentBeatmapKey);
+            OnLeaderboardSet(currentIDifficultyBeatmap);
         }
 
         [UIValue("leaderboardIcons")]
@@ -327,7 +327,7 @@ namespace LocalLeaderboard.UI.ViewControllers
                 });
             }
             _plvc.GetComponentInChildren<TextMeshProUGUI>().color = new Color(0, 0, 0, 0);
-            OnLeaderboardSet(currentBeatmapKey);
+            OnLeaderboardSet(currentIDifficultyBeatmap);
         }
 
         protected override void DidDeactivate(bool removedFromHierarchy, bool screenSystemDisabling)
@@ -431,17 +431,17 @@ namespace LocalLeaderboard.UI.ViewControllers
         
         private CancellationTokenSource _refreshCTS;
 
-        public async void OnLeaderboardSet(BeatmapKey difficultyBeatmap)
+        public async void OnLeaderboardSet(IDifficultyBeatmap difficultyBeatmap)
         {
-            currentBeatmapKey = difficultyBeatmap;
+            currentIDifficultyBeatmap = difficultyBeatmap;
             _refreshCTS?.Cancel();
             _refreshCTS?.Dispose();
             _refreshCTS = new CancellationTokenSource();
             var token = _refreshCTS.Token;
             if (!this.isActivated) return;
-            string mapId = difficultyBeatmap.levelId;
+            string mapId = difficultyBeatmap.level.levelID;
             int difficulty = Results.GetOriginalIdentifier(difficultyBeatmap);
-            string mapType = difficultyBeatmap.beatmapCharacteristic.serializedName;
+            string mapType = difficultyBeatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName;
             string balls = mapType + difficulty.ToString();
             List<LLeaderboardEntry> leaderboardEntries = LeaderboardData.LeaderboardData.LoadBeatMapInfo(mapId, balls);
             

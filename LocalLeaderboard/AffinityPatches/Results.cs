@@ -27,7 +27,7 @@ namespace LocalLeaderboard.AffinityPatches
             return modifiersModel.GetTotalMultiplier(modifiersModel.CreateModifierParamsList(results.gameplayModifiers), results.energy);
         }
 
-        public static int GetOriginalIdentifier(BeatmapKey key)
+        public static int GetOriginalIdentifier(IDifficultyBeatmap key)
         {
             if (key == null)
             {
@@ -117,19 +117,17 @@ namespace LocalLeaderboard.AffinityPatches
         {
             _log.Info("Results postfix called.");
             // i hate this
-            PlayerData localPlayerData = playerData;
-            PlayerLevelStatsData localPlayerLevelStats = playerLevelStats;
-            LevelCompletionResults localLevelCompletionResults = levelCompletionResults;
-            IReadonlyBeatmapData localTransformedBeatmapData = transformedBeatmapData;
-            IDifficultyBeatmap localDifficultyBeatmap = difficultyBeatmap;
-            PlatformLeaderboardsModel localPlatformLeaderboardsModel = platformLeaderboardsModel;
-            UnityMainThreadTaskScheduler.Factory.StartNew(async () => await PostfixTask(localPlayerData, localPlayerLevelStats, localLevelCompletionResults, localTransformedBeatmapData, localDifficultyBeatmap, localPlatformLeaderboardsModel));
+            LevelCompletionResults localLevelCompletionResults = __result;
+            IScoreController localScoreController = ____scoreController;
+            GameplayModifiersModelSO localGameplayModifiersModelSO = ____gameplayModifiersModelSO;
+            IReadonlyBeatmapData localBeatmapData = ____beatmapData;
+            UnityMainThreadTaskScheduler.Factory.StartNew(async () => await PostfixTask(localLevelCompletionResults, localScoreController, localGameplayModifiersModelSO, localBeatmapData));
         }
 
-        private async Task PostfixTask(PlayerData playerData,  PlayerLevelStatsData playerLevelStats,  LevelCompletionResults levelCompletionResults,  IReadonlyBeatmapData transformedBeatmapData, IDifficultyBeatmap difficultyBeatmap, PlatformLeaderboardsModel platformLeaderboardsModel)
+        private async Task PostfixTask( LevelCompletionResults __result,  IScoreController ____scoreController,  GameplayModifiersModelSO ____gameplayModifiersModelSO,  IReadonlyBeatmapData ____beatmapData)
         {
             await Task.Delay(500); // this is literally only so i can get the replay 100% of the time instead of gambling on the replay being saved in time
-            if(ExtraSongDataHolder.beatmapKey == null || ExtraSongDataHolder.beatmapLevel == null || __result == null || ExtraSongData.IsLocalLeaderboardReplay || ____beatmapData == null || ____gameplayModifiersModelSO == null || ____scoreController == null)
+            if(ExtraSongDataHolder.IDifficultyBeatmap == null || ExtraSongDataHolder.IDifficultyBeatmap == null || __result == null || ExtraSongData.IsLocalLeaderboardReplay || ____beatmapData == null || ____gameplayModifiersModelSO == null || ____scoreController == null)
             {
                 ExtraSongData.IsLocalLeaderboardReplay = false;
                 return;
@@ -151,10 +149,10 @@ namespace LocalLeaderboard.AffinityPatches
 
             string currentTime = unixTimestampSeconds.ToString();
 
-            string mapId = ExtraSongDataHolder.beatmapLevel.levelID;
+            string mapId = ExtraSongDataHolder.IDifficultyBeatmap.level.levelID;
 
-            int difficulty = GetOriginalIdentifier(ExtraSongDataHolder.beatmapKey);
-            string mapType = ExtraSongDataHolder.beatmapKey.beatmapCharacteristic.serializedName;
+            int difficulty = GetOriginalIdentifier(ExtraSongDataHolder.IDifficultyBeatmap);
+            string mapType = ExtraSongDataHolder.IDifficultyBeatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName;
 
             string balls = mapType + difficulty.ToString(); // BeatMap Allocated Level Label String
 
@@ -187,14 +185,14 @@ namespace LocalLeaderboard.AffinityPatches
                 }
 
                 string timestamp = DateTime.UtcNow.Ticks.ToString();
-                destinationFileName = Path.GetFileNameWithoutExtension(ExtraSongDataHolder.beatmapKey.levelId + difficulty) + "_" + timestamp + Path.GetExtension(filePath.Name);
+                destinationFileName = Path.GetFileNameWithoutExtension(ExtraSongDataHolder.IDifficultyBeatmap.level.levelID + difficulty) + "_" + timestamp + Path.GetExtension(filePath.Name);
                 string destinationFilePath = Path.Combine(Constants.LLREPLAYS_PATH, destinationFileName);
                 File.Copy(filePath.FullName, destinationFilePath, true);
             }
             ExtraSongData.IsLocalLeaderboardReplay = false;
             LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(__result), maxCombo, averageHitscore, didFail, destinationFileName, rightHandAverageScore, leftHandAverageScore, perfectStreak, rightHandTimeDependency, leftHandTimeDependency, fcAcc, pauses);
             var lb = Resources.FindObjectsOfTypeAll<LeaderboardView>().FirstOrDefault();
-            lb.OnLeaderboardSet(lb.currentBeatmapKey);
+            lb.OnLeaderboardSet(lb.currentIDifficultyBeatmap);
         }
     }
 }

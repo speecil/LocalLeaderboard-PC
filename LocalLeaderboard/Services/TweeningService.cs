@@ -1,14 +1,10 @@
-﻿extern alias balls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using TMPro;
 using Tweening;
 using UnityEngine;
 using Zenject;
-using Tween = balls.Tweening.Tween;
-using TimeTweeningManager = balls.Tweening.TimeTweeningManager;
-using FloatTween = balls.Tweening.FloatTween;
-using EaseTyped = balls.EaseType;
+using EaseTyped = EaseType;
 namespace LocalLeaderboard.Services
 {
     internal class TweeningService

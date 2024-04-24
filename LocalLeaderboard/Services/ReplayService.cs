@@ -12,8 +12,6 @@ namespace LocalLeaderboard.Services
         private object _replayerMenuLoader;
         private SiraLog _log;
 
-        private SiraLog _log;
-
         [Inject]
         public void Inject(BeatLeader.Replayer.ReplayerMenuLoader replayerMenuLoader, SiraLog log)
         {

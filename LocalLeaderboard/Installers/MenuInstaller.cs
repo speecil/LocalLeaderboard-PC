@@ -6,8 +6,8 @@ using System.Linq;
 using IPA.Loader;
 using Zenject;
 using EntryHolder = LocalLeaderboard.UI.ViewControllers.LeaderboardView.EntryHolder;
-using Hive.Versioning;
 using SiraUtil.Logging;
+using Hive.Versioning;
 
 namespace LocalLeaderboard.Installers
 {
