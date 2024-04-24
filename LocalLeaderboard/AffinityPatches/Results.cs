@@ -179,6 +179,7 @@ namespace LocalLeaderboard.AffinityPatches
             {
                 var directory = new DirectoryInfo(Constants.BLREPLAY_PATH);
                 var filePath = directory.GetFiles().OrderByDescending(f => f.LastWriteTime).First();
+                _log.Info("Found BL Replay: " + filePath.FullName);
                 var replayFileName = filePath.Name;
 
                 if (!Directory.Exists(Constants.LLREPLAYS_PATH))
