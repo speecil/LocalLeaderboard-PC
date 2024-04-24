@@ -185,9 +185,9 @@ namespace LocalLeaderboard.AffinityPatches
                 }
 
                 string timestamp = DateTime.UtcNow.Ticks.ToString();
-                destinationFileName = Path.GetFileNameWithoutExtension(ExtraSongDataHolder.IDifficultyBeatmap.level.levelID + difficulty) + "_" + timestamp + Path.GetExtension(filePath.Name);
+                destinationFileName = Path.GetFileNameWithoutExtension(filePath.Name) + "_" + timestamp + Path.GetExtension(filePath.Name);
                 string destinationFilePath = Path.Combine(Constants.LLREPLAYS_PATH, destinationFileName);
-                File.Copy(filePath.FullName, destinationFilePath, true);
+                File.Copy(filePath.FullName, destinationFilePath);
             }
             ExtraSongData.IsLocalLeaderboardReplay = false;
             LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(__result), maxCombo, averageHitscore, didFail, destinationFileName, rightHandAverageScore, leftHandAverageScore, perfectStreak, rightHandTimeDependency, leftHandTimeDependency, fcAcc, pauses);
