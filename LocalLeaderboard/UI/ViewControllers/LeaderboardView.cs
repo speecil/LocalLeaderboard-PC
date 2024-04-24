@@ -274,7 +274,7 @@ namespace LocalLeaderboard.UI.ViewControllers
                 new(
                     Utilities.FindSpriteInAssembly("LocalLeaderboard.Images.clock.png"), "Date / Time"),
                 new(
-                    Utilities.FindSpriteInAssembly("LocalLeaderboard.Images.score.png"), "ACC")
+                    Utilities.FindSpriteInAssembly("LocalLeaderboard.Images.score.png"), "Accuracy")
                 };
             }
         }
