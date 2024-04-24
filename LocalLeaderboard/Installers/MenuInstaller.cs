@@ -25,17 +25,11 @@ namespace LocalLeaderboard.Installers
             Container.Bind<TweeningService>().AsSingle();
             Container.Bind<PlayerService>().AsSingle();
 
-            if (!Plugin.GetGameVersion().Contains("1.29"))
+            if (Plugin.GetGameVersion() >= new Version(1, 29, 1) && Plugin.GetAssemblyByName("BeatLeader") != null)
             {
-                Plugin.beatLeaderInstalled = false;
-            }
-            else
-            {
-                Plugin.beatLeaderInstalled = Plugin.GetAssemblyByName("BeatLeader") != null;
+                Container.Bind<ReplayService>().AsSingle();
             }
             
-            if (Plugin.GetAssemblyByName("BeatLeader") != null) Container.Bind<ReplayService>().AsSingle();
-
             var sph = PluginManager.GetPluginFromId("SongPlayHistory");
             if (sph != null && sph.HVersion >= new Version(2, 1, 0)) 
             {
