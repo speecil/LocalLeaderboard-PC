@@ -99,6 +99,28 @@ namespace LocalLeaderboard.LeaderboardData
                 // If the scores are the same and the time played is within 10 seconds of each other, consider them the same play.
                 return score == other.score && long.TryParse(datePlayed, out long x) && long.TryParse(other.datePlayed, out long y) && Math.Abs(x - y) <= 10;
             }
+
+            public override readonly string ToString()
+            {
+                return $"Date Played: {datePlayed}\n" +
+                       $"Misses: {missCount}\n" +
+                       $"Bad Cuts: {badCutCount}\n" +
+                       $"Acc: {acc}\n" +
+                       $"Full Combo: {fullCombo}\n" +
+                       $"Score: {score}\n" +
+                       $"Mods: {mods}\n" +
+                       $"Max Combo: {maxCombo}\n" +
+                       $"Average Hitscore: {averageHitscore}\n" +
+                       $"Did Fail: {didFail}\n" +
+                       $"BSOR Path: {bsorPath}\n" +
+                       $"Right Hand Average Score: {avgAccRight}\n" +
+                       $"Left Hand Average Score: {avgAccLeft}\n" +
+                       $"Perfect Streak: {perfectStreak}\n" +
+                       $"Right Hand Time Dependency: {rightHandTimeDependency}\n" +
+                       $"Left Hand Time Dependency: {leftHandTimeDependency}\n" +
+                       $"FC Accuracy: {fcAcc}\n" +
+                       $"Pauses: {pauses}";
+            }
         }
 
         public static void AddBeatMap(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, float averageHitscore, bool didFail, string bsorPath, float avgAccRight, float avgAccLeft, int perfectStreak, float rightHandTimeDependency, float leftHandTimeDependency, float fcAcc, int pauses)

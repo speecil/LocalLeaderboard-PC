@@ -33,7 +33,7 @@ namespace LocalLeaderboard.SongPlayHistory
             }
 
             IList<ISongPlayRecord> records = _recordManager.GetRecords(beatmap);
-            var scoringCache = await _scoringCacheManager.GetScoringInfo(beatmap, token);
+            LevelScoringCache scoringCache = await _scoringCacheManager.GetScoringInfo(beatmap, null, token);
 
             List<LLeaderboardEntry> entries = new(records.Count);
             foreach (ISongPlayRecord record in records)
@@ -68,7 +68,7 @@ namespace LocalLeaderboard.SongPlayHistory
                     if (param.HasFlag(SongPlayParam.NoArrows)) mods.Add("NA");
                     if (param.HasFlag(SongPlayParam.GhostNotes)) mods.Add("GN");
                     if (param.HasFlag(SongPlayParam.SmallCubes)) mods.Add("SN");
-                    if (param.HasFlag(SongPlayParam.ProMode)) mods.Add("PRO");
+                    if (param.HasFlag(SongPlayParam.ProMode)) mods.Add("PM");
 
 
                     modsString = string.Join(" ", mods);
