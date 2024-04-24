@@ -115,6 +115,10 @@ namespace LocalLeaderboard.AffinityPatches
         [AffinityPatch(typeof(PrepareLevelCompletionResults), nameof(PrepareLevelCompletionResults.FillLevelCompletionResults))]
         private void Postfix(ref LevelCompletionResults __result, ref IScoreController ____scoreController, ref GameplayModifiersModelSO ____gameplayModifiersModelSO, ref IReadonlyBeatmapData ____beatmapData)
         {
+            if (__result.levelEndStateType != LevelCompletionResults.LevelEndStateType.Cleared)
+            {
+                return;
+            }
             _log.Info("Results postfix called.");
             // i hate this
             LevelCompletionResults localLevelCompletionResults = __result;
