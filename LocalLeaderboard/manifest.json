@@ -3,7 +3,7 @@
   "id": "LocalLeaderboard",
   "name": "LocalLeaderboard",
   "author": "Speecil",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "A leaderboard mod which saves all of your scores and displays them with various settings",
   "gameVersion": "1.29.1",
   "dependsOn": {
