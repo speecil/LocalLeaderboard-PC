@@ -25,7 +25,7 @@ namespace LocalLeaderboard.Installers
             Container.Bind<TweeningService>().AsSingle();
             Container.Bind<PlayerService>().AsSingle();
 
-            if (!Plugin.GetGameVersion().Contains("1.35") && Plugin.GetAssemblyByName("BeatLeader") != null)
+            if (!Plugin.GetGameVersion().Contains("1.36") && Plugin.GetAssemblyByName("BeatLeader") != null)
             {
                 Container.Bind<ReplayService>().AsSingle();
             }
