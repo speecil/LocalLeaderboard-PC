@@ -177,9 +177,9 @@ namespace LocalLeaderboard.AffinityPatches
 
             if (Directory.Exists(Constants.BLREPLAY_PATH) && Plugin.GetAssemblyByName("Beatleader") != null)
             {
-                DirectoryInfo directory = new(Constants.BLREPLAY_PATH);
-                FileInfo filePath = directory.GetFiles().OrderByDescending(f => f.LastWriteTime).First();
-                string replayFileName = filePath.Name;
+                var directory = new DirectoryInfo(Constants.BLREPLAY_PATH);
+                var filePath = directory.GetFiles().OrderByDescending(f => f.LastWriteTime).First();
+                var replayFileName = filePath.Name;
 
                 if (!Directory.Exists(Constants.LLREPLAYS_PATH))
                 {
@@ -187,9 +187,9 @@ namespace LocalLeaderboard.AffinityPatches
                 }
 
                 string timestamp = DateTime.UtcNow.Ticks.ToString();
-                destinationFileName = Path.GetFileNameWithoutExtension(ExtraSongDataHolder.beatmapKey.levelId + difficulty) + "_" + timestamp + Path.GetExtension(filePath.Name);
+                destinationFileName = Path.GetFileNameWithoutExtension(filePath.Name) + "_" + timestamp + Path.GetExtension(filePath.Name);
                 string destinationFilePath = Path.Combine(Constants.LLREPLAYS_PATH, destinationFileName);
-                File.Copy(filePath.FullName, destinationFilePath, true);
+                File.Copy(filePath.FullName, destinationFilePath);
             }
             ExtraSongData.IsLocalLeaderboardReplay = false;
             LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(__result), maxCombo, averageHitscore, didFail, destinationFileName, rightHandAverageScore, leftHandAverageScore, perfectStreak, rightHandTimeDependency, leftHandTimeDependency, fcAcc, pauses);
