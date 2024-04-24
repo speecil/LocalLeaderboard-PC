@@ -1,12 +1,15 @@
-﻿using IPA;
+﻿using Hive.Versioning;
+using IPA;
 using IPA.Config.Stores;
 using LocalLeaderboard.Installers;
 using SiraUtil.Zenject;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using IPALogger = IPA.Logging.Logger;
+using Version = Hive.Versioning.Version;
 
 namespace LocalLeaderboard
 {
@@ -27,15 +30,16 @@ namespace LocalLeaderboard
             zenjector.Install<GameInstaller>(Location.GameCore);
         }
 
-        public static string GetGameVersion()
+        public static Version GetGameVersion()
         {
             try
             {
-                return Application.version;
+                List<int> Version = Application.version.Split('.').Select(int.Parse).ToList();
+                return new Version(Version[0], Version[1], Version[2]);
             }
             catch
             {
-                return "Unknown";
+                return new Version(0, 0, 0);
             }
         }
 
