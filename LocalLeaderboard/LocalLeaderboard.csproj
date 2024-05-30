@@ -134,7 +134,7 @@
       <HintPath>$(BeatSaberDir)\Plugins\SiraUtil.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="SongPlayHistory">
+    <Reference Include="SongPlayHistory, Version=2.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <Private>False</Private>
       <HintPath>$(BeatSaberDir)\Plugins\SongPlayHistory.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
