@@ -295,7 +295,7 @@
     <Compile Include="AffinityPatches\ExtraSongDataCollector.cs" />
     <Compile Include="Configuration\PluginSettings.cs" />
     <Compile Include="Installers\AppInstaller.cs" />
-    <Compile Include="Installers\GameInstaller.cs" />
+    <Compile Include="Installers\PlayerInstaller.cs" />
     <Compile Include="Installers\MenuInstaller.cs" />
     <Compile Include="AffinityPatches\Results.cs" />
     <Compile Include="Installers\SPHInstaller.cs" />

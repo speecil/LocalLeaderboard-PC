@@ -26,25 +26,9 @@ namespace LocalLeaderboard
             zenjector.UseLogger(logger);
             zenjector.Install<MenuInstaller>(Location.Menu);
             zenjector.Install<AppInstaller>(Location.App);
-            zenjector.Install<GameInstaller>(Location.GameCore);
+            zenjector.Install<PlayerInstaller>(Location.Player);
         }
 
-        public static Version GetGameVersion()
-        {
-            try
-            {
-                List<int> Version = Application.version.Split('.').Select(int.Parse).ToList();
-                return new Version(Version[0], Version[1], Version[2]);
-            }
-            catch
-            {
-                return new Version(0, 0, 0);
-            }
-        }
 
-        public static Assembly GetAssemblyByName(string name)
-        {
-            return AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(assembly => assembly.GetName().Name == name);
-        }
     }
 }

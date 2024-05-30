@@ -1,4 +1,8 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System;
+using UnityEngine;
 
 namespace LocalLeaderboard.Utils
 {
@@ -16,5 +20,24 @@ namespace LocalLeaderboard.Utils
 
         internal static readonly Color SPEECIL_COLOUR = new Color(0.156f, 0.69f, 0.46666f, 1);
         internal static readonly Color SPEECIL_COLOUR_BRIGHTER = new Color((float)47 / 255, (float)212 / 255, (float)143 / 255, 1);
+
+
+        public static Version GetGameVersion()
+        {
+            try
+            {
+                List<int> Version = Application.version.Split('.').Select(int.Parse).ToList();
+                return new Version(Version[0], Version[1], Version[2]);
+            }
+            catch
+            {
+                return new Version(0, 0, 0);
+            }
+        }
+
+        public static Assembly GetAssemblyByName(string name)
+        {
+            return AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(assembly => assembly.GetName().Name == name);
+        }
     }
 }
