@@ -2,7 +2,6 @@
 using SiraUtil.Logging;
 using System;
 using System.IO;
-using System.Reflection;
 using Zenject;
 
 namespace LocalLeaderboard.Services

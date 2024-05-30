@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using BeatLeader.Models;
-using ModestTree;
-using UnityEngine;
 
 namespace LocalLeaderboard.Utils
 {
@@ -21,7 +15,7 @@ namespace LocalLeaderboard.Utils
 
         public static TimeSpan GetRelativeTime(string timeSet)
         {
-            var dateTime = AsUnixTime(long.Parse(timeSet));
+            DateTime dateTime = AsUnixTime(long.Parse(timeSet));
             return DateTime.UtcNow - dateTime;
         }
 
@@ -44,19 +38,19 @@ namespace LocalLeaderboard.Utils
                 case < 30 * Day: return timeSpan.Days + " days ago";
                 case < 12 * Month:
                     {
-                        var months = Convert.ToInt32(Math.Floor((double)timeSpan.Days / 30));
+                        int months = Convert.ToInt32(Math.Floor((double)timeSpan.Days / 30));
                         return months <= 1 ? "1 month ago" : months + " months ago";
                     }
                 default:
                     {
-                        var years = Convert.ToInt32(Math.Floor((double)timeSpan.Days / 365));
+                        int years = Convert.ToInt32(Math.Floor((double)timeSpan.Days / 365));
                         return years <= 1 ? "1 year ago" : years + " years ago";
                     }
             }
         }
         public static DateTime AsUnixTime(long longvalue)
         {
-            DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            DateTime unixEpoch = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             return unixEpoch.AddSeconds(longvalue);
         }
     }

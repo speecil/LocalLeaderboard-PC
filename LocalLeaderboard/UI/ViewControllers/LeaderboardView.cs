@@ -16,8 +16,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Reflection;
+using System.Threading;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -32,86 +32,86 @@ namespace LocalLeaderboard.UI.ViewControllers
     [ViewDefinition("LocalLeaderboard.UI.Views.LeaderboardView.bsml")]
     internal class LeaderboardView : BSMLAutomaticViewController, INotifyLeaderboardSet
     {
-        [Inject] private PanelView _panelView;
-        [Inject] private PlatformLeaderboardViewController _plvc;
-        [Inject] private TweeningService _tweeningService;
-        [Inject] private PlayerService _playerService;
+        [Inject] private readonly PanelView _panelView;
+        [Inject] private readonly PlatformLeaderboardViewController _plvc;
+        [Inject] private readonly TweeningService _tweeningService;
+        [Inject] private readonly PlayerService _playerService;
         [Inject] private readonly SiraLog _log;
 
         //[Inject] private PlayerService _playerService;
-        
-        [InjectOptional] private List<IExternalDataService> _externalDataProviders;
+
+        [InjectOptional] private readonly List<IExternalDataService> _externalDataProviders;
 
         private bool Ascending = true;
         public static LLeaderboardEntry[] buttonEntryArray = new LLeaderboardEntry[10];
         public bool UserIsPatron = false;
 
-        SettingsConfig config = SettingsConfig.Instance;
+        readonly SettingsConfig config = SettingsConfig.Instance;
 
         public IDifficultyBeatmap currentIDifficultyBeatmap;
 
         [UIComponent("leaderboardTableView")]
-        private LeaderboardTableView leaderboardTableView = null;
+        private readonly LeaderboardTableView leaderboardTableView = null;
 
         [UIComponent("leaderboardTableView")]
-        private Transform leaderboardTransform = null;
+        private readonly Transform leaderboardTransform = null;
 
         [UIComponent("errorText")]
-        private TextMeshProUGUI errorText;
+        private readonly TextMeshProUGUI errorText;
 
         [UIComponent("headerText")]
-        private TextMeshProUGUI headerText;
+        private readonly TextMeshProUGUI headerText;
 
         [UIComponent("up_button")]
-        private Button up_button;
+        private readonly Button up_button;
 
         [UIComponent("down_button")]
-        private Button down_button;
+        private readonly Button down_button;
 
         [UIComponent("sorter")]
-        private ImageView sorter;
+        private readonly ImageView sorter;
 
         [UIComponent("myHeader")]
-        private Backgroundable myHeader;
+        private readonly Backgroundable myHeader;
 
         [UIComponent("discordButton")]
-        private Button discordButton;
+        private readonly Button discordButton;
 
         [UIComponent("patreonButton")]
-        private Button patreonButton;
+        private readonly Button patreonButton;
 
         [UIComponent("websiteButton")]
-        private Button websiteButton;
+        private readonly Button websiteButton;
 
         [UIComponent("retryButton")]
-        private Button retryButton;
+        private readonly Button retryButton;
 
         [UIComponent("uwuToggle")]
-        private ToggleSetting uwuToggle;
+        private readonly ToggleSetting uwuToggle;
 
         [UIComponent("nameToggle")]
-        private ToggleSetting nameToggle;
+        private readonly ToggleSetting nameToggle;
 
         [UIComponent("americanToggle")]
-        private ToggleSetting americanToggle;
+        private readonly ToggleSetting americanToggle;
 
         [UIComponent("relativeToggle")]
-        private ToggleSetting relativeToggle;
+        private readonly ToggleSetting relativeToggle;
 
         [UIComponent("infoModal")]
-        private ModalView infoModal;
+        private readonly ModalView infoModal;
 
         [UIComponent("settingsModal")]
-        private ModalView settingsModal;
+        private readonly ModalView settingsModal;
 
         [UIValue("EntryHolders")]
-        [Inject] private List<EntryHolder> holders;
+        [Inject] private readonly List<EntryHolder> holders;
 
         [UIComponent("scoreInfoModal")]
-        [Inject] private ScoreInfoModal scoreInfoModal;
+        [Inject] private readonly ScoreInfoModal scoreInfoModal;
 
         [UIParams]
-        BSMLParserParams parserParams;
+        readonly BSMLParserParams parserParams;
 
 
         public int page = 0;
@@ -126,8 +126,8 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         private void UpdatePageButtons()
         {
-            up_button.interactable = (page > 0);
-            down_button.interactable = (page < totalPages - 1);
+            up_button.interactable = page > 0;
+            down_button.interactable = page < totalPages - 1;
         }
 
         private void UpdatePageChanged(int inc)
@@ -271,9 +271,9 @@ namespace LocalLeaderboard.UI.ViewControllers
             {
                 return new List<IconSegmentedControl.DataItem>()
                 {
-                new IconSegmentedControl.DataItem(
+                new(
                     Utilities.FindSpriteInAssembly("LocalLeaderboard.Images.clock.png"), "Date / Time"),
-                new IconSegmentedControl.DataItem(
+                new(
                     Utilities.FindSpriteInAssembly("LocalLeaderboard.Images.score.png"), "ACC")
                 };
             }
@@ -289,7 +289,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         {
             myHeader.background.material = Utilities.ImageResources.NoGlowMat;
             _loadingControl = leaderboardTransform.Find("LoadingControl").gameObject;
-            var loadingContainer = _loadingControl.transform.Find("LoadingContainer");
+            Transform loadingContainer = _loadingControl.transform.Find("LoadingContainer");
             loadingContainer.gameObject.SetActive(false);
             Destroy(loadingContainer.Find("Text").gameObject);
             Destroy(_loadingControl.transform.Find("RefreshContainer").gameObject);
@@ -307,7 +307,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
             base.DidActivate(firstActivation, addedToHierarchy, screenSystemEnabling);
-            if (!this.isActiveAndEnabled) return;
+            if (!isActiveAndEnabled) return;
             if (!_plvc) return;
             if (!_panelView.isActiveAndEnabled) return;
             if (firstActivation)
@@ -347,9 +347,9 @@ namespace LocalLeaderboard.UI.ViewControllers
             foreach (LeaderboardTableCell cell in tableView.GetComponentsInChildren<LeaderboardTableCell>())
             {
                 cell.showSeparator = true;
-                var nameText = cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_playerNameText");
-                var rankText = cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_rankText");
-                var scoreText = cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_scoreText");
+                TextMeshProUGUI nameText = cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_playerNameText");
+                TextMeshProUGUI rankText = cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_rankText");
+                TextMeshProUGUI scoreText = cell.GetField<TextMeshProUGUI, LeaderboardTableCell>("_scoreText");
                 nameText.richText = true;
                 nameText.gameObject.SetActive(false);
                 rankText.gameObject.SetActive(false);
@@ -390,12 +390,12 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         public IEnumerator setcolor(Button button)
         {
-            var bgImage = button.transform.Find("BG").gameObject.GetComponent<ImageView>();
-            var bgBorder = button.transform.Find("Border").gameObject.GetComponent<ImageView>();
-            var bgOutline = button.transform.Find("OutlineWrapper/Outline").gameObject.GetComponent<ImageView>();
-            var buttonText = button.transform.Find("Content/Text").gameObject.GetComponent<TextMeshProUGUI>();
-            var bgColour = Constants.SPEECIL_COLOUR;
-            var textColour = Color.white;
+            ImageView bgImage = button.transform.Find("BG").gameObject.GetComponent<ImageView>();
+            ImageView bgBorder = button.transform.Find("Border").gameObject.GetComponent<ImageView>();
+            ImageView bgOutline = button.transform.Find("OutlineWrapper/Outline").gameObject.GetComponent<ImageView>();
+            TextMeshProUGUI buttonText = button.transform.Find("Content/Text").gameObject.GetComponent<TextMeshProUGUI>();
+            Color bgColour = Constants.SPEECIL_COLOUR;
+            Color textColour = Color.white;
             while (infoModal.gameObject.activeInHierarchy)
             {
                 bgImage.color0 = bgColour;
@@ -416,9 +416,9 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         public IEnumerator setToggle(ToggleSetting toggle)
         {
-            var offColour = new Color(0, 0, 0, 0.5f);
-            var bgImage = toggle.gameObject.transform.Find("SwitchView/BackgroundImage/KnobSlideArea").GetComponentInChildren<ImageView>();
-            var bgColour = Constants.SPEECIL_COLOUR_BRIGHTER;
+            Color offColour = new(0, 0, 0, 0.5f);
+            ImageView bgImage = toggle.gameObject.transform.Find("SwitchView/BackgroundImage/KnobSlideArea").GetComponentInChildren<ImageView>();
+            Color bgColour = Constants.SPEECIL_COLOUR_BRIGHTER;
             while (toggle.gameObject.activeInHierarchy)
             {
                 if (toggle.Value)
@@ -428,7 +428,7 @@ namespace LocalLeaderboard.UI.ViewControllers
                 yield return null;
             }
         }
-        
+
         private CancellationTokenSource _refreshCTS;
 
         public async void OnLeaderboardSet(IDifficultyBeatmap difficultyBeatmap)
@@ -437,21 +437,21 @@ namespace LocalLeaderboard.UI.ViewControllers
             _refreshCTS?.Cancel();
             _refreshCTS?.Dispose();
             _refreshCTS = new CancellationTokenSource();
-            var token = _refreshCTS.Token;
-            if (!this.isActivated) return;
+            CancellationToken token = _refreshCTS.Token;
+            if (!isActivated) return;
             string mapId = difficultyBeatmap.level.levelID;
             int difficulty = Results.GetOriginalIdentifier(difficultyBeatmap);
             string mapType = difficultyBeatmap.parentDifficultyBeatmapSet.beatmapCharacteristic.serializedName;
             string balls = mapType + difficulty.ToString();
             List<LLeaderboardEntry> leaderboardEntries = LeaderboardData.LeaderboardData.LoadBeatMapInfo(mapId, balls);
-            
+
             if (token.IsCancellationRequested) return;
 
             try
             {
                 if (_externalDataProviders != null)
                 {
-                    foreach (var provider in _externalDataProviders)
+                    foreach (IExternalDataService provider in _externalDataProviders)
                     {
                         leaderboardEntries.AddRange(await provider.GetLeaderboardEntries(difficultyBeatmap, token));
                     }
@@ -495,18 +495,18 @@ namespace LocalLeaderboard.UI.ViewControllers
         {
             if (leaderboardEntries.Count <= 0) return leaderboardEntries;
 
-            List<LLeaderboardEntry> intermediate = new List<LLeaderboardEntry>(leaderboardEntries.Count);
+            List<LLeaderboardEntry> intermediate = new(leaderboardEntries.Count);
 
             LLeaderboardEntry? prev = null;
-            foreach (var entry in leaderboardEntries.OrderBy(entry => entry, new LeaderboardEntryDatePlayedComparer()))
+            foreach (LLeaderboardEntry entry in leaderboardEntries.OrderBy(entry => entry, new LeaderboardEntryDatePlayedComparer()))
             {
                 if (prev == null)
                 {
                     intermediate.Add(entry);
                 }
-                else 
+                else
                 {
-                    var previous = prev.Value;
+                    LLeaderboardEntry previous = prev.Value;
                     if (entry.IsSamePlay(previous))
                     {
                         //TODO if we have multiple duplicated external entries, try aggregate the data.
@@ -523,10 +523,10 @@ namespace LocalLeaderboard.UI.ViewControllers
                         intermediate.Add(entry);
                     }
                 }
-                
+
                 prev = entry;
             }
-            
+
             List<LLeaderboardEntry> sortedResults;
             if (sortMethod == 0)
             {
@@ -542,7 +542,7 @@ namespace LocalLeaderboard.UI.ViewControllers
                     sortedResults = intermediate.OrderByDescending(entry => entry, new LeaderboardEntryDatePlayedComparer()).ToList();
                     recent = sortedResults[0];
                 }
-                
+
                 long unixTimestamp;
                 string formattedDate = "Error";
                 if (long.TryParse(recent.datePlayed, out unixTimestamp))
@@ -566,7 +566,7 @@ namespace LocalLeaderboard.UI.ViewControllers
                 {
                     sortedResults = intermediate.OrderByDescending(entry => entry, new LeaderboardEntryAccComparer()).ToList();
                 }
-                
+
                 _panelView.lastPlayed.text = (Ascending ? "Lowest Acc : " : "Highest Acc : ") + sortedResults[0].acc.ToString("F2") + "%";
             }
             else
@@ -630,7 +630,7 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         public List<ScoreData> CreateLeaderboardData(List<LLeaderboardEntry> leaderboard, int page)
         {
-            List<ScoreData> tableData = new List<ScoreData>();
+            List<ScoreData> tableData = new();
             int pageIndex = page * 10;
             for (int i = pageIndex; i < leaderboard.Count && i < pageIndex + 10; i++)
             {
@@ -685,7 +685,7 @@ namespace LocalLeaderboard.UI.ViewControllers
 
         internal class EntryHolder
         {
-            private Action<LLeaderboardEntry> onClick;
+            private readonly Action<LLeaderboardEntry> onClick;
 
             public EntryHolder(Action<LLeaderboardEntry> endmylife)
             {
@@ -707,9 +707,9 @@ namespace LocalLeaderboard.UI.ViewControllers
             private Vector3 originalScale;
             private bool isScaled = false;
 
-            private Color origColour = new Color(1, 1, 1, 1);
-            private Color origColour0 = new Color(1, 1, 1, 0.2509804f);
-            private Color origColour1 = new Color(1, 1, 1, 0);
+            private Color origColour = new(1, 1, 1, 1);
+            private Color origColour0 = new(1, 1, 1, 0.2509804f);
+            private Color origColour1 = new(1, 1, 1, 0);
 
             private void Start()
             {
@@ -742,7 +742,7 @@ namespace LocalLeaderboard.UI.ViewControllers
 
                 Color targetColor = Color.white;
                 Color targetColor0 = Color.white;
-                Color targetColor1 = new Color(1, 1, 1, 0);
+                Color targetColor1 = new(1, 1, 1, 0);
 
                 float lerpDuration = 0.15f;
 

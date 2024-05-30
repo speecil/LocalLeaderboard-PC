@@ -16,21 +16,21 @@ namespace LocalLeaderboard.UI.ViewControllers
     public class PanelView : BSMLAutomaticViewController
     {
         private const float _skew = 0.18f;
-        private bool isRainbowCoroutineRunning = false;
-        private Coroutine rainbowCoroutine;
+        private readonly bool isRainbowCoroutineRunning = false;
+        private readonly Coroutine rainbowCoroutine;
         public bool uwu
         {
             get => SettingsConfig.Instance.rainbowsuwu;
             set => SettingsConfig.Instance.rainbowsuwu = value;
         }
-        private float hue = 0f;
-        private float hueIncrement = 0.001f;
+        private readonly float hue = 0f;
+        private readonly float hueIncrement = 0.001f;
 
-        private ImageView _background;
+        private readonly ImageView _background;
         public ImageView _imgView;
 
         [UIComponent("container")]
-        private Backgroundable _container;
+        private readonly Backgroundable _container;
 
         [UIComponent("LocalLeaderboard_logo")]
         private ImageView LocalLeaderboard_logo;
@@ -54,7 +54,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         public GameObject prompt_loader;
 
 
-        [Inject] LeaderboardView lb;
+        [Inject] readonly LeaderboardView lb;
 
         [UIAction("#post-parse")]
         private void PostParse()
@@ -84,7 +84,7 @@ namespace LocalLeaderboard.UI.ViewControllers
                 {
                     if (GetComponent<RainbowGradientUpdater>() == null)
                     {
-                        this.gameObject.AddComponent<RainbowGradientUpdater>();
+                        gameObject.AddComponent<RainbowGradientUpdater>();
                     }
                 }
                 else
@@ -122,7 +122,7 @@ namespace LocalLeaderboard.UI.ViewControllers
                 // Add the RainbowGradientUpdater component if uwu is true
                 if (GetComponent<RainbowGradientUpdater>() == null)
                 {
-                    this.gameObject.AddComponent<RainbowGradientUpdater>();
+                    gameObject.AddComponent<RainbowGradientUpdater>();
                 }
             }
         }
@@ -139,11 +139,11 @@ namespace LocalLeaderboard.UI.ViewControllers
     {
         public float speed = 0.18f; // Speed at which the gradient changes
 
-        private MeshRenderer meshRenderer;
+        private readonly MeshRenderer meshRenderer;
         private float hue;
         private PanelView panelView;
         private LeaderboardView leaderboardView;
-        private ImageView _imgView;
+        private readonly ImageView _imgView;
 
         private void Start()
         {

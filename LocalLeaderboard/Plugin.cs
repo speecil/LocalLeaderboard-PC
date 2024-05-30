@@ -2,13 +2,7 @@
 using IPA.Config.Stores;
 using LocalLeaderboard.Installers;
 using SiraUtil.Zenject;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using UnityEngine;
 using IPALogger = IPA.Logging.Logger;
-using Version = Hive.Versioning.Version;
 
 namespace LocalLeaderboard
 {
@@ -28,7 +22,5 @@ namespace LocalLeaderboard
             zenjector.Install<AppInstaller>(Location.App);
             zenjector.Install<PlayerInstaller>(Location.Player);
         }
-
-
     }
 }

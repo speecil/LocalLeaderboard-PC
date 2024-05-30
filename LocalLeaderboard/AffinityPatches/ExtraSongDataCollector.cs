@@ -61,8 +61,8 @@ namespace LocalLeaderboard.AffinityPatches
             while (ab == null)
             {
                 _log.Debug("Waiting for text to be found");
-                var x = Resources.FindObjectsOfTypeAll<FormattableText>().Where(x => x.name.Contains("<size=110%><u>You</u>")).ToList();
-                foreach (var item in x)
+                List<FormattableText> x = Resources.FindObjectsOfTypeAll<FormattableText>().Where(x => x.name.Contains("<size=110%><u>You</u>")).ToList();
+                foreach (FormattableText item in x)
                 {
                     if (item.text != _replayWatermark.text)
                     {
@@ -202,7 +202,7 @@ namespace LocalLeaderboard.AffinityPatches
         {
             if (totalBlocksHit.IsEmpty()) return 0.0f;
             float realScore = 0, maxScore = 0;
-            foreach (var p in totalBlocksHit)
+            foreach (Tuple<int, int> p in totalBlocksHit)
             {
                 realScore += p.Item1 * multiplier;
                 maxScore += GetMaxScoreForScoringType(p.Item2);

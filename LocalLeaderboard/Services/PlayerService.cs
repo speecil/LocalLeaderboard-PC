@@ -16,7 +16,7 @@ namespace LocalLeaderboard.Services
 
         public Task<(string, string)> GetPlayerInfo()
         {
-            TaskCompletionSource<(string, string)> taskCompletionSource = new TaskCompletionSource<(string, string)>();
+            TaskCompletionSource<(string, string)> taskCompletionSource = new();
             if (File.Exists(Constants.STEAM_API_PATH))
             {
                 (string steamID, string steamName) = OculusSkillIssue();

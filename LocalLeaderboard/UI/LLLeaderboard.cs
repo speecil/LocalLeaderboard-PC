@@ -9,7 +9,7 @@ namespace LocalLeaderboard.UI
     internal class LLLeaderboard : CustomLeaderboard, IDisposable
     {
         private readonly CustomLeaderboardManager _manager;
-        private LeaderboardView _leaderboardView;
+        private readonly LeaderboardView _leaderboardView;
 
         public override bool ShowForLevel(IPreviewBeatmapLevel selectedLevel)
         {

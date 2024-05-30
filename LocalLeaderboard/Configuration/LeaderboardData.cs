@@ -29,7 +29,7 @@ namespace LocalLeaderboard.LeaderboardData
 
                 using (StreamWriter file = File.CreateText(Constants.CONFIG_PATH))
                 {
-                    JsonSerializer serializer = new JsonSerializer();
+                    JsonSerializer serializer = new();
                     serializer.Serialize(file, LocalLeaderboardData);
                 }
             }
@@ -97,7 +97,7 @@ namespace LocalLeaderboard.LeaderboardData
             public bool IsSamePlay(LeaderboardEntry other)
             {
                 // If the scores are the same and the time played is within 10 seconds of each other, consider them the same play.
-                return score == other.score && long.TryParse(datePlayed, out var x) && long.TryParse(other.datePlayed, out var y) && Math.Abs(x - y) <= 10;
+                return score == other.score && long.TryParse(datePlayed, out long x) && long.TryParse(other.datePlayed, out long y) && Math.Abs(x - y) <= 10;
             }
         }
 
@@ -110,7 +110,7 @@ namespace LocalLeaderboard.LeaderboardData
 
             if (LocalLeaderboardData.ContainsKey(mapID))
             {
-                var mapData = LocalLeaderboardData[mapID];
+                JToken mapData = LocalLeaderboardData[mapID];
 
                 if (mapData.Contains(diff))
                 {
@@ -167,7 +167,8 @@ namespace LocalLeaderboard.LeaderboardData
             }
             else
             {
-                var mapData = new JObject { { diff, new JArray(new JObject
+                JObject mapData = new()
+                { { diff, new JArray(new JObject
         {
             { "missCount", missCount },
             { "badCutCount", badCutCount },
@@ -197,8 +198,8 @@ namespace LocalLeaderboard.LeaderboardData
 
         public static void UpdateBeatMapInfo(string mapID, string diff, int missCount, int badCutCount, bool fullCombo, string datePlayed, float acc, int score, string mods, int maxCombo, float averageHitscore, bool didFail, string bsorPath, float avgAccRight, float avgAccLeft, int perfectStreak, float rightHandTimeDependency, float leftHandTimeDependency, float fcAcc, int pauses)
         {
-            var difficulty = new JObject
-        {
+            JObject difficulty = new()
+            {
             { "missCount", missCount },
             { "badCutCount", badCutCount },
             { "fullCombo", fullCombo },
@@ -238,11 +239,11 @@ namespace LocalLeaderboard.LeaderboardData
 
         public static List<LeaderboardEntry> LoadBeatMapInfo(string mapID, string diff)
         {
-            var leaderboard = new List<LeaderboardEntry>();
+            List<LeaderboardEntry> leaderboard = new();
 
             if (LocalLeaderboardData[mapID] != null && LocalLeaderboardData[mapID][diff] != null)
             {
-                foreach (var scoreData in LocalLeaderboardData[mapID][diff])
+                foreach (JToken scoreData in LocalLeaderboardData[mapID][diff])
                 {
                     int? missCount = scoreData["missCount"]?.Value<int>();
                     int? badCutCount = scoreData["badCutCount"]?.Value<int>();
@@ -264,7 +265,7 @@ namespace LocalLeaderboard.LeaderboardData
                     int? pauses = scoreData["pauses"]?.Value<int>();
 
                     if (score == null) continue;  // If score is null, this is invalid and should be ignored.
-                    
+
                     leaderboard.Add(new LeaderboardEntry(
                         missCount ?? -1,
                         badCutCount ?? -1,

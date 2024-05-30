@@ -1,6 +1,4 @@
-using IPA.Utilities;
 using IPA.Utilities.Async;
-using LocalLeaderboard.Services;
 using LocalLeaderboard.UI.ViewControllers;
 using LocalLeaderboard.Utils;
 using SiraUtil.Affinity;
@@ -17,10 +15,10 @@ namespace LocalLeaderboard.AffinityPatches
     internal class Results : IAffinity
     {
         [Inject] private readonly SiraLog _log;
-        
+
         public static float GetModifierScoreMultiplier(LevelCompletionResults results, GameplayModifiersModelSO modifiersModel)
         {
-            if(modifiersModel == null || results == null)
+            if (modifiersModel == null || results == null)
             {
                 return 1;
             }
@@ -128,10 +126,10 @@ namespace LocalLeaderboard.AffinityPatches
             UnityMainThreadTaskScheduler.Factory.StartNew(async () => await PostfixTask(localLevelCompletionResults, localScoreController, localGameplayModifiersModelSO, localBeatmapData));
         }
 
-        private async Task PostfixTask( LevelCompletionResults __result,  IScoreController ____scoreController,  GameplayModifiersModelSO ____gameplayModifiersModelSO,  IReadonlyBeatmapData ____beatmapData)
+        private async Task PostfixTask(LevelCompletionResults __result, IScoreController ____scoreController, GameplayModifiersModelSO ____gameplayModifiersModelSO, IReadonlyBeatmapData ____beatmapData)
         {
             await Task.Delay(150); // this is literally only so i can get the replay 100% of the time instead of gambling on the replay being saved in time
-            if(ExtraSongDataHolder.IDifficultyBeatmap == null || ExtraSongDataHolder.IDifficultyBeatmap == null || __result == null || ExtraSongData.IsLocalLeaderboardReplay || ____beatmapData == null || ____gameplayModifiersModelSO == null || ____scoreController == null)
+            if (ExtraSongDataHolder.IDifficultyBeatmap == null || ExtraSongDataHolder.IDifficultyBeatmap == null || __result == null || ExtraSongData.IsLocalLeaderboardReplay || ____beatmapData == null || ____gameplayModifiersModelSO == null || ____scoreController == null)
             {
                 ExtraSongData.IsLocalLeaderboardReplay = false;
                 return;
@@ -141,7 +139,7 @@ namespace LocalLeaderboard.AffinityPatches
 
             if (modifiedScore == 0 || maxScore == 0)
                 return;
-            float acc = (modifiedScore / maxScore) * 100;
+            float acc = modifiedScore / maxScore * 100;
             int score = __result.modifiedScore;
             int badCut = __result.badCutsCount;
             int misses = __result.missedCount;
@@ -179,10 +177,10 @@ namespace LocalLeaderboard.AffinityPatches
 
             if (Directory.Exists(Constants.BLREPLAY_PATH) && Plugin.GetAssemblyByName("BeatLeader") != null)
             {
-                var directory = new DirectoryInfo(Constants.BLREPLAY_PATH);
-                var filePath = directory.GetFiles().OrderByDescending(f => f.LastWriteTime).First();
+                DirectoryInfo directory = new(Constants.BLREPLAY_PATH);
+                FileInfo filePath = directory.GetFiles().OrderByDescending(f => f.LastWriteTime).First();
                 _log.Info("Found BL Replay: " + filePath.FullName);
-                var replayFileName = filePath.Name;
+                string replayFileName = filePath.Name;
 
                 if (!Directory.Exists(Constants.LLREPLAYS_PATH))
                 {
@@ -196,7 +194,7 @@ namespace LocalLeaderboard.AffinityPatches
             }
             ExtraSongData.IsLocalLeaderboardReplay = false;
             LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(__result), maxCombo, averageHitscore, didFail, destinationFileName, rightHandAverageScore, leftHandAverageScore, perfectStreak, rightHandTimeDependency, leftHandTimeDependency, fcAcc, pauses);
-            var lb = Resources.FindObjectsOfTypeAll<LeaderboardView>().FirstOrDefault();
+            LeaderboardView lb = Resources.FindObjectsOfTypeAll<LeaderboardView>().FirstOrDefault();
             lb.OnLeaderboardSet(lb.currentIDifficultyBeatmap);
         }
     }

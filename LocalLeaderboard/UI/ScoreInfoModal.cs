@@ -28,31 +28,31 @@ namespace LocalLeaderboard.UI
         public ModalView infoModal;
 
         [UIComponent("dateScoreText")]
-        private TextMeshProUGUI dateScoreText;
+        private readonly TextMeshProUGUI dateScoreText;
 
         [UIComponent("accScoreText")]
-        private TextMeshProUGUI accScoreText;
+        private readonly TextMeshProUGUI accScoreText;
 
         [UIComponent("scoreScoreText")]
-        private TextMeshProUGUI scoreScoreText;
+        private readonly TextMeshProUGUI scoreScoreText;
 
         [UIComponent("fcScoreText")]
-        private TextMeshProUGUI fcScoreText;
+        private readonly TextMeshProUGUI fcScoreText;
 
         [UIComponent("failScoreText")]
-        private TextMeshProUGUI failScoreText;
+        private readonly TextMeshProUGUI failScoreText;
 
         [UIComponent("avgHitscoreScoreText")]
-        private TextMeshProUGUI avgHitscoreScoreText;
+        private readonly TextMeshProUGUI avgHitscoreScoreText;
 
         [UIComponent("maxComboScoreText")]
-        private TextMeshProUGUI maxComboScoreText;
+        private readonly TextMeshProUGUI maxComboScoreText;
 
         [UIComponent("modifiersScoreText")]
-        private TextMeshProUGUI modifiersScoreText;
+        private readonly TextMeshProUGUI modifiersScoreText;
 
         [UIComponent("watchReplayButton")]
-        private Button watchReplayButton;
+        private readonly Button watchReplayButton;
 
         [UIObject("normalModalInfo")]
         private readonly GameObject normalModalInfo;
@@ -102,8 +102,8 @@ namespace LocalLeaderboard.UI
         [UIParams]
         public BSMLParserParams parserParams;
 
-        [InjectOptional] ReplayService _replayService;
-        [Inject] LeaderboardView _leaderboardView;
+        [InjectOptional] readonly ReplayService _replayService;
+        [Inject] readonly LeaderboardView _leaderboardView;
 
         LLeaderboardEntry currentEntry;
 
@@ -116,12 +116,12 @@ namespace LocalLeaderboard.UI
          */
         private IEnumerator setButtoncolor(Button button)
         {
-            var bgImage = button.transform.Find("BG").gameObject.GetComponent<ImageView>();
-            var bgBorder = button.transform.Find("Border").gameObject.GetComponent<ImageView>();
-            var bgOutline = button.transform.Find("OutlineWrapper/Outline").gameObject.GetComponent<ImageView>();
-            var buttonText = button.transform.Find("Content/Text").gameObject.GetComponent<TextMeshProUGUI>();
-            var bgColour = Constants.SPEECIL_COLOUR;
-            var textColour = Color.white;
+            ImageView bgImage = button.transform.Find("BG").gameObject.GetComponent<ImageView>();
+            ImageView bgBorder = button.transform.Find("Border").gameObject.GetComponent<ImageView>();
+            ImageView bgOutline = button.transform.Find("OutlineWrapper/Outline").gameObject.GetComponent<ImageView>();
+            TextMeshProUGUI buttonText = button.transform.Find("Content/Text").gameObject.GetComponent<TextMeshProUGUI>();
+            Color bgColour = Constants.SPEECIL_COLOUR;
+            Color textColour = Color.white;
             while (infoModal.gameObject.activeInHierarchy)
             {
                 bgImage.color0 = bgColour;
@@ -163,8 +163,6 @@ namespace LocalLeaderboard.UI
             moreInfoButton.gameObject.SetActive(true);
             moreModalInfo.SetActive(false);
             normalModalInfo.SetActive(true);
-
-            string formattedDate = "Error";
             if (long.TryParse(entry.datePlayed, out long unixTimestamp))
             {
                 DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(unixTimestamp);
@@ -204,12 +202,12 @@ namespace LocalLeaderboard.UI
             if (entry.pauses != -1) pauses.text = $"Pauses: <size={infoFontSize}><color=#38f2a4>{entry.pauses}</color></size>"; else pauses.text = "";
             if (entry.perfectStreak != -1)
             {
-                perfectStreak.text = $"Perfect Streak: <size={infoFontSize}><color=#38f2a4>{entry.perfectStreak}</color></size>"; 
+                perfectStreak.text = $"Perfect Streak: <size={infoFontSize}><color=#38f2a4>{entry.perfectStreak}</color></size>";
                 moreInfoButton.interactable = true;
             }
             else
             {
-                perfectStreak.text = ""; 
+                perfectStreak.text = "";
                 moreInfoButton.interactable = false;
             }
 
@@ -228,7 +226,7 @@ namespace LocalLeaderboard.UI
             }
 
 
-            if (File.Exists(Constants.LLREPLAYS_PATH + entry.bsorPath))
+            if (File.Exists(Constants.LLREPLAYS_PATH + entry.bsorPath) && Constants.BL_INSTALLED())
             {
                 watchReplayButton.interactable = true;
                 replayHint = "Watch Replay!";
@@ -247,7 +245,7 @@ namespace LocalLeaderboard.UI
         }
         internal static float GetAccPercentFromHandFloat(float handAcc)
         {
-            return (handAcc / 115) * 100;
+            return handAcc / 115 * 100;
         }
 
         private void silly(LLeaderboardEntry leaderboardEntry)
@@ -259,15 +257,15 @@ namespace LocalLeaderboard.UI
             }
             _log.Notice("STARTING LOCALLEADERBOARD REPLAY");
             string fileLocation = Constants.LLREPLAYS_PATH + leaderboardEntry.bsorPath;
-            if (_replayService.TryReadReplay(fileLocation, out var replay1))
+            if (_replayService.TryReadReplay(fileLocation, out BeatLeader.Models.Replay.Replay replay1))
             {
                 parserParams.EmitEvent("hideScoreInfo");
-                BeatLeader.Models.Player player = new BeatLeader.Models.Player();
+                BeatLeader.Models.Player player = new();
                 player.avatar = "https://raw.githubusercontent.com/speecil/LocalLeaderboard-PC/master/LocalLeaderboard/Images/LocalLeaderboard_logo.png";
                 player.country = "AUS";
                 player.pp = leaderboardEntry.acc;
                 player.rank = leaderboardEntry.score;
-                DateTime a = new DateTime();
+                DateTime a = new();
                 string format = SettingsConfig.Instance.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt";
                 if (long.TryParse(leaderboardEntry.datePlayed, out long unixTimestamp))
                 {
