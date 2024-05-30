@@ -225,8 +225,16 @@ namespace LocalLeaderboard.UI
                 RemoveTextHoverEffect(rightHandAverageScore.gameObject);
             }
 
-
+            if (Constants.BL_INSTALLED())
+            {
+                _log.Notice($"BeatLeader installed");
+            }
             if (File.Exists(Constants.LLREPLAYS_PATH + entry.bsorPath))
+            {
+                _log.Notice($"Replay exists at {Constants.LLREPLAYS_PATH + entry.bsorPath}");
+            }
+
+            if (File.Exists(Constants.LLREPLAYS_PATH + entry.bsorPath) && Constants.BL_INSTALLED())
             {
                 watchReplayButton.interactable = true;
                 replayHint = "Watch Replay!";

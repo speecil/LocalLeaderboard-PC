@@ -54,7 +54,7 @@
       <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\Analytics.Model.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="BeatLeader, Version=0.7.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="BeatLeader, Version=0.9.16.0, Culture=neutral, processorArchitecture=MSIL">
       <Private>False</Private>
       <HintPath>$(BeatSaberDir)\Plugins\BeatLeader.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -291,7 +291,7 @@
     <Compile Include="AffinityPatches\ExtraSongDataCollector.cs" />
     <Compile Include="Configuration\PluginSettings.cs" />
     <Compile Include="Installers\AppInstaller.cs" />
-    <Compile Include="Installers\GameInstaller.cs" />
+    <Compile Include="Installers\PlayerInstaller.cs" />
     <Compile Include="Installers\MenuInstaller.cs" />
     <Compile Include="AffinityPatches\Results.cs" />
     <Compile Include="Installers\SPHInstaller.cs" />

@@ -3,7 +3,7 @@ using Zenject;
 
 namespace LocalLeaderboard.Installers
 {
-    internal class GameInstaller : Installer
+    internal class PlayerInstaller : Installer
     {
         public override void InstallBindings()
         {

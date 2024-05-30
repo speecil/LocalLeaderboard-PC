@@ -177,10 +177,10 @@ namespace LocalLeaderboard.AffinityPatches
 
             if (Directory.Exists(Constants.BLREPLAY_PATH) && Plugin.GetAssemblyByName("Beatleader") != null)
             {
-                var directory = new DirectoryInfo(Constants.BLREPLAY_PATH);
-                var filePath = directory.GetFiles().OrderByDescending(f => f.LastWriteTime).First();
+                DirectoryInfo directory = new(Constants.BLREPLAY_PATH);
+                FileInfo filePath = directory.GetFiles().OrderByDescending(f => f.LastWriteTime).First();
                 _log.Info("Found BL Replay: " + filePath.FullName);
-                var replayFileName = filePath.Name;
+                string replayFileName = filePath.Name;
 
                 if (!Directory.Exists(Constants.LLREPLAYS_PATH))
                 {

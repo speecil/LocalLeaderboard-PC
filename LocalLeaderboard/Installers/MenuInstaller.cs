@@ -3,6 +3,7 @@ using IPA.Loader;
 using LocalLeaderboard.Services;
 using LocalLeaderboard.UI;
 using LocalLeaderboard.UI.ViewControllers;
+using LocalLeaderboard.Utils;
 using SiraUtil.Logging;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,6 @@ namespace LocalLeaderboard.Installers
 {
     internal class MenuInstaller : Installer
     {
-
         [Inject]
         private readonly SiraLog _logger;
 
@@ -25,7 +25,7 @@ namespace LocalLeaderboard.Installers
             Container.Bind<TweeningService>().AsSingle();
             Container.Bind<PlayerService>().AsSingle();
 
-            if (Plugin.GetGameVersion() >= new Version(1, 36, 0) && Plugin.GetAssemblyByName("BeatLeader") != null)
+            if (Constants.BL_INSTALLED())
             {
                 Container.Bind<ReplayService>().AsSingle();
             }
