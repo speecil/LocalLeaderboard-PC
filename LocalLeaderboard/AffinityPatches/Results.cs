@@ -175,7 +175,7 @@ namespace LocalLeaderboard.AffinityPatches
 
             string destinationFileName = "BL REPLAY NOT FOUND";
 
-            if (Directory.Exists(Constants.BLREPLAY_PATH) && Plugin.GetAssemblyByName("Beatleader") != null)
+            if (Directory.Exists(Constants.BLREPLAY_PATH) && Constants.BL_INSTALLED())
             {
                 DirectoryInfo directory = new(Constants.BLREPLAY_PATH);
                 FileInfo filePath = directory.GetFiles().OrderByDescending(f => f.LastWriteTime).First();
