@@ -10,8 +10,6 @@ namespace LocalLeaderboard
     [Plugin(RuntimeOptions.SingleStartInit)]
     public class Plugin
     {
-        public static string userName;
-
         [Init]
         public Plugin(IPALogger logger, Zenjector zenjector, IPA.Config.Config conf)
         {

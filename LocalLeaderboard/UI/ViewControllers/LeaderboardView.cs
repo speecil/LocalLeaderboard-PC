@@ -236,7 +236,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         {
             if (patreon && config.nameHeaderToggle)
             {
-                text.text = Plugin.userName.ToUpper() + "'S LEADERBOARD";
+                text.text = _playerService.userName.ToUpper() + "'S LEADERBOARD";
             }
             else
             {
@@ -315,7 +315,7 @@ namespace LocalLeaderboard.UI.ViewControllers
 
                 _playerService.GetPatreonStatus((isPatron, username) =>
                 {
-                    Plugin.userName = username;
+                    _playerService.userName = username;
                     UserIsPatron = isPatron;
                     if (!isPatron)
                     {
