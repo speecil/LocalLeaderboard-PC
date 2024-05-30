@@ -7,6 +7,7 @@ namespace LocalLeaderboard.Services
 {
     internal class PlayerService
     {
+        internal string userName;
         public (string, string) OculusSkillIssue()
         {
             string steamID = Steamworks.SteamUser.GetSteamID().ToString();
