@@ -59,8 +59,8 @@ namespace LocalLeaderboard.UI.ViewControllers
         [UIAction("#post-parse")]
         private void PostParse()
         {
-            _container.background.material = Utilities.ImageResources.NoGlowMat;
-            _imgView = _container.background as ImageView;
+            _container.Background.material = Utilities.ImageResources.NoGlowMat;
+            _imgView = _container.Background as ImageView;
             _imgView.transform.position.Set(-5f, _imgView.transform.position.y, _imgView.transform.position.z);
 
             _imgView.color = new Color(0.156f, 0.69f, 0.46666f, 1);

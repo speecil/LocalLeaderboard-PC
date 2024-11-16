@@ -162,8 +162,8 @@ namespace LocalLeaderboard.UI.ViewControllers
         private void showSettings()
         {
             parserParams.EmitEvent("showSettings");
-            uwuToggle.interactable = UserIsPatron;
-            nameToggle.interactable = UserIsPatron;
+            uwuToggle.Interactable = UserIsPatron;
+            nameToggle.Interactable = UserIsPatron;
             settingsModal.StartCoroutine(setToggle(americanToggle));
             settingsModal.StartCoroutine(setToggle(uwuToggle));
             settingsModal.StartCoroutine(setToggle(relativeToggle));
@@ -287,7 +287,7 @@ namespace LocalLeaderboard.UI.ViewControllers
         [UIAction("#post-parse")]
         private void PostParse()
         {
-            myHeader.background.material = Utilities.ImageResources.NoGlowMat;
+            myHeader.Background.material = Utilities.ImageResources.NoGlowMat;
             _loadingControl = leaderboardTransform.Find("LoadingControl").gameObject;
             Transform loadingContainer = _loadingControl.transform.Find("LoadingContainer");
             loadingContainer.gameObject.SetActive(false);
@@ -295,7 +295,7 @@ namespace LocalLeaderboard.UI.ViewControllers
             Destroy(_loadingControl.transform.Find("RefreshContainer").gameObject);
             Destroy(_loadingControl.transform.Find("DownloadingContainer").gameObject);
 
-            _imgView = myHeader.background as ImageView;
+            _imgView = myHeader.Background as ImageView;
             _imgView.color = Constants.SPEECIL_COLOUR;
             _imgView.color0 = Constants.SPEECIL_COLOUR;
             _imgView.color1 = Constants.SPEECIL_COLOUR;
@@ -322,8 +322,8 @@ namespace LocalLeaderboard.UI.ViewControllers
                         SettingsConfig.Instance.rainbowsuwu = false;
                         SettingsConfig.Instance.nameHeaderToggle = false;
                     }
-                    uwuToggle.interactable = isPatron;
-                    nameToggle.interactable = isPatron;
+                    uwuToggle.Interactable = isPatron;
+                    nameToggle.Interactable = isPatron;
                 });
             }
             _plvc.GetComponentInChildren<TextMeshProUGUI>().color = new Color(0, 0, 0, 0);

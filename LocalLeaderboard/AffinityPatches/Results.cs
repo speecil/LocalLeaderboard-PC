@@ -3,6 +3,7 @@ using LocalLeaderboard.UI.ViewControllers;
 using LocalLeaderboard.Utils;
 using SiraUtil.Affinity;
 using SiraUtil.Logging;
+using SiraUtil.Submissions;
 using System;
 using System.IO;
 using System.Linq;
@@ -115,6 +116,10 @@ namespace LocalLeaderboard.AffinityPatches
         {
             // i hate this
             if (__result.levelEndStateType != LevelCompletionResults.LevelEndStateType.Cleared)
+            {
+                return;
+            }
+            if(BS_Utils.Gameplay.ScoreSubmission.Disabled)
             {
                 return;
             }
