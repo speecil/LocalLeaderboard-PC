@@ -17,7 +17,6 @@ namespace LocalLeaderboard
             LeaderboardData.LeaderboardData.Setup();
             zenjector.UseLogger(logger);
             zenjector.Install<MenuInstaller>(Location.Menu);
-            zenjector.Install<AppInstaller>(Location.App);
             zenjector.Install<PlayerInstaller>(Location.Player);
         }
     }

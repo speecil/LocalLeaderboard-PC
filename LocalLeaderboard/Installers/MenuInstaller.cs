@@ -1,5 +1,6 @@
 ﻿using Hive.Versioning;
 using IPA.Loader;
+using LocalLeaderboard.AffinityPatches;
 using LocalLeaderboard.Services;
 using LocalLeaderboard.UI;
 using LocalLeaderboard.UI.ViewControllers;
@@ -24,6 +25,7 @@ namespace LocalLeaderboard.Installers
             Container.BindInterfacesTo<LLLeaderboard>().AsSingle();
             Container.Bind<TweeningService>().AsSingle();
             Container.Bind<PlayerService>().AsSingle();
+            Container.BindInterfacesTo<Results>().AsSingle();
 
             if (Constants.BL_INSTALLED())
             {

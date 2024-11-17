@@ -1,4 +1,5 @@
 using IPA.Utilities.Async;
+using LocalLeaderboard.Services;
 using LocalLeaderboard.UI.ViewControllers;
 using LocalLeaderboard.Utils;
 using SiraUtil.Affinity;
@@ -16,6 +17,7 @@ namespace LocalLeaderboard.AffinityPatches
     internal class Results : IAffinity
     {
         [Inject] private readonly SiraLog _log;
+        [InjectOptional] private readonly ReplayService _replayService;
 
         public static float GetModifierScoreMultiplier(LevelCompletionResults results, GameplayModifiersModelSO modifiersModel)
         {
@@ -185,18 +187,30 @@ namespace LocalLeaderboard.AffinityPatches
                 DirectoryInfo directory = new(Constants.BLREPLAY_PATH);
                 FileInfo filePath = directory.GetFiles().OrderByDescending(f => f.LastWriteTime).First();
                 _log.Info("Found BL Replay: " + filePath.FullName);
-                string replayFileName = filePath.Name;
 
-                if (!Directory.Exists(Constants.LLREPLAYS_PATH))
+                if(_replayService != null)
                 {
-                    Directory.CreateDirectory(Constants.LLREPLAYS_PATH);
-                }
+                    // open the replay to get the info to check if the hash matches
+                    if (_replayService.TryReadReplay(filePath.FullName, out BeatLeader.Models.Replay.Replay replay))
+                    {
+                        if (mapId.Contains(replay.info.hash))
+                        {
+                            string replayFileName = filePath.Name;
 
-                string timestamp = DateTime.UtcNow.Ticks.ToString();
-                destinationFileName = Path.GetFileNameWithoutExtension(filePath.Name) + "_" + timestamp + Path.GetExtension(filePath.Name);
-                string destinationFilePath = Path.Combine(Constants.LLREPLAYS_PATH, destinationFileName);
-                File.Copy(filePath.FullName, destinationFilePath);
+                            if (!Directory.Exists(Constants.LLREPLAYS_PATH))
+                            {
+                                Directory.CreateDirectory(Constants.LLREPLAYS_PATH);
+                            }
+
+                            string timestamp = DateTime.UtcNow.Ticks.ToString();
+                            destinationFileName = Path.GetFileNameWithoutExtension(filePath.Name) + "_" + timestamp + Path.GetExtension(filePath.Name);
+                            string destinationFilePath = Path.Combine(Constants.LLREPLAYS_PATH, destinationFileName);
+                            File.Copy(filePath.FullName, destinationFilePath);
+                        }
+                    }
+                }
             }
+
             ExtraSongData.IsLocalLeaderboardReplay = false;
             LeaderboardData.LeaderboardData.UpdateBeatMapInfo(mapId, balls, misses, badCut, fc, currentTime, acc, score, GetModifiersString(__result), maxCombo, averageHitscore, didFail, destinationFileName, rightHandAverageScore, leftHandAverageScore, perfectStreak, rightHandTimeDependency, leftHandTimeDependency, fcAcc, pauses);
             LeaderboardView lb = Resources.FindObjectsOfTypeAll<LeaderboardView>().FirstOrDefault();
