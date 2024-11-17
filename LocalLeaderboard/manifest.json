@@ -3,14 +3,14 @@
   "id": "LocalLeaderboard",
   "name": "LocalLeaderboard",
   "author": "Speecil",
-  "version": "0.0.10+1.37.0",
+  "version": "0.0.11+1.39.0",
   "description": "A leaderboard mod which saves all of your scores locally and displays them in a leaderboard with various settings",
-  "gameVersion": "1.37.0",
+  "gameVersion": "1.39.0",
   "dependsOn": {
-    "BSIPA": "^4.3.4",
-    "LeaderboardCore": "^1.6.0",
-    "BeatSaberMarkupLanguage": "^1.11.2",
-    "SiraUtil": "^3.1.10"
+    "BSIPA": "^4.3.5",
+    "LeaderboardCore": "^1.7.0",
+    "BeatSaberMarkupLanguage": "^1.12.3",
+    "SiraUtil": "^3.1.12"
   },
   "loadAfter": [ "BeatLeader", "SongPlayHistory" ]
 }
