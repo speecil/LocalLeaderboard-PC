@@ -46,6 +46,9 @@ namespace LocalLeaderboard.AffinityPatches
                         textMeshPro.richText = true;
                         _replayWatermark = textMeshPro;
                         _replayWatermark.text = coolReplayText ?? _replayWatermark.text;
+
+                        coolReplayText = null;
+                        IsLocalLeaderboardReplay = false;
                     }
                     //SharedCoroutineStarter.instance.StartCoroutine(WaitForTextActive());
                 }

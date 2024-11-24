@@ -15,7 +15,7 @@ namespace LocalLeaderboard.UI
         {
             return true;
         }
-        protected override string leaderboardId => "LocalLeaderboard";
+        public override string leaderboardId => "LocalLeaderboard";
 
         internal LLLeaderboard(CustomLeaderboardManager customLeaderboardManager, PanelView panelView, LeaderboardView leaderboardView)
         {
@@ -25,8 +25,8 @@ namespace LocalLeaderboard.UI
             _manager.Register(this);
         }
 
-        protected override ViewController panelViewController { get; }
-        protected override ViewController leaderboardViewController => _leaderboardView;
+        public override ViewController panelViewController { get; }
+        public override ViewController leaderboardViewController => _leaderboardView;
 
         public void Dispose()
         {
