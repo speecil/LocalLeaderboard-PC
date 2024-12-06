@@ -265,7 +265,8 @@ namespace LocalLeaderboard.UI
             }
             _log.Notice("STARTING LOCALLEADERBOARD REPLAY");
             string fileLocation = Constants.LLREPLAYS_PATH + leaderboardEntry.bsorPath;
-            if (_replayService.TryReadReplay(fileLocation, out BeatLeader.Models.Replay.Replay replay1))
+            var replay1 = _replayService.TryReadReplay(fileLocation);
+            if (replay1 != null)
             {
                 parserParams.EmitEvent("hideScoreInfo");
                 BeatLeader.Models.Player player = new();

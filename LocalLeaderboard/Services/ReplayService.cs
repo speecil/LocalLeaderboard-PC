@@ -2,6 +2,7 @@
 using SiraUtil.Logging;
 using System;
 using System.IO;
+using LocalLeaderboard.Utils;
 using Zenject;
 
 namespace LocalLeaderboard.Services
@@ -18,8 +19,13 @@ namespace LocalLeaderboard.Services
             _log = log;
         }
 
-        public bool TryReadReplay(string filename, out BeatLeader.Models.Replay.Replay replay)
+        public dynamic TryReadReplay(string filename)
         {
+            if (!Constants.BL_INSTALLED())
+            {
+                return null;
+            }
+            
             try
             {
                 if (File.Exists(filename))
@@ -30,16 +36,14 @@ namespace LocalLeaderboard.Services
                     stream.Read(buffer, 0, arrayLength);
                     stream.Close();
 
-                    replay = BeatLeader.Models.Replay.ReplayDecoder.DecodeReplay(buffer);
-                    return true;
+                    return BeatLeader.Models.Replay.ReplayDecoder.DecodeReplay(buffer);
                 }
             }
             catch (Exception e)
             {
                 _log.Error(e);
             }
-            replay = default;
-            return false;
+            return null;
         }
 
         public void StartReplay(BeatLeader.Models.Replay.Replay replay, BeatLeader.Models.Player player)
