@@ -191,7 +191,8 @@ namespace LocalLeaderboard.AffinityPatches
                 if(_replayService != null)
                 {
                     // open the replay to get the info to check if the hash matches
-                    if (_replayService.TryReadReplay(filePath.FullName, out BeatLeader.Models.Replay.Replay replay))
+                    var replay = _replayService.TryReadReplay(filePath.FullName);
+                    if (replay != null)
                     {
                         if (mapId.Contains(replay.info.hash))
                         {
