@@ -18,6 +18,8 @@ namespace LocalLeaderboard
             zenjector.UseLogger(logger);
             zenjector.Install<MenuInstaller>(Location.Menu);
             zenjector.Install<PlayerInstaller>(Location.Player);
+            Log = logger;
         }
+        internal static IPALogger Log { get; private set; }
     }
 }
