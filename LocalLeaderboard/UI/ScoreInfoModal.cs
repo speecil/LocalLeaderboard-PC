@@ -1,4 +1,4 @@
-﻿using BeatSaberMarkupLanguage.Attributes;
+using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Parser;
 using HMUI;
 using LocalLeaderboard.AffinityPatches;
@@ -273,6 +273,7 @@ namespace LocalLeaderboard.UI
                 player.country = "AUS";
                 player.pp = leaderboardEntry.acc;
                 player.rank = leaderboardEntry.score;
+                player.id = "0";
                 DateTime a = new();
                 string format = SettingsConfig.Instance.BurgerDate ? "MM/dd/yyyy hh:mm tt" : "dd/MM/yyyy hh:mm tt";
                 if (long.TryParse(leaderboardEntry.datePlayed, out long unixTimestamp))
