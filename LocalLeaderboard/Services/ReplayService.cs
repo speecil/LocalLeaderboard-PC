@@ -1,7 +1,8 @@
-﻿using LocalLeaderboard.AffinityPatches;
+using LocalLeaderboard.AffinityPatches;
 using SiraUtil.Logging;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Zenject;
 
 namespace LocalLeaderboard.Services
@@ -51,7 +52,18 @@ namespace LocalLeaderboard.Services
                 return;
             }
             ExtraSongData.IsLocalLeaderboardReplay = true;
-            ((BeatLeader.Replayer.ReplayerMenuLoader)_replayerMenuLoader).StartReplayAsync(replay, player, null);
+            RunCatching(((BeatLeader.Replayer.ReplayerMenuLoader)_replayerMenuLoader).StartReplayAsync(replay, player, null));
+        }
+        //this should catch any exception if a replay fails to load; thanks nsgolova for this snippet
+        public static T RunCatching<T>(T task) where T : Task
+        {
+            task.ContinueWith(static x =>
+                {
+                    if (!x.IsFaulted) return;
+                    Plugin.Log.Critical(x.Exception!);
+                }
+            );
+            return task;
         }
     }
 }
